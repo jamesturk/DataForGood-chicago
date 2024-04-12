@@ -29,6 +29,7 @@ __________________
 #### **Packages used**
 - census
 - django
+- pandas
 
 
 #### **Data Source**

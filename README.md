@@ -19,25 +19,7 @@ Overall, the application aims to bridge the gap between data availability, acces
 
 ### **Repository Layout**
 
-DataForGood-chicago
-├── dfg_chi: contains our code for our web app.
-│   ├── gis: contains files used for mapping data.
-│   ├── static: contains images, CSS, and JavaScript files used in our web app.
-│   │   ├── bootstrap
-│   │   ├── css
-│   │   └── js
-│   ├── templates: contains template files used by Django.
-│   └── main.py: file contains the main logic and functionality of our web app.
-├── .github: contains our CI/CD workflows and issue templates
-│   ├── workflows
-│   │   ├── format-and-fail.yml
-│   │   └── run-tests.yml
-│   └── pull_request_template.md
-├── .gitignore
-├── .pre-commit-config.yaml
-├── LICENSE
-├── poetry.lock
-└── pyproject.toml
+![image](https://github.com/uchicago-capp-30320/DataForGood-chicago/assets/111541644/21fb310a-c66b-4a90-a8f9-1556e04ea194)
 
 __________________
 

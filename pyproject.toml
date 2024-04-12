@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "dataforgood-chicago"
+version = "0.1.0"
+description = "Data For Good Project"
+authors = ["Bryan Foo Suon Chuang <foosuonchuang@uchicago.edu>","Yujie Jiang <yujie0706@uchicago.edu>", "Ruoyi Wu <ruoyiwu@uchicago.edu>", "Yueyue Wang <yueyue@uchicago.edu>", "Maxine Xu <maxinexu@uchicago.edu>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+django = "^5.0.4"
+pre-commit = "^3.7.0"
+pytest = "^8.1.1"
+requests = "^2.31.0"
+census = "^0.8.21"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

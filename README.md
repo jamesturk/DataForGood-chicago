@@ -18,15 +18,12 @@ Overall, the application aims to bridge the gap between data availability, acces
 - Maxine Xu: Project Manager, Lead UI/UX Designer, Supporting Backend Engineer/Data Engineer
 
 ### **Repository Layout**
-- /front-end: Contains all front-end code, including UI components, styling, and front-end utilities. This is managed by the Lead Frontend Engineer with support from the UI/UX Designer.
-- /back-end: Houses back-end logic, including API endpoints, database models, and business logic. The Lead Backend Engineer/Data Engineer oversees this directory.
-- /data_visualization: Dedicated to data visualization components and libraries used to generate interactive charts and graphs.
-- /GIS: Contains GIS-specific code and resources, managed by the GIS Engineer.
-- /tests: Holds all test files, including unit and integration tests, to ensure code quality and functionality.
-- /docs: For project documentation, including API documentation, architecture diagrams, and setup guides.
+![image](https://github.com/uchicago-capp-30320/DataForGood-chicago/assets/111541644/188e7962-27e7-4355-97fd-5578f09373fb)
+
 __________________
 
 #### **Packages used**
+Check our pyproject.toml file for all the packages used. Some include: 
 - census
 - django
 - pandas
@@ -54,7 +51,7 @@ git clone git@github.com:uchicago-capp-30320/DataForGood-chicago.git
 ```
 2. Navigate to the repository.
 ```
-cd []
+cd ./dfg_chi
 ```
 3. Establish Dependencies.
 ```

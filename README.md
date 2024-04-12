@@ -18,13 +18,24 @@ Overall, the application aims to bridge the gap between data availability, acces
 - Maxine Xu: Project Manager, Lead UI/UX Designer, Supporting Backend Engineer/Data Engineer
 
 ### **Repository Layout**
-- `.github`: This directory contains our CI/CD workflows and issue templates.
-- `dfg_chi`: This directory contains our code for our web application. 
-- `.gitignore`: This file specifies intentionally untracked files to ignore in Git.
-- `.pre-commit-config.yaml`: This file is used to configure the pre-commit framework.
-- `LICENSE`: This file contains the MIT license under which our project is distributed.
-- `poetry.lock`: This file is locks the dependencies we use to a specific version.
-- `pyproject.toml`: This file is contains metadata and builds configurations, including dependencies managed by Poetry.
+DataForGood-chicago
+├── dfg_chi: contains our code for our web app.
+│   ├── gis: contains files used for mapping data.
+│   ├── static: contains images, CSS, and JavaScript files used in our web app.
+│   │   ├── bootstrap
+│   │   ├── css
+│   │   └── js
+│   ├── templates: contains template files used by Django.
+│   └── main.py: file contains the main logic and functionality of our web app.
+├── .github: contains our CI/CD workflows and issue templates
+│   ├── workflows
+│   │   └── example_workflow.yml
+│   └── ISSUE_TEMPLATE.md
+├── .gitignore: this file specifies intentionally untracked files to ignore in Git.
+├── .pre-commit-config.yaml: this file is used to configure the pre-commit framework.
+├── LICENSE: MIT license
+├── poetry.lock: this file is locks the dependencies we use to a specific version.
+└── pyproject.toml: this file is contains metadata and builds configurations, including dependencies managed by Poetry.
 __________________
 
 #### **Packages used**

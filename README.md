@@ -18,6 +18,7 @@ Overall, the application aims to bridge the gap between data availability, acces
 - Maxine Xu: Project Manager, Lead UI/UX Designer, Supporting Backend Engineer/Data Engineer
 
 ### **Repository Layout**
+
 DataForGood-chicago
 ├── dfg_chi: contains our code for our web app.
 │   ├── gis: contains files used for mapping data.
@@ -29,13 +30,15 @@ DataForGood-chicago
 │   └── main.py: file contains the main logic and functionality of our web app.
 ├── .github: contains our CI/CD workflows and issue templates
 │   ├── workflows
-│   │   └── example_workflow.yml
-│   └── ISSUE_TEMPLATE.md
-├── .gitignore: this file specifies intentionally untracked files to ignore in Git.
-├── .pre-commit-config.yaml: this file is used to configure the pre-commit framework.
-├── LICENSE: MIT license
-├── poetry.lock: this file is locks the dependencies we use to a specific version.
-└── pyproject.toml: this file is contains metadata and builds configurations, including dependencies managed by Poetry.
+│   │   ├── format-and-fail.yml
+│   │   └── run-tests.yml
+│   └── pull_request_template.md
+├── .gitignore
+├── .pre-commit-config.yaml
+├── LICENSE
+├── poetry.lock
+└── pyproject.toml
+
 __________________
 
 #### **Packages used**

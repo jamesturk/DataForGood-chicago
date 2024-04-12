@@ -18,18 +18,17 @@ Overall, the application aims to bridge the gap between data availability, acces
 - Maxine Xu: Project Manager, Lead UI/UX Designer, Supporting Backend Engineer/Data Engineer
 
 ### **Repository Layout**
-- /front-end: Contains all front-end code, including UI components, styling, and front-end utilities. This is managed by the Lead Frontend Engineer with support from the UI/UX Designer.
-- /back-end: Houses back-end logic, including API endpoints, database models, and business logic. The Lead Backend Engineer/Data Engineer oversees this directory.
-- /data_visualization: Dedicated to data visualization components and libraries used to generate interactive charts and graphs.
-- /GIS: Contains GIS-specific code and resources, managed by the GIS Engineer.
-- /tests: Holds all test files, including unit and integration tests, to ensure code quality and functionality.
-- /docs: For project documentation, including API documentation, architecture diagrams, and setup guides.
+- `.github`: This directory contains our CI/CD workflows and issue templates.
+- `dfg_chi`: This directory contains our code for our web application. 
+- `.gitignore`: This file specifies intentionally untracked files to ignore in Git.
+- `.pre-commit-config.yaml`: This file is used to configure the pre-commit framework.
+- `LICENSE`: This file contains the MIT license under which our project is distributed.
+- `poetry.lock`: This file is locks the dependencies we use to a specific version.
+- `pyproject.toml`: This file is contains metadata and builds configurations, including dependencies managed by Poetry.
 __________________
 
 #### **Packages used**
-- census
-- django
-
+Please check our pyproject.toml file for all of the packages we used.
 
 #### **Data Source**
 
@@ -53,7 +52,7 @@ git clone git@github.com:uchicago-capp-30320/DataForGood-chicago.git
 ```
 2. Navigate to the repository.
 ```
-cd []
+cd dfg_chi
 ```
 3. Establish Dependencies.
 ```

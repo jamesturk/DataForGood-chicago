@@ -19,6 +19,15 @@ Overall, the application aims to bridge the gap between data availability, acces
 
 ### **Repository Layout**
 ![image](https://github.com/uchicago-capp-30320/DataForGood-chicago/assets/111541644/188e7962-27e7-4355-97fd-5578f09373fb)
+__________________
+#### Issue Tracker: Using GitHub Issue Tracker
+
+#### Code Review Process
+
+Steps:
+1. Our project employs a code review process beginning with developers submitting a pull request (PR) to the relevant branch.
+2. PRs are then automatically assigned to an appropriate reviewer, typically a support role in the relevant domain. The review focuses on code quality, project standards, and functionality, with developers making necessary revisions based on feedback.
+3. After reviewer approval, a QA Engineer conducts a final check, ensuring the PR meets all quality benchmarks before the final merge is approved by a Project Manager or Chief Architect. 
 
 __________________
 

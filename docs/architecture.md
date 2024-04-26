@@ -85,9 +85,13 @@ The sections are made of three key components:
 ![image](https://github.com/uchicago-capp-30320/DataForGood-chicago/assets/111541644/c1eec53c-a973-4723-8f8f-ebc6eee3b126)
 
 The graph shows the relationships between the different entities in the ERD:
+
 The `geo_reference` entity is the central entity that all other entities depend on. It likely contains geographic information such as census tract ID, community name, zip code, etc.
+
 The `economic_characteristics`, `housing_characteristics`, `education_characteristics`, `population_characteristics`, and `health_characteristics` entities all have a foreign key reference to the `geo_reference` entity. This indicates that each of these entities is associated with a specific geographic location.
+
 The `economic_sub_indicator` entity has a foreign key reference to the `economic_characteristics` entity. This suggests that the `economic_sub_indicator` entity provides more detailed or subcategory information related to economic characteristics.
+
 Similarly, the `housing_sub_indicator`, `education_sub_indicator`, `population_sub_indicator`, and `health_sub_indicator` entities have foreign key references to their respective main entities (`housing_characteristics`, `education_characteristics`, `population_characteristics`, and `health_characteristics`). These sub-indicator entities likely contain more specific or subcategory information related to their main entities.
 
 
@@ -110,12 +114,11 @@ Similarly, the `housing_sub_indicator`, `education_sub_indicator`, `population_s
 2. Memo generation: The application allows users to press a button to generate memo based on the selected view of data tables and data visualizations
 3. Data Export: The application allows users to export the data tables and visualizations in various formats, including Excel (.xlsx), PDF, and JPEG.
 4. Resource: The application allows users to interact with the embedded ArcGIS Instant App to view city resources.
-
-### Endpoints:
-- /main/aboutus: Displays information about the project, including a description and objectives.
-- /main/data&visualize: The main page for data visualization, where users can select parameters and view data tables and charts.
-- /main/resources: Provides an embedded ArcGIS web app with interactive feature layers.
-- /main/data&visualize/{parameters from query}/tables.xlsx: Enables the user to download the datatables as one .xlsx file, with each datatable as an excel worksheet tab.
-- /main/data&visualize/{parameters from query}/tables.pdf: Enables the user to download the datatables as a .pdf file, with each datatable as a page in the PDF document.
-- /main/data&visualize/{parameters from query}/chart_1.jpg: There will be one unique link for each chart in the HTML page. This enables the user to select the specific charts to download as a .jpg image, with each image being one chart.
-- /main/resources: Provides a view of an embedded ArcGIS web app.
+5. Endpoints:
+    - /main/aboutus: Displays information about the project, including a description and objectives.
+    - /main/data&visualize: The main page for data visualization, where users can select parameters and view data tables and charts.
+    - /main/resources: Provides an embedded ArcGIS web app with interactive feature layers.
+    - /main/data&visualize/{parameters from query}/tables.xlsx: Enables the user to download the datatables as one .xlsx file, with each datatable as an excel worksheet tab.
+    - /main/data&visualize/{parameters from query}/tables.pdf: Enables the user to download the datatables as a .pdf file, with each datatable as a page in the PDF document.
+    - /main/data&visualize/{parameters from query}/chart_1.jpg: There will be one unique link for each chart in the HTML page. This enables the user to select the specific charts to download as a .jpg image, with each image being one chart.
+    - /main/resources: Provides a view of an embedded ArcGIS web app.

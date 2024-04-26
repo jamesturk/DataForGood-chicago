@@ -1,15 +1,6 @@
 ## Architecture Documentation
 Welcome to the DataForGood Chicago project! This document will provide you with an overview of our application's architecture and key concepts to help you get started.
 
-### Application Overview:
-Our web application aims to provide users with access to various socioeconomic data indicators for the City of Chicago. Users can explore and visualize data at different geographic levels, such as citywide, by zip code, by community area, or by census tract. The main objective of our web application is to help small and medium-sized nonprofits collect, analyze, and use Census data efficiently to achieve their goals. The application consists of three main sections: "About Us," "Data & Visualize," and "Resources."
-
-###  Key Components:
-The sections are made of three key components:
-1. Data & Visualize: Select variables and indicators for analysis, generate interactive visualizations, and customizable dashboards for comprehensive insights.
-2. Automated Insights and Memo Generation: Summarize key insights from data and visuals, generate ready-to-use memos or paragraphs.
-3. Maps and City Resources: Explore and navigate city resources using integrated ArcGIS Online functionality.
-
 ### Data Flow and Backend:
 - Data Source: The data for our application comes mainly from the American Community Survey conducted by the Census Bureau. We have a backend database using MySQL, which stores this data in a structured format. The following is a table view of the indicators we have for each category:
 

@@ -1,7 +1,10 @@
 ## Database Models:
 `geo_reference`: This model contains geographic information such as census tract ID, community name, zip code, latitude, longitude, and geometry (GIS polygon).
+
 `economic_characteristics`: This model stores economic indicators like median income of households for each census tract and year.
+
 `economic_sub_indicator`: This model holds sub-indicators related to economic characteristics, such as median income by race, for each census tract and year.
+
 (Note: The provided examples focus on economic indicators, but similar models exist for other indicator categories like housing, education, etc.)
 
 `geo_reference`:

@@ -7,14 +7,14 @@
 
 (Note: The provided examples focus on economic indicators, but similar models exist for other indicator categories like housing, education, etc.)
 
-`geo_reference`:
+`census_tracts`:
 | Name           | Type           | Description                                                   |
 |----------------|----------------|---------------------------------------------------------------|
 | id             | PrimaryKey, int| Census Tract ID                                               |
 | community_name | str            | Name of the Community                                         |
 | zip_code       | int            | Zip code                                                      |
-| INTPTLAT       | float          | Latitude of Census Tract                                      |
-| INTPTLON       | float          | Longitude of Census Tract                                     |
+| latitude       | float          | Latitude of Census Tract                                      |
+| longitude      | float          | Longitude of Census Tract                                     |
 | geometry       | str            | GIS polygon: Each pair of numbers represents a point in the polygon, with the first number being the x-coordinate and the second number being the y-coordinate. |
 
 `economic_characteristics` (for example Median Income of Households):
@@ -38,6 +38,6 @@
 | value                  | int                                | Median income in US dollars                                            |
 
 ### Entity-Relationship Diagram:
-![image](https://github.com/uchicago-capp-30320/DataForGood-chicago/assets/111541644/c10b12d7-c39d-4ef9-8451-21e7c4e8bc74)
+![image](https://github.com/uchicago-capp-30320/DataForGood-chicago/assets/111541644/ff9047c1-6f6c-45e3-86dc-53a6cedeb29b)
 
 **For more information on the data flow and backend processes please read the `architecture.md` file.**

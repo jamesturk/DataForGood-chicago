@@ -3,10 +3,10 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.views import generic
 from django.template import Context, loader
-
-from .models import Georeference, EconomicMain, EconomicSub
 from django.template.defaulttags import register
+
 from .utils import create_table
+from .models import Georeference, EconomicMain, EconomicSub
 from .forms import SearchForm
 
 @register.filter
@@ -30,11 +30,12 @@ def dataandvisualize(request):
         if form.is_valid():
             geograpahic_level = form.cleaned_data['geographic_level']
             geographic_unit = form.cleaned_data['tract']
-            year = form.cleaned_data['year']
+            category = form.cleaned_data['category']
             indicator = form.cleaned_data['indicator']
+            year = form.cleaned_data['year']
             
-            print(geograpahic_level, geographic_unit, year, indicator)        
-            field = create_table(EconomicMain, geograpahic_level, geographic_unit,
+            print(geograpahic_level, geographic_unit, category, indicator, year)        
+            field = create_table(category, geograpahic_level, geographic_unit,
                                  indicator, year)
     
             return render(request, "dataandvisualize.html", {'field':field})

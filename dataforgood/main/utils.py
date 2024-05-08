@@ -1,9 +1,13 @@
+from .models import Georeference, EconomicMain, EconomicSub
+
 # Helps for views.py
-def create_table(model, geographic_level, geographic_unit, indicator, year):
+def create_table(category, geographic_level, geographic_unit, indicator, year):
     """
     """
     headers = [geographic_level] + list(year)
     rows = []
+
+    model = get_model(category)
             
     for unit in geographic_unit:
         row = [unit]
@@ -29,6 +33,11 @@ def query_database(model, unit, indicator, year):
 
     return results
 
+def get_model(category_name):
+    """
+    """
+    category_mapping = {'Economic':EconomicMain}
+    return category_mapping[category_name]
 
 
 # Helpers for models.py

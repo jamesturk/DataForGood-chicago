@@ -180,88 +180,32 @@
     </head>
     <h1> Data & Visualize </h1>
     <body>
+
         <div class="query-form">
-            <h4> Area </h4>
-            <form>
-                <label for ="geographic-level"> Geographic Level</label>
-                <select id="geographic-level"> 
-                    <option value ="city"> City of Chicago (Default) </option>
-                    <option value ="community-area"> By Community Area </option>
-                    <option value ="zipcode"> By Zipcode </option>
-                    <option value ="tract"> By Census Tract </option>
-                </select>
-                <label for ="area"> Geographic Area </label>
-                <select id="area"> 
-                    <option value ="city"> City of Chicago (Default) </option>
-                    <option value ="hyde-park"> Hyde Park </option>
-                    <option value ="lincoln-park"> Lincoln Park </option>
-                </select>
+            <h4> Search Database </h4>
+            <form class="SearchForm" method="GET", enctype="multipart/form-data">
+                {% csrf_token %}
+                {{form.as_p}}
+            <button type="submit"> Submit </button>
             </form>
         </div>
 
-        <div class="query-form">
-            <h4> Select Category and Time Value </h4>
-            <form>
-                <label for ="category"> Category </label>
-                <select id="category"> 
-                    <option value ="population"> Population (Default) </option>
-                    <option value ="economics"> Economics </option>
-                    <option value ="education"> Education </option>
-                    <option value ="health"> Health </option>
-                    <option value ="Housing"> Housing </option>
-                </select>
-                <label for ="period"> Time Period </label>
-                <select id="period"> 
-                    <option value ="five-year"> 5-Year Estimate (Default) </option>
-                    <option value ="yearly"> 1-Year Estimate </option>
-                </select>
-            </form>
+        <div class="maintable" id="table"">
+            <table class="table1" border="1">
+                <tr>
+                    {% for header in field.headers %}
+                        <th> {{ header }} </th>
+                    {% endfor %}
+                    {% for row in field.rows %}
+                    <tr>
+                        {% for value in row %}
+                            <td>{{value}}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </table>
         </div>
 
-        <div class="query-form">
-            <h4> Select Year(s) </h4>
-            <form>
-                <label for ="period"> Year(s) </label>
-                <select id="period"> 
-                    <option value ="2015-2019"> 2015-19 </option>
-                    <option value ="2016-2020"> 2016-20 </option>
-                    <option value ="2017-2021"> 2017-21 </option>
-                    <option value ="2016-2022"> 2018-22 </option>
-                </select>
-                <input type="submit" name="SubmitButton", value="Submit">
-            </form>
-        </div>
-
-        <details>
-            <summary>Select Years</summary>
-            <form>
-              <fieldset>
-                <legend>
-                  Cars
-                </legend>
-                <ul>
-                  <li>
-                    <label for="bmw">2015</label>
-                    <input type="checkbox" id="bmw" name="bmw" value="bmw" />
-                  </li>
-                  <li>
-                    <label for="citroen">2016</label>
-                    <input type="checkbox" id="citroen" name="citroen" value="citroen" />
-                  </li>
-                  <li>
-                    <label for="skoda">2017</label>
-                    <input type="checkbox" id="skoda" name="skoda" value="skoda" />
-                  </li>
-                  <li>
-                    <label for="volvo">2018</label>
-                    <input type="checkbox" id="volvo" name="volvo" value="volvo" />
-                  </li>
-                </ul>
-              </fieldset>
-            </form>
-          
-          </details>
-        
         <div class="maintable">
             <h3> Total Population </h3>
             <table class="table1" border="1">

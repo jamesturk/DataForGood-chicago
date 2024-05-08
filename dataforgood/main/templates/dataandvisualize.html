@@ -181,6 +181,17 @@
     <h1> Data & Visualize </h1>
     <body>
 
+        <header>
+            <nav>
+                <div class="logo">Data For Good - Chicago</div>
+                <ul class="nav-links">
+                    <li><a href="{% url 'aboutus' %}">About Us</a></li>
+                    <li><a href="{% url 'dataandvisualize' %}">Data & Visualize</a></li>
+                    <li><a href="{% url 'resources' %}">Resource</a></li>
+                </ul>
+            </nav>
+        </header>
+
         <div class="query-form">
             <h4> Search Database </h4>
             <form class="SearchForm" method="GET", enctype="multipart/form-data">

@@ -180,7 +180,7 @@
     </head>
     <h1> Data & Visualize </h1>
     <body>
-
+    
         <header>
             <nav>
                 <div class="logo">Data For Good - Chicago</div>
@@ -202,6 +202,7 @@
         </div>
 
         <div class="maintable" id="table"">
+            <h3> {{table_title}} </h3>
             <table class="table1" border="1">
                 <tr>
                     {% for header in field.headers %}
@@ -216,6 +217,28 @@
                 {% endfor %}
             </table>
         </div>
+
+        
+        <div class="subtable" id="table"">
+            <h3> By Subgroups </h3>
+            <table class="table2" border="1">
+                <caption> {{subtable_year}} </caption>
+                <tr>
+                    {% for header in subtable_field.headers %}
+                        <th> {{ header }} </th>
+                    {% endfor %}
+                    {% for row in subtable_field.rows %}
+                    <tr>
+                        {% for value in row %}
+                            <td>{{value}}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+
+
 
         <div class="maintable">
             <h3> Total Population </h3>

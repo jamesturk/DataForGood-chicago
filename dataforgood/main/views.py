@@ -47,12 +47,14 @@ def dataandvisualize(request):
                                                                geograpahic_level,
                                                                geographic_unit,
                                                                indicator, year)
+            
+            print(multi_year_subtable_field)
             # Hardcoding subtable title for testing
-            subtable_year = '2018'
+            subtable_year = str(year[0])
         
             context = {'field':field, 
                        'table_title':table_title, 
-                       'subtable_field':multi_year_subtable_field['2018'],
+                       'subtable_field':multi_year_subtable_field[subtable_year],
                        'subtable_year':subtable_year}
 
             return render(request, "dataandvisualize.html", context)

@@ -15,27 +15,18 @@ class SearchForm(forms.Form):
         })
     )
 
-    # tract = forms.ChoiceField(
-    #     choices=get_choices(Georeference, 'id'),
-    #     widget=forms.Select(attrs={
-    #         'class':'form-control'
-    #     })
-    # )
-
-    # year = forms.ChoiceField(
-    #     choices=get_choices(EconomicMain, 'year'),
-    #     widget=forms.Select(attrs={
-    #         'class':'form-control'
-    #     })
-    # )
-
-    year = forms.MultipleChoiceField(
-        widget=forms.CheckboxSelectMultiple,
-        choices=get_choices(EconomicMain, 'year'))
-    
     tract = forms.MultipleChoiceField(
         widget=forms.CheckboxSelectMultiple,
         choices=get_choices(Georeference, 'id'))
+    
+    category = indicator = forms.ChoiceField(
+        choices=[('Economic', 'Economic'), 
+                 ('Education', 'Education'), ('Health', 'Health'),
+                 ('Housing', 'Housing'), ('Population', 'Population')],
+        widget=forms.Select(attrs={
+            'class':'form-control'
+        })
+    )
 
     indicator = forms.ChoiceField(
         choices=get_choices(EconomicMain, 'indicator_name'),
@@ -43,6 +34,11 @@ class SearchForm(forms.Form):
             'class':'form-control'
         })
     )
+
+    year = forms.MultipleChoiceField(
+        widget=forms.CheckboxSelectMultiple,
+        choices=get_choices(EconomicMain, 'year'))
+
 
 # class SearchForm(forms.Form):
 #     period = forms.ModelChoiceField(queryset = Georeference.objects.all())

@@ -5,6 +5,13 @@ from django.views import generic
 from django.template import Context, loader
 
 from .models import Georeference, EconomicMain, EconomicSub
+from django.template.defaulttags import register
+from .utils import create_table
+from .forms import SearchForm
+
+@register.filter
+def get_item(dictionary, key):
+    return dictionary.get(key)
 
 # Create your views here.
 
@@ -18,7 +25,21 @@ def aboutus(request):
 
 # Data and Visualize Page - /main/data&visualize/
 def dataandvisualize(request):
-    return render(request, "dataandvisualize.html")
+    if request.method == 'GET':
+        form = SearchForm(request.GET)
+        if form.is_valid():
+            geograpahic_level = form.cleaned_data['geographic_level']
+            geographic_unit = form.cleaned_data['tract']
+            year = form.cleaned_data['year']
+            indicator = form.cleaned_data['indicator']
+            
+            print(geograpahic_level, geographic_unit, year, indicator)        
+            field = create_table(EconomicMain, geograpahic_level, geographic_unit,
+                                 indicator, year)
+    
+            return render(request, "dataandvisualize.html", {'field':field})
+        
+    return render(request, "dataandvisualize.html", {'form':form})
 
 # Resources Page - /main/resources/
 def resources(request):

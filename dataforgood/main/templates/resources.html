@@ -1,7 +1,11 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>City Resources</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data For Good - Chicago</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <style>
         .arcgis-app-container {
             position: relative;
@@ -11,17 +15,40 @@
         }
 
         .arcgis-app-container iframe {
-            position: relative;
+            position: absolute;
             top: 0;
             left: 0;
-            width: 80%;
-            height: 80%;
+            width: 100%;
+            height: 100%;
+        }
+        
+        h1.city-title {
+            text-align: center;
+            margin: 20px 0; /* Adjust margin as necessary */
         }
     </style>
 </head>
 <body>
-    <div class="arcgis-app-container">
-        <iframe src="https://experience.arcgis.com/experience/3d6a0f98803b4739ae76c673fface4bb/" width="100%" height="600"></iframe>
-    </div>
+    <header>
+        <nav>
+            <div class="logo">Data For Good - Chicago</div>
+            <ul class="nav-links">
+                <li><a href="{% url 'aboutus' %}">About Us</a></li>
+                <li><a href="{% url 'dataandvisualize' %}">Data & Visualize</a></li>
+                <li><a href="{% url 'resources' %}">Resource</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main>
+        <h1 class="city-title">City Resources</h1>
+        <div class="arcgis-app-container">
+            <iframe src="https://experience.arcgis.com/experience/3d6a0f98803b4739ae76c673fface4bb/" frameborder="0"></iframe>
+        </div>
+    </main>
+    
+    <footer>
+        <p>Copyright © 2024 Data For Good - Chicago. All rights reserved.</p>
+    </footer>
 </body>
 </html>

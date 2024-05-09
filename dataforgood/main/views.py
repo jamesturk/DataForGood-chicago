@@ -4,6 +4,16 @@ from django.template.defaulttags import register
 from .forms import SearchForm, SubgroupForm
 from .utils import create_subgroup_tables, create_table, create_table_title
 
+from io import BytesIO
+
+import base64
+import geopandas as gpd
+import pandas as pd
+import matplotlib.pyplot as plt
+
+communityshape_path = './static/css/communityarea'
+zipcodeshape_path = './static/css/zipcode'
+censusshape_path = './static/css/censustracts'
 
 @register.filter
 def get_item(dictionary, key):

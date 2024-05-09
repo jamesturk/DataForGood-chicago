@@ -9,6 +9,9 @@ class CensusTracts(models.Model):
     longitude = models.FloatField()
     geometry = gis_models.PolygonField()
 
+    class Meta:
+        abstract = True
+
 class BaseIndicator(models.Model):
     id = models.IntegerField(primary_key=True)
     census_tract_id = models.ForeignKey(CensusTracts, on_delete=models.CASCADE)
@@ -21,11 +24,17 @@ class BaseIndicator(models.Model):
 class MainIndicator(BaseIndicator):
     indicator_name = models.CharField(max_length=255)
 
+    class Meta:
+        abstract = True
+
     def __str__(self):
         return self.indicator_name
 
 class SubIndicator(BaseIndicator):
     sub_group_indicator_name = models.CharField(max_length=255)
+
+    class Meta:
+        abstract = True
 
     def __str__(self):
         return self.sub_group_indicator_name

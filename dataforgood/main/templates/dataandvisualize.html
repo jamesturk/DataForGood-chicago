@@ -243,6 +243,15 @@
                 });
             });
         </script>
+
+        <div id="chart-container"></div>
+        {% if heatmap %}
+            <img src="data:image/png;base64,{{ heatmap }}" alt="Heatmap">
+        {% else %}
+            <p>{{ heatmap_message }}</p>
+        {% endif %}
+        </div>
+
         <div class="subtable" id="table">
             <h3>By Subgroups</h3>
 

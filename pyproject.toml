@@ -13,6 +13,10 @@ pre-commit = "^3.7.0"
 pytest = "^8.1.1"
 requests = "^2.31.0"
 census = "^0.8.21"
+pandas = "^2.2.2"
+psycopg2-binary = "2.9.6"
+django-extensions = "^3.2.3"
+django-environ = "^0.11.2"
 
 
 [build-system]

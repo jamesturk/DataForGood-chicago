@@ -66,7 +66,7 @@ Welcome to the DataForGood Chicago project! This document will provide you with 
     - economic_characteristics: This model stores economic indicators like median income of households for each census tract and year.
     - economic_sub_indicator: This model holds sub-indicators related to economic characteristics, such as median income by race, for each census tract and year.
     - Note: The provided examples focus on economic indicators, but similar models exist for other indicator categories like housing, education, etc.
-    
+
 - Updated Entity-Relationship Diagram:
 ![image](https://github.com/uchicago-capp-30320/DataForGood-chicago/assets/111541644/3e6785f0-f20b-4bc0-a56d-7f24b7d1f4ac)
 
@@ -101,7 +101,7 @@ Similarly, the `housing_sub_indicator`, `education_sub_indicator`, `population_s
     - Years: Users can select a specific 5-year estimate or a range of individual years (e.g., 2018-2022 5-year estimate or 2021-2022 yearly) to view the data for those time periods.
     - Indicators: Each indicator category may have indicators that provide more detailed information of the general groups (e.g., *Total Population* within the `population_characteristics`).
     - Sub-indicators: Each indicator category may have indicators that provide more detailed information of the general groups (e.g., breakdown of race groups for the indicator *Total Population*). We will present the data tables and visuals for all sub-indicators, and users can decide to hide the unnecessary visuals or data tables.
-    
+
 2. Memo generation: The application allows users to press a button to generate memo based on the selected view of data tables and data visualizations
 3. Data Export: The application allows users to export the data tables and visualizations in various formats, including Excel (.xlsx), PDF, and JPEG.
 4. Resource: The application allows users to interact with the embedded ArcGIS Instant App to view city resources.

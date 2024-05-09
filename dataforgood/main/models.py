@@ -1,5 +1,6 @@
 from django.db import models
 
+
 # Create your models here.
 class Georeference(models.Model):
     # Primary Key (Georeference ID - i.e. Tract Number)
@@ -8,9 +9,11 @@ class Georeference(models.Model):
     community_name = models.CharField(max_length=50)
 
     def __str__(self):
-        """
-        """
-        return str(self.id) + " " + str(self.zip_code) + " " + self.community_name
+        """ """
+        return (
+            str(self.id) + " " + str(self.zip_code) + " " + self.community_name
+        )
+
 
 class EconomicMain(models.Model):
     # UID (unqiue row numbers auto increment)
@@ -26,9 +29,17 @@ class EconomicMain(models.Model):
     value = models.IntegerField(default=9999)
 
     def __str__(self):
-        """
-        """
-        return str(self.georeference_id) + " " + self.indicator_name + " " + str(self.year) + " " + str(self.value)
+        """ """
+        return (
+            str(self.georeference_id)
+            + " "
+            + self.indicator_name
+            + " "
+            + str(self.year)
+            + " "
+            + str(self.value)
+        )
+
 
 class EconomicSub(models.Model):
     # UID (unique row numbers auto increment)
@@ -44,6 +55,13 @@ class EconomicSub(models.Model):
     value = models.IntegerField(default=9999)
 
     def __str__(self):
-        """
-        """
-        return str(self.indicator_id) + " " + self.subgroup_indicator_name + " " + str(self.year) + " " + str(self.value)
+        """ """
+        return (
+            str(self.indicator_id)
+            + " "
+            + self.subgroup_indicator_name
+            + " "
+            + str(self.year)
+            + " "
+            + str(self.value)
+        )

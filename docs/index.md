@@ -12,7 +12,7 @@ The sections are made of three key components:
 
 ### Documentation Layout
 - `architecture.md`: details our projects' core concepts and architecture (data flow and backend, frontend and user interface, endpoints)
-- `models.md`: documents our key database tables that our web application relies on 
+- `models.md`: documents our key database tables that our web application relies on
 - `endpoints/endpoints.md`: documents and identifies key URLs, their purpose, and parameters
 - `changelog.md`: documentation of major changes for our team to reference
 - `decisions` - directory with short write-ups of key technical decisions

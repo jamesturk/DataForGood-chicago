@@ -24,31 +24,31 @@ Parameters
 - `years`: a list of years to include in the data tables and visualizations. Valid values are "2020", "2021", "2022", "2018-22 5-year estimate", and so on. For indicators that are 5-year estimates, users can only select one 5-year period; for indicators with yearly estimates, users can select multiple years.
 
 ##### Example HTML Links
-- Example 1:  
+- Example 1:
   `/main/data&visualize/community_area-hyde_park&economic&median_income&2018-2019-2020`
   - `geographic_level`: Community Area - Hyde Park
   - `indicator_category`: Economic Characteristics
   - `indicator_variable`: Median Income in the Past 12 Months
   - `years`: 2018, 2019, 2020 (*multi single-year estimates*)
-- Example 2:  
+- Example 2:
   `/main/data&visualize/community_area-hyde_park&education&pop_3yo_educ&2018-22`
   - `geographic_level`: Community Area - Hyde Park
   - `indicator_category`: Education Characteristics
-  - `indicator_variable`: Population 3 years and over enrolled in school 
+  - `indicator_variable`: Population 3 years and over enrolled in school
   - `years`: 2018-22 (*one five-year estimate*)
-- Example 3:  
+- Example 3:
   `/main/data&visualize/community_area-hyde_park-lincoln_park&education&pop_3yo_educ&2018-22`
   - `geographic_level`: Community Area - Hyde Park, Lincoln Park (multiple neighborhood areas)
   - `indicator_category`: Education Characteristics
-  - `indicator_variable`: Population 3 years and over enrolled in school 
+  - `indicator_variable`: Population 3 years and over enrolled in school
   - `years`: 2018-22 (*one five-year estimate*)
-- Example 4:  
+- Example 4:
   `/main/data&visualize/zip_code-60610-60611-60612&education&pop_3yo_educ&2018-22`
   - `geographic_level`: Zipcode - 60610, 60611, 60612 (multiple zipcodes)
   - `indicator_category`: Education Characteristics
-  - `indicator_variable`: Population 3 years and over enrolled in school 
+  - `indicator_variable`: Population 3 years and over enrolled in school
   - `years`: 2018-22 (*one five-year estimate*)
-- Example 5:  
+- Example 5:
   `/main/data&visualize/census_tract-10112-10113-10117&economic&median_income&2018-2019-2020`
   - `geographic_level`: Census Tract - 10112, 10113, 10117
   - `indicator_category`: Economic Characteristics
@@ -91,7 +91,7 @@ Parameters
 - `indicator_variable` List of available indicator variables. Select one at a time.
 - `data_table_indicator_general`: Data table for selected indicator
 - `data_table_indicator_sub`: Data table for all sub-indicators
-- `data_visualization_general`: Visualization for the selected indicator, geographic level, and years (if multiple years selected) 
+- `data_visualization_general`: Visualization for the selected indicator, geographic level, and years (if multiple years selected)
 - `data_visualization_sub_indicator`: Visualization for all sub-indicators of the selected indicator, geographic level, and year
 - `year_dropdown_sub_indicator`: a dropdown menu that allows users to select one year at a time for the sub-indicator visualization. The year dictionary here will be a list of user selected years. The default year used is the latest year available or the latest 5-year estimate
 
@@ -100,30 +100,30 @@ Purpose: Enable the user to download the datatables as one .xlsx file, with each
 
 Parameters: None
 
-Template variables: 
+Template variables:
 - `href`: HTML link of the exported tables.xlsx file
 
-Reponse: HTML page that exports that datatable (from a .json or pandas dataframe) as a .xlsx file. 
+Reponse: HTML page that exports that datatable (from a .json or pandas dataframe) as a .xlsx file.
 
 #### Endpoint B2:  /main/data&visualize/{parameters from query}/tables.pdf
 Purpose: Enable the user to download the datatables as a .pdf file, with each datatable as a page in the PDF document.
 
 Parameters: None
 
-Template variables: 
+Template variables:
 - `href`: HTML link of the exported tables.pdf file
 
-Reponse: HTML page that exports that datatable (from a .json or pandas dataframe) as a .pdf file. 
+Reponse: HTML page that exports that datatable (from a .json or pandas dataframe) as a .pdf file.
 
 #### Endpoint B3:  /main/data&visualize/{parameters from query}/chart_1.jpg
 Purpose: There will be one unique link for each chart in the HTML page. This enables the user to select the specific charts to download as a .jpg image, with each image being one chart.
 
 Parameters: None
 
-Template variables: 
+Template variables:
 - `href`: HTML link of the exported chart_1.jpg file
 
-Reponse: HTML page that exports the chart as a .jpg file. 
+Reponse: HTML page that exports the chart as a .jpg file.
 
 ### Endpoint C: /main/resources
 Purpose: This endpoint provides a view of an embedded ArcGIS web app.
@@ -131,5 +131,3 @@ Purpose: This endpoint provides a view of an embedded ArcGIS web app.
 Parameters: None/NA
 
 Response: HTML page with the embedded ArcGIS web app which contains a lot of feature layers to interact with.
-
-

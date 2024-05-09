@@ -27,12 +27,12 @@ __________________
 Steps:
 1. Our project employs a code review process beginning with developers submitting a pull request (PR) to the relevant branch.
 2. PRs are then automatically assigned to an appropriate reviewer, typically a support role in the relevant domain. The review focuses on code quality, project standards, and functionality, with developers making necessary revisions based on feedback.
-3. After reviewer approval, a QA Engineer conducts a final check, ensuring the PR meets all quality benchmarks before the final merge is approved by a Project Manager or Chief Architect. 
+3. After reviewer approval, a QA Engineer conducts a final check, ensuring the PR meets all quality benchmarks before the final merge is approved by a Project Manager or Chief Architect.
 
 __________________
 
 #### **Packages used**
-Check our pyproject.toml file for all the packages used. Some include: 
+Check our pyproject.toml file for all the packages used. Some include:
 - census
 - django
 - pandas

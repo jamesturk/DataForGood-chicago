@@ -217,7 +217,32 @@
                 {% endfor %}
             </table>
         </div>
+        <div id="chart-container"></div>
 
+        <script src="https://code.highcharts.com/highcharts.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var chartData = {{ chart_data|safe }};
+        
+                Highcharts.chart('chart-container', {
+                    chart: {
+                        type: 'column'
+                    },
+                    title: {
+                        text: '{{ table_title }}'
+                    },
+                    xAxis: {
+                        categories: chartData.categories
+                    },
+                    yAxis: {
+                        title: {
+                            text: 'Value'
+                        }
+                    },
+                    series: chartData.series
+                });
+            });
+        </script>
         
         <div class="subtable" id="table"">
             <h3> By Subgroups </h3>
@@ -281,7 +306,6 @@
                 </tr>
             </table>
         </div>
-
         <div class="subtable">
             <h3> By Race Groups </h3>
             <table class="table2" border="1">

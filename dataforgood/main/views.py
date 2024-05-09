@@ -28,7 +28,6 @@ def aboutus(request):
 def dataandvisualize(request):
     if request.method == 'GET':
         form = SearchForm(request.GET)
-
         if form.is_valid():
             # Extract variables from SearchForm
             geograpahic_level = form.cleaned_data['geographic_level']
@@ -38,28 +37,37 @@ def dataandvisualize(request):
             year = form.cleaned_data['year']
 
             # Create main table context variables
-            table_title = create_table_title(indicator, year)       
-            field = create_table(category, geograpahic_level, geographic_unit,
-                                 indicator, year)
+            table_title = create_table_title(indicator, year)
+            field = create_table(category, geograpahic_level, geographic_unit, indicator, year)
 
-            # Create subtable context variables          
-            multi_year_subtable_field = create_subgroup_tables(category, 
-                                                               geograpahic_level,
-                                                               geographic_unit,
-                                                               indicator, year)
-            
+            # Create subtable context variables
+            multi_year_subtable_field = create_subgroup_tables(category, geograpahic_level, geographic_unit, indicator, year)
             print(multi_year_subtable_field)
+
             # Hardcoding subtable title for testing
             subtable_year = str(year[0])
-        
-            context = {'field':field, 
-                       'table_title':table_title, 
-                       'subtable_field':multi_year_subtable_field[subtable_year],
-                       'subtable_year':subtable_year}
 
+            # Prepare data for the chart
+            chart_data = {
+                'categories': field['headers'][1:],  # Years
+                'series': []
+            }
+            for row in field['rows']:
+                chart_data['series'].append({
+                    'name': row[0],  # Geographic unit
+                    'data': row[1:]  # Values for each year
+                })
+
+            context = {
+                'field': field,
+                'table_title': table_title,
+                'subtable_field': multi_year_subtable_field[subtable_year],
+                'subtable_year': subtable_year,
+                'chart_data': chart_data
+            }
             return render(request, "dataandvisualize.html", context)
-        
-    return render(request, "dataandvisualize.html", {'form':form})
+
+    return render(request, "dataandvisualize.html", {'form': form})
 
 
 # Resources Page - /main/resources/

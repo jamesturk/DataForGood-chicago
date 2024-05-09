@@ -20,6 +20,7 @@ def aboutus(request):
     return render(request, "aboutus.html")
 
 
+# MODIFIED LINE 44 and 50
 # Data and Visualize with FORMS - /main/data&visualize/
 def dataandvisualize(request):
     if request.method == "GET":
@@ -41,12 +42,12 @@ def dataandvisualize(request):
             # Create main table context variables
             table_title = create_table_title(indicator, year)
             field = create_table(
-                category, geograpahic_level, geographic_unit, indicator, year
+                geograpahic_level, geographic_unit, indicator, year
             )
 
             # Create subtable context variables
             multi_year_subtable_field = create_subgroup_tables(
-                category, geograpahic_level, geographic_unit, indicator, year
+                geograpahic_level, geographic_unit, indicator, year
             )
             print(multi_year_subtable_field)
 

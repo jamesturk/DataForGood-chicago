@@ -1,12 +1,31 @@
 from .models import EconomicMain, EconomicSub
-
+from .models2 import *
 
 # HELPER FUNCTIONS FOR VIEWS.PY #
 
 
-# Global variables that map form inputs to specific models to conduct querying
-MAIN_MODEL_MAPPING = {"Economic": EconomicMain}
-SUB_MODEL_MAPPING = {"Economic": EconomicSub}
+# Global variables that map form indicator options to specific models to conduct querying
+MAIN_MODEL_MAPPING = {"Median Income in the Past 12 Months (inflation-adjusted)" : MedianIncome_Main,
+                      "Mean Income in the Past 12 Months (inflation-adjusted)" : MeanIncome_Main,
+                      "Aggregate Contract Rent" : ContractRent_Main,
+                      "Total Number of Households" : HouseholdType_Main,
+                      "Median Earnings in the Past 12 Months" : MedianEarning_Main,
+                      "Population 3 years and over enrolled in school" : Enrollment_Main,
+                      "Total Population With Disability" : Disability_Main,
+                      "Insurance Coverage: Total Population" : Insurance_Main,
+                      "Total Population and Race Group" : Races_Main,
+                      "Median Age" : MedianAge_Main}
+
+SUB_MODEL_MAPPING = {"Median Income in the Past 12 Months (inflation-adjusted)" : MedianIncome_Sub,
+                      "Mean Income in the Past 12 Months (inflation-adjusted)" : MeanIncome_Sub,
+                      "Aggregate Contract Rent" : ContractRent_Sub,
+                      "Total Number of Households" : HouseholdType_Sub,
+                      "Median Earnings in the Past 12 Months" : MedianEarning_Sub,
+                      "Population 3 years and over enrolled in school" : Enrollment_Sub,
+                      "Total Population With Disability" : Disability_Sub,
+                      "Insurance Coverage: Total Population" : Insurance_Sub,
+                      "Total Population and Race Group" : Races_Sub,
+                      "Median Age" : MedianAge_Sub}
 
 
 def convert_list_to_tuple(query_lst):
@@ -31,12 +50,12 @@ def convert_list_to_tuple(query_lst):
     return query_tup
 
 
-def get_model(category_name, table_type):
+def get_model(indicator, table_type):
     """
     Retrieves model object based on category selected by the user.
 
     Inputs:
-        category_name (str): category selected by user in the form
+        indicator (str): indicator selected by user in the form
         table_type (str): 'main' for main indicator, 'sub' for subgroup tables
 
     Returns:
@@ -44,10 +63,10 @@ def get_model(category_name, table_type):
             selected by the user
     """
     if table_type == "main":
-        return MAIN_MODEL_MAPPING[category_name]
+        return MAIN_MODEL_MAPPING[indicator]
 
     if table_type == "sub":
-        return SUB_MODEL_MAPPING[category_name]
+        return SUB_MODEL_MAPPING[indicator]
 
 
 def get_subgroups(results):
@@ -96,8 +115,8 @@ def create_table_title(indicator, year):
 
     return " ".join(indicator_word_lst)
 
-
-def create_table(category, geographic_level, geographic_unit, indicator, year):
+# MODIFIED
+def create_table(geographic_level, geographic_unit, indicator, year):
     """
     Generates a dictionary to be used a context variables in the html file to
     create a table on the webapp (for the main indicator/overall group).
@@ -120,7 +139,7 @@ def create_table(category, geographic_level, geographic_unit, indicator, year):
     rows = []
 
     # Retrieve model based on category selected by user (main)
-    model = get_model(category, "main")
+    model = get_model(indicator, "main")
     # Note: Hard coded here for dummy database testing
     model = EconomicMain
 
@@ -132,7 +151,7 @@ def create_table(category, geographic_level, geographic_unit, indicator, year):
     for unit in geographic_unit:
         row = [unit]
         results = model.objects.filter(
-            georeference_id=unit, indicator_name=indicator, year__in=year
+            georeference_id=unit, year__in=year
         )
         for r in results:
             row.append(r.value)
@@ -140,9 +159,9 @@ def create_table(category, geographic_level, geographic_unit, indicator, year):
 
     return {"headers": headers, "rows": rows}
 
-
+# CHANGE THIS SHOULD NOT BE CATEGORY BUT INDICATOR NAME
 def create_subgroup_tables(
-    category, geographic_level, geographic_unit, indicator, year
+    geographic_level, geographic_unit, indicator, year
 ):
     """
     Generates a dictionary to be used a context variables in the html file to
@@ -165,7 +184,7 @@ def create_subgroup_tables(
                 str)
     """
     # Retrieve model based on category selected by user (subgroups)
-    model = get_model(category, "sub")
+    model = get_model(indicator, "sub")
     # Note: Hard coded here for dummy database testing
     model = EconomicSub
 
@@ -180,7 +199,6 @@ def create_subgroup_tables(
         geographic_unit = convert_list_to_tuple(geographic_unit)
         results = model.objects.filter(
             georeference_id__in=geographic_unit,
-            indicator_id__indicator_name=indicator,
             year=one_year,
         )
 

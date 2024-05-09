@@ -7,7 +7,7 @@ from django.template.defaulttags import register
 
 from .utils import create_table, create_subgroup_tables, create_table_title
 from .models import Georeference, EconomicMain, EconomicSub
-from .forms import SearchForm
+from .forms import SearchForm, SubgroupForm
 
 @register.filter
 def get_item(dictionary, key):
@@ -28,6 +28,8 @@ def aboutus(request):
 def dataandvisualize(request):
     if request.method == 'GET':
         form = SearchForm(request.GET)
+        subgroup_form = SubgroupForm(year_choices=[])
+
         if form.is_valid():
             # Extract variables from SearchForm
             geograpahic_level = form.cleaned_data['geographic_level']
@@ -35,7 +37,7 @@ def dataandvisualize(request):
             category = form.cleaned_data['category']
             indicator = form.cleaned_data['indicator']
             year = form.cleaned_data['year']
-
+            subgroup_form = SubgroupForm(year_choices=[(str(year), str(year)) for year in form.cleaned_data['year']])
             # Create main table context variables
             table_title = create_table_title(indicator, year)
             field = create_table(category, geograpahic_level, geographic_unit, indicator, year)
@@ -61,13 +63,13 @@ def dataandvisualize(request):
             context = {
                 'field': field,
                 'table_title': table_title,
-                'subtable_field': multi_year_subtable_field[subtable_year],
-                'subtable_year': subtable_year,
-                'chart_data': chart_data
+                'multi_year_subtable_field': multi_year_subtable_field,
+                'chart_data': chart_data,
+                'subgroup_form': subgroup_form
             }
             return render(request, "dataandvisualize.html", context)
-
-    return render(request, "dataandvisualize.html", {'form': form})
+    
+    return render(request, "dataandvisualize.html", {'form': form, 'subgroup_form': SubgroupForm(year_choices=[])})
 
 
 # Resources Page - /main/resources/

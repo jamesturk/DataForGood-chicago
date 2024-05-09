@@ -39,7 +39,17 @@ class SearchForm(forms.Form):
         widget=forms.CheckboxSelectMultiple,
         choices=get_choices(EconomicMain, 'year'))
 
+class SubgroupForm(forms.Form):
+    subgroup_year = forms.ChoiceField(
+        choices=[],
+        widget=forms.Select(attrs={
+            'class': 'form-control'
+        })
+    )
 
+    def __init__(self, year_choices, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['subgroup_year'].choices = year_choices
 # class SearchForm(forms.Form):
 #     period = forms.ModelChoiceField(queryset = Georeference.objects.all())
 #         #period = forms.ModelChoiceField(queryset = Georeference.objects.all(), widget=forms.CheckboxSelectMultiple)

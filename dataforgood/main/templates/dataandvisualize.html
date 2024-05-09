@@ -243,27 +243,59 @@
                 });
             });
         </script>
+        <div class="subtable" id="table">
+            <h3>By Subgroups</h3>
         
-        <div class="subtable" id="table"">
-            <h3> By Subgroups </h3>
+            <form id="subgroup-form">
+                {{ subgroup_form.as_p }}
+                <input type="submit" value="Submit">
+            </form>
+        
             <table class="table2" border="1">
-                <caption> {{subtable_year}} </caption>
-                <tr>
-                    {% for header in subtable_field.headers %}
-                        <th> {{ header }} </th>
-                    {% endfor %}
-                    {% for row in subtable_field.rows %}
-                    <tr>
-                        {% for value in row %}
-                            <td>{{value}}</td>
-                        {% endfor %}
-                    </tr>
-                {% endfor %}
+                <caption id="subtable-year"></caption>
+                <thead>
+                    <tr id="subtable-headers"></tr>
+                </thead>
+                <tbody id="subtable-rows"></tbody>
             </table>
-        </div>
-
-
-
+        </div> 
+        
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+            $(document).ready(function() {
+                var multiYearSubtableField = {{ multi_year_subtable_field|safe }};
+        
+                // Function to update the subgroup table based on the selected year
+                function updateSubgroupTable(year) {
+                    var subtableData = multiYearSubtableField[year];
+                    $('#subtable-year').text(year);
+                    $('#subtable-headers').empty();
+                    $('#subtable-rows').empty();
+        
+                    subtableData.headers.forEach(function(header) {
+                        $('#subtable-headers').append('<th>' + header + '</th>');
+                    });
+        
+                    subtableData.rows.forEach(function(row) {
+                        var rowHtml = '<tr>';
+                        row.forEach(function(value) {
+                            rowHtml += '<td>' + value + '</td>';
+                        });
+                        rowHtml += '</tr>';
+                        $('#subtable-rows').append(rowHtml);
+                    });
+                }
+        
+                $('#subgroup-form').submit(function(event) {
+                    event.preventDefault();
+                    var selectedYear = $('#id_subgroup_year').val();
+                    updateSubgroupTable(selectedYear);
+                });
+        
+                var initialYear = '{{ subgroup_form.subgroup_year.value }}';
+                updateSubgroupTable(initialYear);
+            });
+        </script>
 
         <div class="maintable">
             <h3> Total Population </h3>

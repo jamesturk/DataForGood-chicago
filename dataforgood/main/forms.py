@@ -1,7 +1,7 @@
 from django import forms
 
-from .models import EconomicMain, Georeference
-from .models2 import *
+from .models import CensusTracts, ContractRent_Main
+# from .models2 import *
 from .utils import get_choices
 
 # Category chocies
@@ -67,7 +67,7 @@ class SearchForm(forms.Form):
 
     tract = forms.MultipleChoiceField(
         widget=forms.CheckboxSelectMultiple,
-        choices=get_choices(Georeference, "id"),
+        choices=get_choices(CensusTracts, "tract_id"),
     )
 
     category = indicator = forms.ChoiceField(
@@ -77,14 +77,14 @@ class SearchForm(forms.Form):
 
     # To be modified to become dynamic depending on category selected by user
     indicator = forms.ChoiceField(
-        choices=get_choices(EconomicMain, "indicator_name"),
+        choices=get_choices(ContractRent_Main, "indicator_name"),
         widget=forms.Select(attrs={"class": "form-control"}),
     )
 
     # To be modified to become dyanmic dependin gon the indicator selected by user
     year = forms.MultipleChoiceField(
         widget=forms.CheckboxSelectMultiple,
-        choices=get_choices(EconomicMain, "year"),
+        choices=get_choices(ContractRent_Main, "year"),
     )
 
 

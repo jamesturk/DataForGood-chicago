@@ -1,5 +1,5 @@
-from .models import EconomicMain, EconomicSub
-from .models2 import *
+from .models import *
+# from .models2 import *
 
 # HELPER FUNCTIONS FOR VIEWS.PY #
 
@@ -141,7 +141,7 @@ def create_table(geographic_level, geographic_unit, indicator, year):
     # Retrieve model based on category selected by user (main)
     model = get_model(indicator, "main")
     # Note: Hard coded here for dummy database testing
-    model = EconomicMain
+    model = ContractRent_Main
 
     # Converts list of years to tuple, if only one year selected,
     # converts list to tuple with a comma
@@ -186,7 +186,7 @@ def create_subgroup_tables(
     # Retrieve model based on category selected by user (subgroups)
     model = get_model(indicator, "sub")
     # Note: Hard coded here for dummy database testing
-    model = EconomicSub
+    model = ContractRent_Sub
 
     # Creates a nested dictionary, one dictionary for each year
     table_many_years = {}

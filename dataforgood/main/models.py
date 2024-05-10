@@ -1,67 +1,109 @@
 from django.db import models
+from django.contrib.gis.db import models as gis_models
 
+class CensusTracts(models.Model):
+    tract_id = models.IntegerField(primary_key=True)
+    community = models.CharField(max_length=255)
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+    geometry = gis_models.PolygonField()
 
-# Create your models here.
-class Georeference(models.Model):
-    # Primary Key (Georeference ID - i.e. Tract Number)
-    id = models.IntegerField(primary_key=True)
-    zip_code = models.IntegerField(default=999999)
-    community_name = models.CharField(max_length=50)
-
-    def __str__(self):
-        """ """
-        return (
-            str(self.id) + " " + str(self.zip_code) + " " + self.community_name
-        )
-
-
-class EconomicMain(models.Model):
-    # UID (unqiue row numbers auto increment)
-    uid = models.AutoField(primary_key=True)
-
-    # Indicator ID (ID for each EconomicMain indicator)
-    indicator_id = models.IntegerField(default=1)
-    # Foreign Key (Georeference ID - i.e. Tract Number)
-    georeference_id = models.ForeignKey(Georeference, on_delete=models.CASCADE)
-
-    indicator_name = models.CharField(max_length=50)
-    year = models.IntegerField(default=9999)
-    value = models.IntegerField(default=9999)
+class TractZipCode(models.Model):
+    id = models.AutoField(primary_key=True)
+    tract = models.ForeignKey(CensusTracts,
+                              on_delete=models.CASCADE,
+                              related_name='zip_codes')
+    zip_code = models.IntegerField()
 
     def __str__(self):
-        """ """
-        return (
-            str(self.georeference_id)
-            + " "
-            + self.indicator_name
-            + " "
-            + str(self.year)
-            + " "
-            + str(self.value)
-        )
+        return f"{self.tract.tract_id} - {self.zip_code}"
 
 
-class EconomicSub(models.Model):
-    # UID (unique row numbers auto increment)
-    uid = models.AutoField(primary_key=True)
+class BaseIndicator(models.Model):
+    id = models.AutoField(primary_key=True)
+    indicator_id = models.IntegerField()
+    census_tract = models.ForeignKey(CensusTracts,
+                                    on_delete=models.CASCADE)
+    year = models.IntegerField()
+    value = models.IntegerField()
 
-    # Foreign Key 1 (Georereference ID)
-    georeference_id = models.ForeignKey(Georeference, on_delete=models.CASCADE)
-    # Foreign Key 2 (ID for an EconomicMain indicator)
-    indicator_id = models.ForeignKey(EconomicMain, on_delete=models.CASCADE)
+    class Meta:
+        abstract = True
 
-    subgroup_indicator_name = models.CharField(max_length=50)
-    year = models.IntegerField(default=9999)
-    value = models.IntegerField(default=9999)
+class MainIndicator(BaseIndicator):
+    indicator_name = models.CharField(max_length=255)
+
+    class Meta:
+        abstract = True
 
     def __str__(self):
-        """ """
-        return (
-            str(self.indicator_id)
-            + " "
-            + self.subgroup_indicator_name
-            + " "
-            + str(self.year)
-            + " "
-            + str(self.value)
-        )
+        return self.indicator_name
+
+class SubIndicator(BaseIndicator):
+    sub_group_indicator_name = models.CharField(max_length=255)
+
+    class Meta:
+        abstract = True
+
+    def __str__(self):
+        return self.sub_group_indicator_name
+
+class ContractRent_Main(MainIndicator):
+    pass
+
+class ContractRent_Sub(SubIndicator):
+    pass
+
+class Disability_Main(MainIndicator):
+    pass
+
+class Disability_Sub(SubIndicator):
+    pass
+
+class Enrollment_Main(MainIndicator):
+    pass
+
+class Enrollment_Sub(SubIndicator):
+    pass
+
+class HouseholdType_Main(MainIndicator):
+    pass
+
+class HouseholdType_Sub(SubIndicator):
+    pass
+
+class Insurance_Main(MainIndicator):
+    pass
+
+class Insurance_Sub(SubIndicator):
+    pass
+
+class MeanIncome_Main(MainIndicator):
+    pass
+
+class MeanIncome_Sub(SubIndicator):
+    pass
+
+class MedianAge_Main(MainIndicator):
+    pass
+
+class MedianAge_Sub(SubIndicator):
+    pass
+
+class MedianEarning_Main(MainIndicator):
+    pass
+
+class MedianEarning_Sub(SubIndicator):
+    pass
+
+class MedianIncome_Main(MainIndicator):
+    pass
+
+class MedianIncome_Sub(SubIndicator):
+    pass
+
+class Races_Main(MainIndicator):
+    pass
+
+class Races_Sub(SubIndicator):
+    pass

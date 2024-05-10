@@ -1,5 +1,5 @@
 from .models import *
-# from .models2 import *
+from django import forms
 
 # HELPER FUNCTIONS FOR VIEWS.PY #
 
@@ -81,7 +81,7 @@ def get_subgroups(results):
         subgroups_lst (list of str): a list of unique subgroups
     """
     subgroups_lst = []
-    for tup in results.values_list("subgroup_indicator_name").distinct():
+    for tup in results.values_list("sub_group_indicator_name").distinct():
         subgroups_lst.append(tup[0])
 
     return subgroups_lst
@@ -151,7 +151,7 @@ def create_table(geographic_level, geographic_unit, indicator, year):
     for unit in geographic_unit:
         row = [unit]
         results = model.objects.filter(
-            georeference_id=unit, year__in=year
+            census_tract_id=unit, year__in=year
         )
         for r in results:
             row.append(r.value)
@@ -198,7 +198,7 @@ def create_subgroup_tables(
         # converts list to tuple with a comma
         geographic_unit = convert_list_to_tuple(geographic_unit)
         results = model.objects.filter(
-            georeference_id__in=geographic_unit,
+            census_tract_id__in=geographic_unit,
             year=one_year,
         )
 
@@ -214,9 +214,8 @@ def create_subgroup_tables(
             # a subgroup that other zipcodes in the query has)
             for unit in geographic_unit:
                 result = model.objects.filter(
-                    georeference_id=unit,
-                    indicator_id__indicator_name=indicator,
-                    subgroup_indicator_name=subgroup,
+                    census_tract_id=unit,
+                    sub_group_indicator_name=subgroup,
                     year=one_year,
                 )
                 if len(result) > 0:
@@ -251,4 +250,34 @@ def get_choices(model, col):
     for item in unique_values:
         choices.append((item[col], item[col]))
 
-    return choices
+    return sorted(choices)
+
+def create_multiple_choice_geo(model, field_name, widget_id, class_name='form-option'):
+    """
+    Create a dynamically configured MultipleChoiceField based on the specified model and field.
+    
+    :param model: Django model class from which to fetch choices.
+    :param field_name: Name of the model field for which to create a choice field.
+    :param widget_id: HTML ID to use for the field's widget.
+    :param class_name: CSS class name for the widget.
+    :return: forms.MultipleChoiceField instance.
+    """
+    return forms.MultipleChoiceField(
+        widget=forms.CheckboxSelectMultiple(attrs={'class': class_name, 'id': widget_id}),
+        choices=get_choices(model, field_name),
+    )
+
+def create_multiple_choice_indicator(choices_lst, widget_id, class_name='form-option'):
+    """
+    Create a dynamically configured MultipleChoiceField based on the specified model and field.
+    
+    :param model: Django model class from which to fetch choices.
+    :param field_name: Name of the model field for which to create a choice field.
+    :param widget_id: HTML ID to use for the field's widget.
+    :param class_name: CSS class name for the widget.
+    :return: forms.MultipleChoiceField instance.
+    """
+    return forms.ChoiceField(
+        widget=forms.Select(attrs={'class': class_name, 'id': widget_id}),
+        choices=choices_lst
+    )

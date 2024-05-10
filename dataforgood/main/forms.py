@@ -2,7 +2,7 @@ from django import forms
 
 from .models import CensusTracts, TractZipCode, ContractRent_Main
 # from .models2 import *
-from .utils import get_choices
+from .utils import *
 
 # Category chocies
 CATEGORY_CHOCIES = [
@@ -16,12 +16,10 @@ CATEGORY_CHOCIES = [
 # Geographic level choices
 GEOGRAPHIC_LEVEL_CHOICES = [
             ("City of Chicago", "City of Chicago"),
-            ("Community Area", "Community Area"),
+            ("Community", "Community"),
             ("Zipcode", "Zipcode"),
             ("Tract", "Tract"),
         ]
-
-# Indicator chocies for each category
 
 ECONOMIC_CHOCIES = [
     ('Median Income in the Past 12 Months (inflation-adjusted)',
@@ -58,34 +56,49 @@ POPULATION_CHOICES = [
      'Median Age'),
     ]
 
+# Indicator chocies for each category
+category_to_indicators = {'Economic':ECONOMIC_CHOCIES,
+                          'Education':EDUCATION_CHOICES,
+                          'Health':HEALTH_CHOICES,
+                          'Housing':HOUSING_CHOICES,
+                          'Population':POPULATION_CHOICES}
+
+
 
 class SearchForm(forms.Form):
+
+    def __init__(self, *args, **kwargs):
+        super(SearchForm, self).__init__(*args, **kwargs)
+        self.fields['tract'].required = False
+        self.fields['zipcode'].required = False
+        self.fields['community'].required = False
+        self.fields['category'].required = False
+        self.fields['economic_indicators'].required = False
+        self.fields['health_indicators'].required = False
+        self.fields['housing_indicators'].required = False
+        self.fields['population_indicators'].required = False
+
+
     geographic_level = forms.ChoiceField(
         choices=GEOGRAPHIC_LEVEL_CHOICES,
         widget=forms.Select(attrs={"class": "form-control", "id": "id_geographic_level"}),
     )
 
-    tract = forms.MultipleChoiceField(
-        widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-option', 'id': 'id_tract'}),
-        choices=get_choices(CensusTracts, "tract_id"),
-    )
-
-    zipcode = forms.MultipleChoiceField(
-        widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-option', 'id': 'id_zipcode'}),
-        choices=get_choices(TractZipCode, "zip_code"),
-    )
+    tract = create_multiple_choice_geo(CensusTracts, "tract_id", "id_tract")
+    zipcode = create_multiple_choice_geo(TractZipCode, "zip_code", "id_zipcode")
+    community = create_multiple_choice_geo(CensusTracts, "community", "id_community")
 
 
-    category = indicator = forms.ChoiceField(
+    category = forms.ChoiceField(
         choices=CATEGORY_CHOCIES,
-        widget=forms.Select(attrs={"class": "form-control"}),
+        widget=forms.Select(attrs={"class": "form-control", "id": "id_category"}),
     )
 
-    # To be modified to become dynamic depending on category selected by user
-    indicator = forms.ChoiceField(
-        choices=get_choices(ContractRent_Main, "indicator_name"),
-        widget=forms.Select(attrs={"class": "form-control"}),
-    )
+    economic_indicators = create_multiple_choice_indicator(ECONOMIC_CHOCIES, "id_economic_indicators")
+    education_indicators = create_multiple_choice_indicator(EDUCATION_CHOICES, "id_education_indicators")
+    health_indicators = create_multiple_choice_indicator(HEALTH_CHOICES, "id_health_indicators")
+    housing_indicators = create_multiple_choice_indicator(HOUSING_CHOICES, "id_housing_indicators")
+    population_indicators = create_multiple_choice_indicator(POPULATION_CHOICES, "id_population_indicators")
 
     # To be modified to become dyanmic dependin gon the indicator selected by user
     year = forms.MultipleChoiceField(

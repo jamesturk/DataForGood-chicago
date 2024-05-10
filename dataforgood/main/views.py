@@ -27,18 +27,36 @@ def dataandvisualize(request):
         form = SearchForm(request.GET)
         subgroup_form = SubgroupForm(year_choices=[])
 
+        # Print out any for errors
+        print("Check for form errors:\n", form.errors)
+
         if form.is_valid():
             # Extract variables from SearchForm
             geograpahic_level = form.cleaned_data["geographic_level"]
-            geographic_unit = form.cleaned_data["tract"]
             category = form.cleaned_data["category"]
-            indicator = form.cleaned_data["indicator"]
             year = form.cleaned_data["year"]
+
+            geographic_level_dct = {'City of Chicago': 'DO SOMETHING',
+                                   'Community' : form.cleaned_data["community"],
+                                   'Zipcode' : form.cleaned_data["zipcode"],
+                                   'Tract' : form.cleaned_data["tract"]}
+
+            indicator_dct = {'Economic' : form.cleaned_data["economic_indicators"],
+                                      'Education' : form.cleaned_data["education_indicators"],
+                                      'Health' : form.cleaned_data["health_indicators"],
+                                      'Housing' : form.cleaned_data["housing_indicators"],
+                                      'Population' : form.cleaned_data["population_indicators"]}
+            
+            geographic_unit = geographic_level_dct[geograpahic_level]
+            indicator = indicator_dct[category]
+            print("TESTING", geographic_unit, indicator, year)
+
             subgroup_form = SubgroupForm(
                 year_choices=[
                     (str(year), str(year)) for year in form.cleaned_data["year"]
                 ]
             )
+
             # Create main table context variables
             table_title = create_table_title(indicator, year)
             field = create_table(
@@ -49,10 +67,6 @@ def dataandvisualize(request):
             multi_year_subtable_field = create_subgroup_tables(
                 geograpahic_level, geographic_unit, indicator, year
             )
-            print(multi_year_subtable_field)
-
-            # Hardcoding subtable title for testing
-            str(year[0])
 
             # Prepare data for the chart
             chart_data = {

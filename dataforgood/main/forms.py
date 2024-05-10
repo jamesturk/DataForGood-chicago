@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import CensusTracts, ContractRent_Main
+from .models import CensusTracts, TractZipCode, ContractRent_Main
 # from .models2 import *
 from .utils import get_choices
 
@@ -62,13 +62,19 @@ POPULATION_CHOICES = [
 class SearchForm(forms.Form):
     geographic_level = forms.ChoiceField(
         choices=GEOGRAPHIC_LEVEL_CHOICES,
-        widget=forms.Select(attrs={"class": "form-control"}),
+        widget=forms.Select(attrs={"class": "form-control", "id": "id_geographic_level"}),
     )
 
     tract = forms.MultipleChoiceField(
-        widget=forms.CheckboxSelectMultiple,
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-option', 'id': 'id_tract'}),
         choices=get_choices(CensusTracts, "tract_id"),
     )
+
+    zipcode = forms.MultipleChoiceField(
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-option', 'id': 'id_zipcode'}),
+        choices=get_choices(TractZipCode, "zip_code"),
+    )
+
 
     category = indicator = forms.ChoiceField(
         choices=CATEGORY_CHOCIES,

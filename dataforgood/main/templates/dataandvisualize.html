@@ -74,21 +74,21 @@
                 font-size:1em;
             }
             .scrollable-checkbox-list {
-                height: 150px; 
+                height: 150px;
                 overflow-y: scroll;; /* Enables vertical scrolling */
-                border: 1px solid #ccc; 
+                border: 1px solid #ccc;
                 padding: 10px;
-                border-radius: 5px; 
+                border-radius: 5px;
                 background-color: white;
                 margin-bottom: 10px;
             }
             .year-select {
                 padding: 10px;
-                border-radius: 5px; 
+                border-radius: 5px;
                 background-color: white;
                 margin-bottom: 10px;
             }
-    
+
             input[type=text], select{
                 width:100%;
                 padding:12px 20px;
@@ -346,6 +346,7 @@
                 {% endfor %}
             </table>
         </div>
+
         <div id="chart-container"></div>
 
         <script src="https://code.highcharts.com/highcharts.js"></script>
@@ -372,14 +373,38 @@
                 });
             });
         </script>
-        <div class="subtable" id="table">
-            <h3>By Subgroups</h3>
 
+        <div class="map-container">
+            {% for path, title in paths_titles %}
+                <div style="margin-bottom: 20px;">
+                    <h2>{{ title }}</h2>
+                    <div class="iframe-wrapper">
+                        {% include path %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <style>
+            .iframe-wrapper {
+                width: 50%;
+                height: 350px;
+                border: 1px solid #ccc;
+                padding: 10px;
+                box-sizing: border-box;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+
+
+        <div class="subtable" id="table">
+            <h3>Table and Visualization for Subgroups By Year</h3>
+            <text> * Please select a specific year and press submit to view the data table and visualization *</text>
             <form id="subgroup-form">
                 {{ subgroup_form.as_p }}
-                <input type="submit" value="Submit">
+                <input type="submit" value="Get Data and Visualization">
             </form>
-
             <table class="table2" border="1">
                 <caption id="subtable-year"></caption>
                 <thead>
@@ -388,13 +413,20 @@
                 <tbody id="subtable-rows"></tbody>
             </table>
         </div>
+            <div>
+                <button id="toggle-view">Switch Axes</button>
+            </div>
+            <div id="subtable-chart-container"></div>
+
 
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://code.highcharts.com/highcharts.js"></script>
         <script>
             $(document).ready(function() {
                 var multiYearSubtableField = {{ multi_year_subtable_field|safe }};
+                var subgroupChartData = {{ subgroup_chart_data|safe }};
+                var currentView = 'tract'; // Initialize the current view to 'tract'
 
-                // Function to update the subgroup table based on the selected year
                 function updateSubgroupTable(year) {
                     var subtableData = multiYearSubtableField[year];
                     $('#subtable-year').text(year);
@@ -413,12 +445,109 @@
                         rowHtml += '</tr>';
                         $('#subtable-rows').append(rowHtml);
                     });
+
+                    // Update the subtable chart based on the current view
+                    updateChart(year, subtableData);
+                }
+
+                function updateChart(year, subtableData) {
+                    var tractCategories = subtableData.rows.map(function(row) {
+                        return row[0];
+                    });
+
+                    var raceGroups = subtableData.headers.slice(1);
+
+                    var seriesData;
+
+                    if (currentView === 'tract') {
+                        seriesData = raceGroups.map(function(raceGroup, index) {
+                            return {
+                                name: raceGroup,
+                                data: subtableData.rows.map(function(row) {
+                                    return parseFloat(row[index + 1]) || null;
+                                })
+                            };
+                        });
+                    } else {
+                        seriesData = tractCategories.map(function(tract, index) {
+                            var tractData = subtableData.rows[index].slice(1).map(function(value) {
+                                return parseFloat(value) || null;
+                            });
+
+                            return {
+                                name: tract,
+                                data: tractData
+                            };
+                        });
+                    }
+
+                    var chartOptions = {
+                        chart: {
+                            type: 'column'
+                        },
+                        title: {
+                            text: 'Subgroup Data for ' + year
+                        },
+                        xAxis: {
+                            categories: currentView === 'tract' ? tractCategories : raceGroups
+                        },
+                        yAxis: {
+                            min: 0,
+                            title: {
+                                text: 'Value'
+                            },
+                            stackLabels: {
+                                enabled: true,
+                                style: {
+                                    fontWeight: 'bold',
+                                    color: ( // theme
+                                        Highcharts.defaultOptions.title.style &&
+                                        Highcharts.defaultOptions.title.style.color
+                                    ) || 'gray'
+                                }
+                            }
+                        },
+                        legend: {
+                            align: 'right',
+                            x: -30,
+                            verticalAlign: 'top',
+                            y: 25,
+                            floating: true,
+                            backgroundColor:
+                                Highcharts.defaultOptions.legend.backgroundColor || 'white',
+                            borderColor: '#CCC',
+                            borderWidth: 1,
+                            shadow: false
+                        },
+                        tooltip: {
+                            headerFormat: '<b>{point.x}</b><br/>',
+                            pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'
+                        },
+                        plotOptions: {
+                            column: {
+                                stacking: 'normal',
+                                dataLabels: {
+                                    enabled: true
+                                }
+                            }
+                        },
+                        series: seriesData
+                    };
+
+                    Highcharts.chart('subtable-chart-container', chartOptions);
                 }
 
                 $('#subgroup-form').submit(function(event) {
                     event.preventDefault();
                     var selectedYear = $('#id_subgroup_year').val();
                     updateSubgroupTable(selectedYear);
+                });
+
+                $('#toggle-view').click(function() {
+                    currentView = currentView === 'tract' ? 'raceGroup' : 'tract';
+                    var selectedYear = $('#id_subgroup_year').val();
+                    var subtableData = multiYearSubtableField[selectedYear];
+                    updateChart(selectedYear, subtableData);
                 });
 
                 var initialYear = '{{ subgroup_form.subgroup_year.value }}';

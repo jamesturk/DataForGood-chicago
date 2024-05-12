@@ -116,7 +116,7 @@ def create_table_title(indicator, year):
 
     return " ".join(indicator_word_lst)
 
-# MODIFIED
+
 def create_table(geographic_level, geographic_unit, indicator, year):
     """
     Generates a dictionary to be used a context variables in the html file to
@@ -193,74 +193,6 @@ def create_table(geographic_level, geographic_unit, indicator, year):
 
     return {"headers": headers, "rows": rows}
 
-# CHANGE THIS SHOULD NOT BE CATEGORY BUT INDICATOR NAME
-def create_subgroup_tables(
-    geographic_level, geographic_unit, indicator, year
-):
-    """
-    Generates a dictionary to be used a context variables in the html file to
-    create a table on the webapp (for the subgroups).
-
-    Inputs:
-        category: (str): category selected by user in the form
-        geographic_level (list of str): geographic level selected by the user in
-            the form
-        geographic_unit (list of str or int): geographic unit(s) corresponding
-            to the geographic level selected by the user in the form
-        indicator (str): name of indicator selected by the user in the form
-        year (list of int): year(s) selected by the user
-
-    Returns: a nested dictionary of dictionaries, each dictionary corresponding
-        one year.
-        For each year's nested dictionary, there are two items
-            - 'headers': header row of table (list of str)
-            - 'rows': multiple rows for each geographic unit (list of lists of
-                str)
-    """
-    # Retrieve model based on category selected by user (subgroups)
-    model = MAIN_MODEL_MAPPING[indicator]
-    # Note: Hard coded here for dummy database testing
-    model = ContractRent_Sub
-
-    # Creates a nested dictionary, one dictionary for each year
-    table_many_years = {}
-    for one_year in year:
-        headers = [geographic_level] + list(geographic_unit)
-        rows = []
-
-        # Converts list of geographic units to tuple, if only one unit selected,
-        # converts list to tuple with a comma
-        geographic_unit = convert_list_to_tuple(geographic_unit)
-        results = model.objects.filter(
-            census_tract_id__in=geographic_unit,
-            year=one_year,
-        )
-
-        # Generates a list of unique subgroups for selected geographic units
-        subgroups_lst = get_subgroups(results)
-
-        # Creates a row for each subgroup
-        for subgroup in subgroups_lst:
-            row = [subgroup.capitalize()]
-
-            # Runs a for loop on each geographic unit to ensure that NAs or
-            # empty queries are accounted for (e.g. if a zipcode does not have
-            # a subgroup that other zipcodes in the query has)
-            for unit in geographic_unit:
-                result = model.objects.filter(
-                    census_tract_id=unit,
-                    sub_group_indicator_name=subgroup,
-                    year=one_year,
-                )
-                if len(result) > 0:
-                    row.append(result[0].value)
-                else:
-                    row.append("NA")
-            rows.append(row)
-
-        table_many_years[one_year] = {"headers": headers, "rows": rows}
-
-    return table_many_years
 
 
 def create_subgroup_tables(geographic_level, geographic_unit, indicator, year):
@@ -285,98 +217,61 @@ def create_subgroup_tables(geographic_level, geographic_unit, indicator, year):
                 str)
     """
     # Note: Hard coded here for dummy database testing
-    model = EconomicSub
+    model = SUB_MODEL_MAPPING[indicator]
+    model = ContractRent_Sub
 
     # Creates a nested dictionary, one dictionary for each year
     table_many_years = {}
+
+    subgroups = model.objects.values_list('sub_group_indicator_name').distinct()
+
+    subgroup_clean = []
+    for subgroup in subgroups:
+        subgroup_clean.append(subgroup[0])
+
+    print(subgroup_clean)
+
     for one_year in year:
         headers = [geographic_level] + list(geographic_unit)
         rows = []
 
-        # Converts list of geographic units to tuple, if only one unit selected,
-        # converts list to tuple with a comma
-        geographic_unit = convert_list_to_tuple(geographic_unit)
-
-        # AMENDED 11 MAY - Subgroups at Tract level
         if geographic_level == 'Tract':
             results = model.objects.filter(
-                georeference_id__in=geographic_unit,
-                year=one_year,
-            )
-        
-        # AMENDED 11 MAY - Subgroups at Zipcode level
-        elif geographic_level == 'Zipcode':
-            results = model.objects.filter(
-                georeference_id__zip_code__in=geographic_unit,
-                year=one_year,
-            )
-        
-        # AMENDED 11 MAY - Subgroups at Community level
-        elif geographic_level == 'Community':
-            results = model.objects.filter(
-                georeference_id__community_name__in=geographic_unit,
-                year=one_year,
-            )
-
-        # Generates a list of unique subgroups for selected geographic units
-        subgroups_lst = get_subgroups(results)
-
-        # Creates a row for each subgroup
-        for subgroup in subgroups_lst:
-            row = [subgroup.capitalize()]
-
-            if geographic_level == 'Tract': # AMENDED 11 MAY
-                # Runs a for loop on each geographic unit to ensure that NAs or
-                # empty queries are accounted for (e.g. if a zipcode does not have
-                # a subgroup that other zipcodes in the query has)
-                for unit in geographic_unit:
-                    result = model.objects.filter(
-                        georeference_id=unit,
-                        subgroup_indicator_name=subgroup,
-                        year=one_year,
-                    )
-                    if len(result) > 0:
-                        row.append(result[0].value)
-                    else:
-                        row.append("NA")
+                census_tract_id__in=geographic_unit,
+                    year=one_year).values(
+                        'census_tract_id',
+                        'sub_group_indicator_name').annotate(
+                            Avg('value')).order_by(
+                                'sub_group_indicator_name',
+                                'census_tract_id')
             
-            elif geographic_level == 'Zipcode':
-                # Runs a for loop on each geographic unit to ensure that NAs or
-                # empty queries are accounted for (e.g. if a zipcode does not have
-                # a subgroup that other zipcodes in the query has)
-                for unit in geographic_unit:
-                    result = model.objects.values(
-                        'georeference_id__zip_code').filter(
-                            georeference_id__zip_code=unit,
-                            subgroup_indicator_name=subgroup,
-                            year=one_year, 
-                        ).annotate(Avg('value'))
-                    if len(result) > 0:
-                        row.append(result[0]['value__avg'])
-                    else:
-                        row.append("NA") 
+            for subgroup in subgroup_clean:
+                row = [subgroup.capitalize()]
+                for r in results.filter(sub_group_indicator_name=subgroup):
+                    row.append(r['value__avg'])
+                rows.append(row)
 
-            elif geographic_level == 'Community':
-                # Runs a for loop on each geographic unit to ensure that NAs or
-                # empty queries are accounted for (e.g. if a zipcode does not have
-                # a subgroup that other zipcodes in the query has)
-                for unit in geographic_unit:
-                    result = model.objects.values(
-                        'georeference_id__community_name').filter(
-                            georeference_id__community_name=unit,
-                            subgroup_indicator_name=subgroup,
-                            year=one_year,
-                        ).annotate(Avg('value'))
-                    if len(result) > 0:
-                        row.append(result[0]['value__avg'])
-                    else:
-                        row.append("NA")
+        if geographic_level == 'Community':
+            results = model.objects.filter(
+                census_tract_id__community__in=geographic_unit,
+                year=one_year).values(
+                    'census_tract_id__community',
+                    'sub_group_indicator_name').annotate(
+                        Avg('value')).order_by(
+                            'sub_group_indicator_name',
+                            'census_tract_id__community')
             
-            rows.append(row)
+            for subgroup in subgroup_clean:
+                row = [subgroup.capitalize()]
+                for r in results.filter(sub_group_indicator_name=subgroup):
+                    row.append(r['value__avg'])
+                rows.append(row)
 
         table_many_years[one_year] = {"headers": headers, "rows": rows}
 
     return table_many_years
+
+
 
 # HELPER FUNCTIONS FOR FORMS.PY #
 

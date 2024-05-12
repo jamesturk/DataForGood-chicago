@@ -153,8 +153,10 @@ def create_table(geographic_level, geographic_unit, indicator, year):
             results = model.objects.filter(
             census_tract_id=unit, year__in=year
             )
+
+            # Appends value for each year
             for r in results:
-                row.append(round(r.value), 2)
+                row.append(round(r.value, 2))
         
         # ADDED 11 MAY
         elif geographic_level == 'Zipcode':
@@ -167,7 +169,8 @@ def create_table(geographic_level, geographic_unit, indicator, year):
             results = model.objects.values('year').filter(
                 census_tract_id__in=tracts_in_zipcode, 
                 year__in=year).annotate(Avg('value')).order_by('year')
-    
+            
+            # Appends value for each year
             for r in results:
                 row.append(round(r['value__avg'], 2))
         
@@ -182,6 +185,7 @@ def create_table(geographic_level, geographic_unit, indicator, year):
                                    year__in=year).annotate(Avg('value')
                     ).order_by('year')
 
+            # Appends value for each year
             for r in results:
                 row.append(round(r['value__avg'], 2))
     

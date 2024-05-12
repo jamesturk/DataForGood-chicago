@@ -162,7 +162,8 @@ def create_table(geographic_level, geographic_unit, indicator, year):
         elif geographic_level == 'Zipcode':
             
             # Obtain tracts in the selected zipcode
-            tracts_in_zipcode = list(TractZipCode.objects.filter(zip_code=unit).values_list('tract_id').distinct())
+            tracts_in_zipcode = list(TractZipCode.objects.filter(
+                zip_code=unit).values_list('tract_id').distinct())
 
             # Groupby year, sorted by year in ascending order and
             # takes the mean of observations
@@ -218,18 +219,15 @@ def create_subgroup_tables(geographic_level, geographic_unit, indicator, year):
     """
     # Note: Hard coded here for dummy database testing
     model = SUB_MODEL_MAPPING[indicator]
-    model = ContractRent_Sub
 
     # Creates a nested dictionary, one dictionary for each year
     table_many_years = {}
 
+    # Obtain list of subgroups
     subgroups = model.objects.values_list('sub_group_indicator_name').distinct()
-
     subgroup_clean = []
     for subgroup in subgroups:
         subgroup_clean.append(subgroup[0])
-
-    print(subgroup_clean)
 
     for one_year in year:
         headers = [geographic_level] + list(geographic_unit)
@@ -245,12 +243,40 @@ def create_subgroup_tables(geographic_level, geographic_unit, indicator, year):
                                 'sub_group_indicator_name',
                                 'census_tract_id')
             
+            # Extract values for each subgroup as a row
             for subgroup in subgroup_clean:
                 row = [subgroup.capitalize()]
                 for r in results.filter(sub_group_indicator_name=subgroup):
-                    row.append(r['value__avg'])
+                    row.append(round(r['value__avg'], 2))
                 rows.append(row)
+        
+        if geographic_level == 'Zipcode':
 
+            # Create a dictionary to save values for each subgroup
+            subgroup_dct = {}
+            for subgroup in subgroup_clean:
+                subgroup_dct[subgroup] = []
+
+            # Conduct querying for each zipcode (joining tract id each time)
+            for zipcode in geographic_unit:
+                # Obtain tracts in one zipcode
+                tracts_in_zipcode = list(TractZipCode.objects.filter(
+                    zip_code=zipcode).values_list('tract_id').distinct())
+                
+                # Obtain subgroup averages for one zipcode
+                results = model.objects.filter(
+                    census_tract_id__in=tracts_in_zipcode,
+                    year=one_year).values('sub_group_indicator_name').annotate(
+                        Avg('value')).order_by('sub_group_indicator_name')
+
+                # Append results to subgroup dictionary
+                for r in results:
+                    subgroup_dct[r['sub_group_indicator_name']].append(round(r['value__avg'], 2))
+
+            # Convert dictionary values to list of lists for table
+            for subgroup, row in subgroup_dct.items():
+                rows.append([subgroup] + row)
+    
         if geographic_level == 'Community':
             results = model.objects.filter(
                 census_tract_id__community__in=geographic_unit,
@@ -264,7 +290,7 @@ def create_subgroup_tables(geographic_level, geographic_unit, indicator, year):
             for subgroup in subgroup_clean:
                 row = [subgroup.capitalize()]
                 for r in results.filter(sub_group_indicator_name=subgroup):
-                    row.append(r['value__avg'])
+                    row.append(round(r['value__avg'], 2))
                 rows.append(row)
 
         table_many_years[one_year] = {"headers": headers, "rows": rows}

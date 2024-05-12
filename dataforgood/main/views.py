@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.template.defaulttags import register
 
+from django.views.decorators.csrf import csrf_protect
 from .forms import SearchForm, SubgroupForm
 from .utils import create_subgroup_tables, create_table, create_table_title
 
@@ -22,86 +23,83 @@ def aboutus(request):
 
 # MODIFIED LINE 44 and 50
 # Data and Visualize with FORMS - /main/data&visualize/
+@csrf_protect
 def dataandvisualize(request):
-    if request.method == "GET":
-        form = SearchForm(request.GET)
-        subgroup_form = SubgroupForm(year_choices=[])
+    form = SearchForm(request.GET or None)
+    subgroup_form = SubgroupForm(year_choices=[])
 
-        # Print out any for errors
-        print("Check for form errors:\n", form.errors)
+    if request.method == "GET" and form.is_valid():
+        # Extract variables from SearchForm
+        geograpahic_level = form.cleaned_data["geographic_level"]
+        category = form.cleaned_data["category"]
+        year = form.cleaned_data["year"]
 
-        if form.is_valid():
-            # Extract variables from SearchForm
-            geograpahic_level = form.cleaned_data["geographic_level"]
-            category = form.cleaned_data["category"]
-            year = form.cleaned_data["year"]
+        geographic_level_dct = {'City of Chicago': 'DO SOMETHING',
+                                'Community' : form.cleaned_data["community"],
+                                'Zipcode' : form.cleaned_data["zipcode"],
+                                'Tract' : form.cleaned_data["tract"]}
 
-            geographic_level_dct = {'City of Chicago': 'DO SOMETHING',
-                                   'Community' : form.cleaned_data["community"],
-                                   'Zipcode' : form.cleaned_data["zipcode"],
-                                   'Tract' : form.cleaned_data["tract"]}
+        indicator_dct = {'Economic' : form.cleaned_data["economic_indicators"],
+                                    'Education' : form.cleaned_data["education_indicators"],
+                                    'Health' : form.cleaned_data["health_indicators"],
+                                    'Housing' : form.cleaned_data["housing_indicators"],
+                                    'Population' : form.cleaned_data["population_indicators"]}
 
-            indicator_dct = {'Economic' : form.cleaned_data["economic_indicators"],
-                                      'Education' : form.cleaned_data["education_indicators"],
-                                      'Health' : form.cleaned_data["health_indicators"],
-                                      'Housing' : form.cleaned_data["housing_indicators"],
-                                      'Population' : form.cleaned_data["population_indicators"]}
-            
-            geographic_unit = geographic_level_dct[geograpahic_level]
-            indicator = indicator_dct[category]
-            print("### USER SELECTION ###")
-            print("Geographic Level Selected:", geograpahic_level)
-            print(geograpahic_level, "Selected:", geographic_unit)
-            print("Category Selected:", category)
-            print("Indicator Selected:", indicator)
-            print("Year(s) Selected:", year)
+        geographic_unit = geographic_level_dct[geograpahic_level]
+        indicator = indicator_dct[category]
+        print("### USER SELECTION ###")
+        print("Geographic Level Selected:", geograpahic_level)
+        print(geograpahic_level, "Selected:", geographic_unit)
+        print("Category Selected:", category)
+        print("Indicator Selected:", indicator)
+        print("Year(s) Selected:", year)
 
-            subgroup_form = SubgroupForm(
-                year_choices=[
-                    (str(year), str(year)) for year in form.cleaned_data["year"]
-                ]
+        subgroup_form = SubgroupForm(
+            year_choices=[
+                (str(year), str(year)) for year in form.cleaned_data["year"]
+            ]
+        )
+
+        # Create main table context variables
+        table_title = create_table_title(indicator, year)
+        field = create_table(
+            geograpahic_level, geographic_unit, indicator, year
+        )
+
+        # Create subtable context variables
+        multi_year_subtable_field = create_subgroup_tables(
+            geograpahic_level, geographic_unit, indicator, year
+        )
+
+        print("### MAIN TABLE ###")
+        print("Header:", field['headers'])
+        print("Rows:", field['rows'])
+        print("### SUBGROUP TABLES DICTIONARY ###")
+        for year, dct in multi_year_subtable_field.items():
+            print(year, dct)
+
+        # Prepare data for the chart
+        chart_data = {
+            "categories": field["headers"][1:],  # Years
+            "series": [],
+        }
+        for row in field["rows"]:
+            chart_data["series"].append(
+                {
+                    "name": row[0],  # Geographic unit
+                    "data": row[1:],  # Values for each year
+                }
             )
 
-            # Create main table context variables
-            table_title = create_table_title(indicator, year)
-            field = create_table(
-                geograpahic_level, geographic_unit, indicator, year
-            )
-
-            # Create subtable context variables
-            multi_year_subtable_field = create_subgroup_tables(
-                geograpahic_level, geographic_unit, indicator, year
-            )
-
-            print("### MAIN TABLE ###")
-            print("Header:", field['headers'])
-            print("Rows:", field['rows'])
-            
-            print("### SUBGROUP TABLES DICTIONARY ###")
-            for year, dct in multi_year_subtable_field.items():
-                print(year, dct)
-
-            # Prepare data for the chart
-            chart_data = {
-                "categories": field["headers"][1:],  # Years
-                "series": [],
-            }
-            for row in field["rows"]:
-                chart_data["series"].append(
-                    {
-                        "name": row[0],  # Geographic unit
-                        "data": row[1:],  # Values for each year
-                    }
-                )
-
-            context = {
-                "field": field,
-                "table_title": table_title,
-                "multi_year_subtable_field": multi_year_subtable_field,
-                "chart_data": chart_data,
-                "subgroup_form": subgroup_form,
-            }
-            return render(request, "dataandvisualize.html", context)
+        context = {
+            "form": form,
+            "field": field,
+            "table_title": table_title,
+            "multi_year_subtable_field": multi_year_subtable_field,
+            "chart_data": chart_data,
+            "subgroup_form": subgroup_form,
+        }
+        return render(request, "dataandvisualize.html", context)
 
     return render(
         request,

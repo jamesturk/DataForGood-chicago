@@ -82,6 +82,12 @@
                 background-color: white;
                 margin-bottom: 10px;
             }
+            .year-select {
+                padding: 10px;
+                border-radius: 5px; 
+                background-color: white;
+                margin-bottom: 10px;
+            }
     
             input[type=text], select{
                 width:100%;
@@ -205,19 +211,33 @@
         <div class="query-form">
             <h4> Search Database </h4>
             <form class="SearchForm" method="GET", enctype="multipart/form-data">
-                <!-- {% csrf_token %} -->
+                {% csrf_token %}
                 <p>{{ form.geographic_level.label_tag }}{{ form.geographic_level }}</p>
-                <div class="scrollable-checkbox-list" id="tract_field" style="display:none;">{{ form.tract }}</div>
-                <div class="scrollable-checkbox-list" id="zipcode_field" style="display:none;">{{ form.zipcode }}</div>
-                <div class="scrollable-checkbox-list" id="community_field" style="display:none;">{{ form.community }}</div>
+                <div class="scrollable-checkbox-list" id="tract_field">
+                    <input type="checkbox" id="select_all_tract" onclick="toggleTractSelection(this)">
+                    <label for="select_all_tract">Select All/Remove All</label>
+                    {{ form.tract }}
+                </div>
+                <div class="scrollable-checkbox-list" id="zipcode_field">
+                    <input type="checkbox" id="select_all_zipcode" onclick="toggleZipcodeSelection(this)">
+                    <label for="select_all_zipcode">Select All/Remove All</label>
+                    {{ form.zipcode }}
+                </div>
+                <div class="scrollable-checkbox-list" id="community_field">{{ form.community }}</div>
                 <p>{{ form.category.label_tag }}{{ form.category }}</p>
+                <p>{{ form.indicator.label_tag }}</p>
                 <div  id="economic_field" style="display:none;">{{ form.economic_indicators }}</div>
                 <div id="education_field" style="display:none;">{{ form.education_indicators }}</div>
                 <div id="health_field" style="display:none;">{{ form.health_indicators }}</div>
                 <div  id="housing_field" style="display:none;">{{ form.housing_indicators }}</div>
                 <div  id="population_field" style="display:none;">{{ form.population_indicators }}</div>
-                <!-- <p>{{ form.indicator.label_tag }}{{ form.indicator }}</p> -->
-                <div class="scrollable-checkbox-list">
+                <div>
+                    <p>{{ form.year.label_tag }}
+                    <input type="checkbox" id="select_all_years" onclick="toggleYearSelection(this)">
+                    <label for="select_all_years">Select All/Remove All</label>
+                    </p>
+                </div>
+                <div class="year-select">
                     {% for checkbox in form.year %}
                         <label>{{ checkbox.tag }} {{ checkbox.choice_label }}</label><br>
                     {% endfor %}
@@ -284,6 +304,30 @@
                 categorySelect.addEventListener('change', handleIndicatorChange);
                 handleIndicatorChange();
             });
+
+            // function to select/remove all for years
+            function toggleYearSelection(source) {
+                checkboxes = document.querySelectorAll('[name="year"]');
+                for(var i = 0, n = checkboxes.length; i < n; i++) {
+                    checkboxes[i].checked = source.checked;
+                }
+            };
+
+            // function to select/remove all for tracts
+            function toggleTractSelection(source) {
+                var checkboxes = document.querySelectorAll('input[name="tract"]');
+                for (var i = 0, n = checkboxes.length; i < n; i++) {
+                    checkboxes[i].checked = source.checked;
+                }
+            };
+
+            // function to select/remove all for zipcodes
+            function toggleZipcodeSelection(source) {
+                var checkboxes = document.querySelectorAll('input[name="zipcode"]');
+                for (var i = 0, n = checkboxes.length; i < n; i++) {
+                    checkboxes[i].checked = source.checked;
+                }
+            };
             </script>
 
         <div class="maintable" id="table"">

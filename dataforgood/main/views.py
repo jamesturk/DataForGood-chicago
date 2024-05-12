@@ -34,7 +34,7 @@ def dataandvisualize(request):
         category = form.cleaned_data["category"]
         year = form.cleaned_data["year"]
 
-        geographic_level_dct = {'City of Chicago': 'DO SOMETHING',
+        geographic_level_dct = {'City of Chicago': [],
                                 'Community' : form.cleaned_data["community"],
                                 'Zipcode' : form.cleaned_data["zipcode"],
                                 'Tract' : form.cleaned_data["tract"]}

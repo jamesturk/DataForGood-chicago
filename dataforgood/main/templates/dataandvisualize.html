@@ -330,50 +330,97 @@
             };
             </script>
 
-        <div class="maintable" id="table"">
-            <h3> {{table_title}} </h3>
+        <div class="maintable" id="table">
+            <h3>{{ table_title }}</h3>
             <table class="table1" border="1">
                 <tr>
                     {% for header in field.headers %}
-                        <th> {{ header }} </th>
+                        <th>{{ header }}</th>
                     {% endfor %}
-                    {% for row in field.rows %}
+                </tr>
+                {% for row in field.rows %}
                     <tr>
                         {% for value in row %}
-                            <td>{{value}}</td>
+                            <td>{{ value }}</td>
                         {% endfor %}
                     </tr>
                 {% endfor %}
             </table>
         </div>
-
+        
+        <div>
+            <button id="toggle-main-view">Switch Axes</button>
+        </div>
         <div id="chart-container"></div>
-
+        
         <script src="https://code.highcharts.com/highcharts.js"></script>
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 var chartData = {{ chart_data|safe }};
-
-                Highcharts.chart('chart-container', {
-                    chart: {
-                        type: 'column'
-                    },
-                    title: {
-                        text: '{{ table_title }}'
-                    },
-                    xAxis: {
-                        categories: chartData.categories
-                    },
-                    yAxis: {
+                var currentView = 'category'; // Initialize the current view to 'category'
+        
+                function updateMainChart() {
+                    var categories = chartData.categories;
+                    var series = chartData.series;
+        
+                    var seriesData;
+        
+                    if (currentView === 'category') {
+                        seriesData = series;
+                    } else {
+                        seriesData = categories.map(function(category, index) {
+                            var categoryData = series.map(function(serie) {
+                                return serie.data[index];
+                            });
+        
+                            return {
+                                name: category,
+                                data: categoryData
+                            };
+                        });
+                    }
+        
+                    var chartOptions = {
+                        chart: {
+                            type: 'bar'
+                        },
                         title: {
-                            text: 'Value'
-                        }
-                    },
-                    series: chartData.series
+                            text: '{{ table_title }}'
+                        },
+                        xAxis: {
+                            categories: currentView === 'category' ? categories : series.map(function(serie) {
+                                return serie.name;
+                            })
+                        },
+                        yAxis: {
+                            min: 0,
+                            title: {
+                                text: 'Value'
+                            }
+                        },
+                        legend: {
+                            reversed: true
+                        },
+                        plotOptions: {
+                            series: {
+                                stacking: 'normal'
+                            }
+                        },
+                        series: seriesData
+                    };
+        
+                    Highcharts.chart('chart-container', chartOptions);
+                }
+        
+                updateMainChart();
+        
+                document.getElementById('toggle-main-view').addEventListener('click', function() {
+                    currentView = currentView === 'category' ? 'series' : 'category';
+                    updateMainChart();
                 });
             });
         </script>
-
+        
         <div class="map-container">
             {% for path, title in paths_titles %}
                 <div style="margin-bottom: 20px;">

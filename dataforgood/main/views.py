@@ -49,7 +49,12 @@ def dataandvisualize(request):
             
             geographic_unit = geographic_level_dct[geograpahic_level]
             indicator = indicator_dct[category]
-            print("TESTING", geographic_unit, indicator, year)
+            print("### USER SELECTION ###")
+            print("Geographic Level Selected:", geograpahic_level)
+            print(geograpahic_level, "Selected:", geographic_unit)
+            print("Category Selected:", category)
+            print("Indicator Selected:", indicator)
+            print("Year(s) Selected:", year)
 
             subgroup_form = SubgroupForm(
                 year_choices=[
@@ -67,6 +72,14 @@ def dataandvisualize(request):
             multi_year_subtable_field = create_subgroup_tables(
                 geograpahic_level, geographic_unit, indicator, year
             )
+
+            print("### MAIN TABLE ###")
+            print("Header:", field['headers'])
+            print("Rows:", field['rows'])
+            
+            print("### SUBGROUP TABLES DICTIONARY ###")
+            for year, dct in multi_year_subtable_field.items():
+                print(year, dct)
 
             # Prepare data for the chart
             chart_data = {

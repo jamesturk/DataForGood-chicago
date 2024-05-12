@@ -1,11 +1,31 @@
+{% load static %}
+
 <html>
     <head>
-        <title> Data & Visualize </title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data & Visualize </title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">Data For Good - Chicago</div>
+            <ul class="nav-links">
+                <li><a href="{% url 'aboutus' %}">About Us</a></li>
+                <li><a href="{% url 'dataandvisualize' %}">Data & Visualize</a></li>
+                <li><a href="{% url 'resources' %}">Resource</a></li>
+            </ul>
+        </nav>
+    </header>
+    <h2>  Data & Visualize </h2>
+    <head>
         <style>
-            body{
+            /* body{
                 background:white;
                 font-family:arial;
-            }
+            } */
 
             h1{
                 font-size:40px;
@@ -194,20 +214,7 @@
 
         </style>
     </head>
-    <h1> Data & Visualize </h1>
     <body>
-
-        <header>
-            <nav>
-                <div class="logo">Data For Good - Chicago</div>
-                <ul class="nav-links">
-                    <li><a href="{% url 'aboutus' %}">About Us</a></li>
-                    <li><a href="{% url 'dataandvisualize' %}">Data & Visualize</a></li>
-                    <li><a href="{% url 'resources' %}">Resource</a></li>
-                </ul>
-            </nav>
-        </header>
-
         <div class="query-form">
             <h4> Search Database </h4>
             <form class="SearchForm" method="GET", enctype="multipart/form-data">
@@ -328,7 +335,7 @@
                     checkboxes[i].checked = source.checked;
                 }
             };
-            </script>
+        </script>
 
         <div class="maintable" id="table">
             <h3>{{ table_title }}</h3>

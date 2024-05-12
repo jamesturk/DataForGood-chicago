@@ -1,12 +1,8 @@
 from django.db import models
-from django.contrib.gis.db import models as gis_models
 
 class CensusTracts(models.Model):
     tract_id = models.IntegerField(primary_key=True)
     community = models.CharField(max_length=255)
-    latitude = models.FloatField()
-    longitude = models.FloatField()
-    geometry = gis_models.PolygonField()
 
 class TractZipCode(models.Model):
     id = models.AutoField(primary_key=True)

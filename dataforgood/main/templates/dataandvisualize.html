@@ -404,19 +404,21 @@
         
         <div>
             <button id="toggle-main-view">Switch Axes</button>
+            <button id="download-main-chart">Download Chart</button>
         </div>
         <div id="chart-container"></div>
         
         <script src="https://code.highcharts.com/highcharts.js"></script>
+        <script src="https://code.highcharts.com/modules/exporting.js"></script>
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 var chartData = {{ chart_data|safe }};
                 var currentView = 'category'; // Initialize the current view to 'category'
+                var chart; // Declare the chart variable
         
                 function updateMainChart() {
                     var categories = chartData.categories;
                     var series = chartData.series;
-        
                     var seriesData;
         
                     if (currentView === 'category') {
@@ -463,7 +465,10 @@
                         series: seriesData
                     };
         
-                    Highcharts.chart('chart-container', chartOptions);
+                    if (chart) {
+                        chart.destroy();
+                    }
+                    chart = Highcharts.chart('chart-container', chartOptions);
                 }
         
                 updateMainChart();
@@ -471,6 +476,13 @@
                 document.getElementById('toggle-main-view').addEventListener('click', function() {
                     currentView = currentView === 'category' ? 'series' : 'category';
                     updateMainChart();
+                });
+        
+                document.getElementById('download-main-chart').addEventListener('click', function() {
+                    chart.exportChart({
+                        type: 'image/png',
+                        filename: 'main-chart'
+                    });
                 });
             });
         </script>
@@ -564,17 +576,19 @@
 
         <div>
             <button id="toggle-view">Switch Axes</button>
+            <button id="download-subtable-chart">Download Chart</button>
         </div>
         <div id="subtable-chart-container"></div>
 
 
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://code.highcharts.com/highcharts.js"></script>
+        <script src="https://code.highcharts.com/modules/exporting.js"></script>
         <script>
             $(document).ready(function() {
                 var multiYearSubtableField = {{ multi_year_subtable_field|safe }};
                 var subgroupChartData = {{ subgroup_chart_data|safe }};
-                var currentView = 'tract'; // Initialize the current view to 'tract'
+                var currentView = 'tract'; 
 
                 function updateSubgroupTable(year) {
                     var subtableData = multiYearSubtableField[year];
@@ -699,8 +713,14 @@
                     updateChart(selectedYear, subtableData);
                 });
 
-                var initialYear = '{{ subgroup_form.subgroup_year.value }}';
-                updateSubgroupTable(initialYear);
+                $('#download-subtable-chart').click(function() {
+                    var chart = Highcharts.charts[1];
+                    chart.exportChart({
+                        type: 'image/png',
+                        filename: 'subtable-chart'
+                    });
+                });
+
             });
         </script>
     </body>

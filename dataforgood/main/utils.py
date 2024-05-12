@@ -145,11 +145,20 @@ def create_table(geographic_level, geographic_unit, indicator, year):
     # converts list to tuple with a comma
     year = convert_list_to_tuple(year)
 
+    if geographic_level == 'City of Chicago':
+        row = ["City Average"]
+        results = model.objects.values('year').filter(year__in=year).annotate(
+            Avg('value')).order_by('year')
+        
+        for r in results:
+            row.append(round(r['value__avg'], 2))
+        rows.append(row)
+
     # Creates a row for each geographic unit
     for unit in geographic_unit:
         row = [unit]
         
-        if geographic_level == 'Tract': # AMENDED 11 MAY
+        if geographic_level == 'Tract':
             results = model.objects.filter(
             census_tract_id=unit, year__in=year
             )
@@ -233,6 +242,18 @@ def create_subgroup_tables(geographic_level, geographic_unit, indicator, year):
         headers = [geographic_level] + list(geographic_unit)
         rows = []
 
+        if geographic_level == 'City of Chicago':
+            results = model.objects.values(
+                'sub_group_indicator_name').filter(
+                    year=one_year).annotate(
+                        Avg('value')).order_by('sub_group_indicator_name')
+
+            for subgroup in subgroup_clean:
+                row = [subgroup.capitalize()]
+                for r in results.filter(sub_group_indicator_name=subgroup):
+                    row.append(round(r['value__avg'], 2))
+                rows.append(row)
+
         if geographic_level == 'Tract':
             results = model.objects.filter(
                 census_tract_id__in=geographic_unit,
@@ -251,7 +272,6 @@ def create_subgroup_tables(geographic_level, geographic_unit, indicator, year):
                 rows.append(row)
         
         if geographic_level == 'Zipcode':
-
             # Create a dictionary to save values for each subgroup
             subgroup_dct = {}
             for subgroup in subgroup_clean:
@@ -287,6 +307,7 @@ def create_subgroup_tables(geographic_level, geographic_unit, indicator, year):
                             'sub_group_indicator_name',
                             'census_tract_id__community')
             
+            # Extract values for each subgroup as a row
             for subgroup in subgroup_clean:
                 row = [subgroup.capitalize()]
                 for r in results.filter(sub_group_indicator_name=subgroup):

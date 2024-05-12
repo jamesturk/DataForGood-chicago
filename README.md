@@ -44,6 +44,8 @@ Check our pyproject.toml file for all the packages used. Some include:
 Source: U.S. Census Bureau\
 Way of Collection: API Key
 
+(2) ChatGPT API:\
+
 ##### Getting Census API key
 - Request an API key with this link: https://api.census.gov/data/key_signup.html
 - Once you have a key, create a new file called `.env` in the root directory of this project by running `touch .env`.
@@ -60,16 +62,25 @@ git clone git@github.com:uchicago-capp-30320/DataForGood-chicago.git
 ```
 2. Navigate to the repository.
 ```
-cd ./dfg_chi
+cd ./DataForGood-chicago/dataforgood
 ```
-3. Establish Dependencies.
+3. If you haven't done it already:
+```
+pip install poetry
+```
+4. Set the path of downloaded poetry
+```
+export PATH="$HOME/.local/bin:$PATH"
+```
+5. Establish Dependencies.
 ```
 poetry install
 ```
-4. Activate the virtual environment.
+6. Activate the virtual environment.
 ```
 poetry shell
 ```
 5. Launch the App
 ```
-[]
+python manage.py runserver
+```

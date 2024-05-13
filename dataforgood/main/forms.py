@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import CensusTracts, ContractRent_Main, TractZipCode
+from .models import CensusTracts, MedianEarning_Main, TractZipCode
 
 # from .models2 import *
 from .utils import *
@@ -124,7 +124,7 @@ class SearchForm(forms.Form):
     # To be modified to become dyanmic dependin gon the indicator selected by user
     year = forms.MultipleChoiceField(
         widget=forms.CheckboxSelectMultiple,
-        choices=get_choices(ContractRent_Main, "year"),
+        choices=get_choices(MedianEarning_Main, "year"),
     )
 
 

@@ -1,7 +1,11 @@
 from django import forms
 from django.db.models import Avg
 
-from .models import *
+from .models import MedianIncome_Main, MeanIncome_Main, ContractRent_Main, \
+    HouseholdType_Main, MedianEarning_Main, Enrollment_Main, Disability_Main, \
+    Insurance_Main, Races_Main, MedianAge_Main, MedianIncome_Sub, MeanIncome_Sub, \
+    ContractRent_Sub, HouseholdType_Sub, MedianEarning_Sub, Enrollment_Sub, \
+    Disability_Sub, Insurance_Sub, Races_Sub, MedianAge_Sub, TractZipCode
 
 
 # HELPER FUNCTIONS FOR VIEWS.PY #
@@ -68,40 +72,22 @@ def convert_list_to_tuple(query_lst):
     return query_tup
 
 
-def get_model(indicator, table_type):
-    """
-    Retrieves model object based on category selected by the user.
-
-    Inputs:
-        indicator (str): indicator selected by user in the form
-        table_type (str): 'main' for main indicator, 'sub' for subgroup tables
-
-    Returns:
-        model (model object): model corresponding to category and indicator
-            selected by the user
-    """
-    if table_type == "main":
-        return MAIN_MODEL_MAPPING[indicator]
-
-    if table_type == "sub":
-        return SUB_MODEL_MAPPING[indicator]
-
-
-def get_subgroups(results):
+def get_subgroups(model_sub):
     """
     Generates a list of unique subgroups for selected geographic units
     for a given indicator.
 
     Inputs:
-        results (queryset): a list of query results
+        model_sub (Django model): sub model of the indicator selected by user
 
     Returns:
         subgroups_lst (list of str): a list of unique subgroups
     """
+    subgroups = model_sub.objects.values_list("sub_group_indicator_name").distinct()
     subgroups_lst = []
-    for tup in results.values_list("sub_group_indicator_name").distinct():
-        subgroups_lst.append(tup[0])
-
+    for subgroup in subgroups:
+        subgroups_lst.append(subgroup[0])
+    
     return subgroups_lst
 
 
@@ -156,7 +142,7 @@ def create_table(geographic_level, geographic_unit, indicator, year):
     headers = [geographic_level] + list(year)
     rows = []
 
-    model = get_model(indicator, "main")
+    model = MAIN_MODEL_MAPPING[indicator]
 
     # Converts list of years to tuple, if only one year selected,
     # converts list to tuple with a comma
@@ -256,10 +242,7 @@ def create_subgroup_tables(geographic_level, geographic_unit, indicator, year):
     table_many_years = {}
 
     # Obtain list of subgroups
-    subgroups = model.objects.values_list("sub_group_indicator_name").distinct()
-    subgroup_clean = []
-    for subgroup in subgroups:
-        subgroup_clean.append(subgroup[0])
+    subgroup_lst = get_subgroups(model)
 
     for one_year in year:
         headers = [geographic_level] + list(geographic_unit)
@@ -273,7 +256,7 @@ def create_subgroup_tables(geographic_level, geographic_unit, indicator, year):
                 .order_by("sub_group_indicator_name")
             )
 
-            for subgroup in subgroup_clean:
+            for subgroup in subgroup_lst:
                 row = [subgroup.capitalize()]
                 for r in results.filter(sub_group_indicator_name=subgroup):
                     row.append(round(r["value__avg"], 2))
@@ -290,7 +273,7 @@ def create_subgroup_tables(geographic_level, geographic_unit, indicator, year):
             )
 
             # Extract values for each subgroup as a row
-            for subgroup in subgroup_clean:
+            for subgroup in subgroup_lst:
                 row = [subgroup.capitalize()]
                 for r in results.filter(sub_group_indicator_name=subgroup):
                     row.append(round(r["value__avg"], 2))
@@ -299,7 +282,7 @@ def create_subgroup_tables(geographic_level, geographic_unit, indicator, year):
         if geographic_level == "Zipcode":
             # Create a dictionary to save values for each subgroup
             subgroup_dct = {}
-            for subgroup in subgroup_clean:
+            for subgroup in subgroup_lst:
                 subgroup_dct[subgroup] = []
 
             # Conduct querying for each zipcode (joining tract id each time)
@@ -347,7 +330,7 @@ def create_subgroup_tables(geographic_level, geographic_unit, indicator, year):
             )
 
             # Extract values for each subgroup as a row
-            for subgroup in subgroup_clean:
+            for subgroup in subgroup_lst:
                 row = [subgroup.capitalize()]
                 for r in results.filter(sub_group_indicator_name=subgroup):
                     row.append(round(r["value__avg"], 2))

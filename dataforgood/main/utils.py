@@ -172,7 +172,6 @@ def create_table(geographic_level, geographic_unit, indicator, year):
             for r in results:
                 row.append(round(r.value, 2))
 
-        # ADDED 11 MAY
         elif geographic_level == "Zipcode":
             # Obtain tracts in the selected zipcode
             tracts_in_zipcode = list(
@@ -194,7 +193,6 @@ def create_table(geographic_level, geographic_unit, indicator, year):
             for r in results:
                 row.append(round(r["value__avg"], 2))
 
-        # ADDED 11 MAY
         elif geographic_level == "Community":
             # Groupby community area and year, sorted by year in ascending order
             # and takes the mean of observations
@@ -212,6 +210,28 @@ def create_table(geographic_level, geographic_unit, indicator, year):
         rows.append(row)
 
     return {"headers": headers, "rows": rows}
+
+
+def create_subgroup_table_rows(subgroup_lst, rows, results):
+    """
+    Creates a row for each subgroup based on query results.
+
+    Inputs:
+        subgroup_lst (list of str): list of subgroup names
+        rows (list of lists): a single list to store each row as a list
+        results (Django queryset): a queryset item of dictionaries, each
+            dictionary is a query result instance
+    
+    Returns:
+        rows (list of lists): a single list with each subgroup stored as a list
+    """
+    for subgroup in subgroup_lst:
+        row = [subgroup.capitalize()]
+        for r in results.filter(sub_group_indicator_name=subgroup):
+            row.append(round(r["value__avg"], 2))
+        rows.append(row)
+    
+    return rows
 
 
 def create_subgroup_tables(geographic_level, geographic_unit, indicator, year):
@@ -256,11 +276,7 @@ def create_subgroup_tables(geographic_level, geographic_unit, indicator, year):
                 .order_by("sub_group_indicator_name")
             )
 
-            for subgroup in subgroup_lst:
-                row = [subgroup.capitalize()]
-                for r in results.filter(sub_group_indicator_name=subgroup):
-                    row.append(round(r["value__avg"], 2))
-                rows.append(row)
+            rows = create_subgroup_table_rows(subgroup_lst, rows, results)
 
         if geographic_level == "Tract":
             results = (
@@ -272,18 +288,11 @@ def create_subgroup_tables(geographic_level, geographic_unit, indicator, year):
                 .order_by("sub_group_indicator_name", "census_tract_id")
             )
 
-            # Extract values for each subgroup as a row
-            for subgroup in subgroup_lst:
-                row = [subgroup.capitalize()]
-                for r in results.filter(sub_group_indicator_name=subgroup):
-                    row.append(round(r["value__avg"], 2))
-                rows.append(row)
+            create_subgroup_table_rows(subgroup_lst, rows, results)
 
         if geographic_level == "Zipcode":
             # Create a dictionary to save values for each subgroup
-            subgroup_dct = {}
-            for subgroup in subgroup_lst:
-                subgroup_dct[subgroup] = []
+            subgroup_dct = {subgroup: [] for subgroup in subgroup_lst}
 
             # Conduct querying for each zipcode (joining tract id each time)
             for zipcode in geographic_unit:
@@ -311,8 +320,7 @@ def create_subgroup_tables(geographic_level, geographic_unit, indicator, year):
                     )
 
             # Convert dictionary values to list of lists for table
-            for subgroup, row in subgroup_dct.items():
-                rows.append([subgroup] + row)
+            rows = [[subgroup] + row for subgroup, row in subgroup_dct.items()]
 
         if geographic_level == "Community":
             results = (
@@ -329,12 +337,7 @@ def create_subgroup_tables(geographic_level, geographic_unit, indicator, year):
                 )
             )
 
-            # Extract values for each subgroup as a row
-            for subgroup in subgroup_lst:
-                row = [subgroup.capitalize()]
-                for r in results.filter(sub_group_indicator_name=subgroup):
-                    row.append(round(r["value__avg"], 2))
-                rows.append(row)
+            create_subgroup_table_rows(subgroup_lst, rows, results)
 
         table_many_years[one_year] = {"headers": headers, "rows": rows}
 

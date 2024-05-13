@@ -6,7 +6,6 @@ from .models import *
 
 # HELPER FUNCTIONS FOR VIEWS.PY #
 
-
 # Global variables that map form indicator options to specific models to conduct querying
 MAIN_MODEL_MAPPING = {
     "Median Income in the Past 12 Months (inflation-adjusted)": MedianIncome_Main,
@@ -34,6 +33,18 @@ SUB_MODEL_MAPPING = {
     "Median Age": MedianAge_Sub,
 }
 
+INDICATOR_UNIT_MAPPING = {
+    "Median Income in the Past 12 Months (inflation-adjusted)": "US Dollars",
+    "Mean Income in the Past 12 Months (inflation-adjusted)": "US Dollars",
+    "Aggregate Contract Rent": "US Dollars",
+    "Total Number of Households": "Number of Households",
+    "Median Earnings in the Past 12 Months": "US Dollars",
+    "Population 3 years and over enrolled in school": "Number of People",
+    "Total Population With Disability": "Number of People",
+    "Insurance Coverage: Total Population": "Number of People",
+    "Total Population and Race Group": "Number of People",
+    "Median Age": "Years"
+}
 
 def convert_list_to_tuple(query_lst):
     """

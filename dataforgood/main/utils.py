@@ -226,7 +226,13 @@ def create_subgroup_table_rows(subgroup_lst, rows, results):
         rows (list of lists): a single list with each subgroup stored as a list
     """
     for subgroup in subgroup_lst:
-        row = [subgroup.capitalize()]
+
+        # Format subgroup name to a human readable format
+        subgroup_word_lst = subgroup.split("_")
+        for idx, word in enumerate(subgroup_word_lst):
+            subgroup_word_lst[idx] = word.capitalize()
+
+        row = [' '.join(subgroup_word_lst)]
         for r in results.filter(sub_group_indicator_name=subgroup):
             row.append(round(r["value__avg"], 2))
         rows.append(row)
@@ -288,7 +294,7 @@ def create_subgroup_tables(geographic_level, geographic_unit, indicator, year):
                 .order_by("sub_group_indicator_name", "census_tract_id")
             )
 
-            create_subgroup_table_rows(subgroup_lst, rows, results)
+            rows = create_subgroup_table_rows(subgroup_lst, rows, results)
 
         if geographic_level == "Zipcode":
             # Create a dictionary to save values for each subgroup
@@ -337,7 +343,7 @@ def create_subgroup_tables(geographic_level, geographic_unit, indicator, year):
                 )
             )
 
-            create_subgroup_table_rows(subgroup_lst, rows, results)
+            rows = create_subgroup_table_rows(subgroup_lst, rows, results)
 
         table_many_years[one_year] = {"headers": headers, "rows": rows}
 

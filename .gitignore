@@ -132,3 +132,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# heatmap files
+heatmap_*.html
+!heatmap_feb928af-723b-45b5-8687-5a4bb2b41cbf.html

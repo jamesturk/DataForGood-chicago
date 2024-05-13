@@ -11,7 +11,7 @@ from django.views.decorators.csrf import csrf_protect
 from dataforgood.settings import BASE_DIR
 
 from .forms import SearchForm, SubgroupForm
-from .utils import create_subgroup_tables, create_table, create_table_title
+from .utils import create_subgroup_tables, create_table, create_table_title, INDICATOR_UNIT_MAPPING
 
 
 communityshape_path = os.path.join(BASE_DIR, "main/communityarea")
@@ -178,6 +178,7 @@ def dataandvisualize(request):
                 ).add_to(mymap)
 
                 # Creating heatmap layer
+                units = INDICATOR_UNIT_MAPPING[indicator]
                 folium.Choropleth(
                     geo_data=data,
                     name="Choropleth",
@@ -188,7 +189,7 @@ def dataandvisualize(request):
                     fill_opacity=1,
                     line_opacity=0.2,
                     bins=3,
-                    legend_name=indicator,
+                    legend_name=units,
                     smooth_factor=0,
                 ).add_to(mymap)
 
@@ -216,7 +217,7 @@ def dataandvisualize(request):
                     highlight_function=highlight_function,
                     tooltip=folium.features.GeoJsonTooltip(
                         fields=[geograpahic_level, year],
-                        aliases=[geograpahic_level, indicator],
+                        aliases=[geograpahic_level, units],
                         style=(
                             "background-color: white; color: #333333; font-family: arial; font-size: 12px; padding: 10px;"
                         ),

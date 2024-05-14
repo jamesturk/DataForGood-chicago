@@ -725,6 +725,13 @@
             <h3>Generated Memo:</h3>
             <p>{{ memo }}</p>
         </div>
+
+        {% if memo_path %}
+            <a href="{{ memo_path }}" download="memo.docx">
+                <button>Download Memo</button>
+            </a>
+        {% endif %}
+        
     </body>
 </body>
 </html>

@@ -1,14 +1,17 @@
 {% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About Us: Data For Good - Chicago </title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-
 </head>
+
 <body>
+
     <header>
         <nav>
             <div class="logo">Data For Good - Chicago</div>
@@ -19,11 +22,51 @@
             </ul>
         </nav>
     </header>
+
     <section class="hero">
-        <h1>Data Exploration. Data Analysis. Data Visualization.</h1>
-        <p>DataForGood Chicago empowers nonprofits and researchers with data-driven insights for informed decision-making and impactful community change</p>
+        <h1>Empowering Nonprofits with Data-Driven Decisions</h1>
+        <p>Explore, Analyze, and Visualize Impactful Data Insights for Better Community Outcomes</p>
+        
+        <section class="about-us">
+            <h2>Who We Are</h2>
+            <p>DataForGood Chicago is a web application designed to assist small to medium-sized nonprofit organizations in Chicago in 
+                utilizing data effectively for decision-making and resource management. 
+                Our platform offers a centralized solution to access, analyze, and visualize socioeconomic data from multiple sources.</p>
+
+            <h2>Our Mission</h2>
+            <p>To democratize access to data-driven insights, enabling nonprofit organizations to harness the power of data for 
+                social good and drive positive change in their communities.</p>
+        </section>
+
+        <section class="features">
+            <h2>Key Features</h2>
+            <ul>
+                <li>Integrated Mapping with ArcGIS Online</li>
+                <li>Customizable Data Dashboards</li>
+                <li>Automated Insights and Memo Generation</li>
+            </ul>
+        </section>
+
+        <section class="team">
+            <h2>Meet Our Team</h2>
+            <ul>
+                <li>Bryan Foo - Project Lead</li>
+                <li>Yueyue Wang - Data Scientist</li>
+                <li>Ruoyi Wu - Developer</li>
+                <li>Yujie Jiang - UX/UI Designer</li>
+                <li>Maxine Xu - GIS Specialist</li>
+            </ul>
+        </section>
+        
         <a href="{% url 'dataandvisualize' %}" class="explore-button">EXPLORE DATA</a>
+
     </section>
-    <footer>
+
+
+
+    <footer contenteditable="">
         <p>Copyright © 2024 Data For Good - Chicago. All rights reserved.</p>
     </footer>
+</body>
+</html>
+

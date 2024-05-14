@@ -132,7 +132,7 @@ class SearchForm(forms.Form):
         POPULATION_CHOICES, "id_population_indicators"
     )
 
-    periods = forms.MultipleChoiceField(
+    year = forms.MultipleChoiceField(
         widget=forms.CheckboxSelectMultiple,
         choices=PERIOD_CHOICES,
     )

@@ -51,6 +51,12 @@ INDICATOR_UNIT_MAPPING = {
 }
 
 SUBGROUP_NAMES = {
+    "mean_white": "White",
+    "mean_black": "Black",
+    "mean_hawai": "Native Hawaiian and Other Pacific Islander",
+    "mean_ind_ala": "American Indian and Alaska Native",
+    "mean_asia": "Asian",
+    "mean_other": "Some Other Race",
     "median_white": "White",
     "median_hawai": "Native Hawaiian and Other Pacific Islander",
     "median_asia": "Asian",
@@ -89,6 +95,7 @@ SUBGROUP_NAMES = {
     "male_age": "Male",
     "female_age": "Female", 
 }
+
 
 def convert_list_to_tuple(query_lst):
     """

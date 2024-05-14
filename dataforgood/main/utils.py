@@ -554,6 +554,7 @@ def create_subgroup_tables(geographic_level, geographic_unit, indicator, periods
 
             rows = create_subgroup_table_rows(subgroup_lst, rows, results)
 
+        rows = sorted(rows)
         table_many_years[period_str] = {"headers": headers, "rows": rows}
 
     return table_many_years

@@ -222,7 +222,9 @@ def save_memo(indicator, geo_level, memo, docs_path):
         indicator, geo_level), 0)
     p = document.add_paragraph(memo)
     path = docs_path + '/memo_{}.docx'.format(uuid.uuid4())
+
     document.save(path)
+
     return path
 
 

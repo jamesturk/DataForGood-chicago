@@ -1,5 +1,11 @@
+import uuid
+
 from django import forms
 from django.db.models import Avg
+from langchain_openai import ChatOpenAI
+from langchain.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+from docx import Document
 
 from .models import MedianIncome_Main, MeanIncome_Main, ContractRent_Main, \
     HouseholdType_Main, MedianEarning_Main, Enrollment_Main, Disability_Main, \
@@ -95,6 +101,129 @@ SUBGROUP_NAMES = {
     "male_age": "Male",
     "female_age": "Female", 
 }
+
+# Source: Modified class, context, and instructions from 
+# https://github.com/abejburton/census_llm
+
+class WriteMemo:
+    """
+    This class uses GPT 3.5 Turbo to explain the selected indicator data. 
+    """
+
+    def __init__(self, indicator, geo_level, dictionary, describe, open_ai_key):
+        self.indicator = indicator
+        self.geo_level = geo_level
+        self.dictionary = dictionary
+        self.describe = describe
+
+        template = """
+        Role: You are a data analyst for a small nonprofit in Chicago.
+        
+        Context:
+        Your goal is to write a memo about the data from  the American 
+        Community Survey's (ACS) 5-year estimate data, which are "period" 
+        estimates that represent data collected over a period of time. 
+        The primary advantage of using multiyear estimates is the increased 
+        statistical reliability of the data for less populated areas and small 
+        population subgroups. The data is focused on a selected indicator, 
+        a selected geographic level, and selected years, all of which are 
+        chosen by the user.
+        
+        You will receive 4 pieces of information to form a truthful analysis
+        and write a professional memo that can be interpreted by a 
+        nontechnical audience.
+
+        The first piece of information is a string value of the selected 
+        indicator that the analysis will be focused on.
+
+        The second piece of information is the selected geographic level. 
+        There are three geographic levels, Census Tracts, Zip codes, and 
+        Community Areas, and the user only picks one. The data is only focused 
+        on the geographic levels in Chicago so do not mention 
+        other cities, states, or countries.
+        
+        The third piece of information is the python output of dictionary of 
+        a pandas dataframe of selected data from the American Community Survey. 
+        The dictionary's keys are the dataframe's column names and the 
+        dictionary's values are the dataframe's rows of values which correspond 
+        to the columns. The first column will be the geographic level of data 
+        that was selected by the user. The following columns will be the years 
+        selected by the user. The years will range from 2017 to 2022. The 
+        values in the year columns reflect the values of indicator selected 
+        by the user. The values in the first column reflect the selected 
+        census tracts, community areas, or zip codes. 
+        
+        The fourth piece of information will be the results of calling the 
+        describe() method on the dataframe that is selected by the user (this 
+        is not across all the geographic areas of Chicago). 
+        Please do not conduct analysis on the first column of the dataframe. 
+        Please provide a description of the dataframe, including the mean, 
+        minimum, and maximum values in a year for the indicator. 
+        For each geographic area in each year in the 
+        dictionary please list what quartile it is in and be sure to mention 
+        which geographic area is associated with the value. If the geographic
+        are in the specified year is the minimum or maximum value in the
+        selected dataframe, point it out. 
+
+        If there are multiple years in the dataframe, point out if the value 
+        for the indicator for a geographic area is increasing or decreasing. 
+        Lastly, please provide insight about the selected indicator and
+        what factors the nonprofit may want to investigate further that are
+        related to the selected indicator and how a nonprofit could help 
+        improve the indicator values for geographic areas that have the lowest 
+        values.
+
+        Instructions:
+        Explain that you did analysis on an indicator (mention indicator name)
+        using data from the American Community Survey's (ACS) 
+        5-year estimate data for certain geographic areas in Chicago (list 
+        out the selected geographic areas) in certain years (list out the
+        selected years) and will be explaining the output of 
+        the analysis.
+        
+        Read the four pieces of information provided. Explain any key findings
+        that you find. Base your analysis solely on the information provided in
+        this prompt. Don't make anything up, just provide coherent basic analysis
+        based on the information.
+        -----
+        
+        Information: {information}
+        """
+        prompt = ChatPromptTemplate.from_template(template)
+        model = ChatOpenAI(model="gpt-3.5-turbo", temperature=0, api_key=open_ai_key)
+        self.response = prompt | model | StrOutputParser()
+
+    def invoke(self):
+        return self.response.invoke({"information": [self.indicator, 
+                                                  self.geo_level, 
+                                                  self.dictionary, 
+                                                  self.describe]})
+
+def save_memo(indicator, geo_level, memo, docs_path):
+    """
+    This function saves the memo outputted by ChatGPT to a word file. 
+
+    Inputs:
+        - indicator (str): name of indicator selected by the user
+        - geo_level (str): geographic level of data selected  by the user
+        - memo (str): string of ChatGPT's response 
+    
+    Returns:
+        - path (str): string of the path where the memo is saved 
+    """
+    document = Document()
+
+    # Font style
+    style = document.styles['Normal']
+    style.font.name = 'Calibri'
+
+    # Adding Memo title and body
+    document.add_heading('Analysis of {} in Selected Chicago {}'.format(
+        indicator, geo_level), 0)
+    p = document.add_paragraph(memo)
+    path = docs_path + '/memo_{}.docx'.format(uuid.uuid4())
+    document.save(path)
+    return path
 
 
 def convert_list_to_tuple(query_lst):

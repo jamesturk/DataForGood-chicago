@@ -132,24 +132,22 @@ def create_table_title(indicator, year):
         indicator_formatted += year + ", "
     
     return indicator_formatted
+
+
+def convert_none_to_na_and_round(single_result):
+    """
+    Takes in a query result value returns the result (rounded to 2 decimal
+        places) if the query is not None, else return "NA" string
     
-    # indicator_word_lst = indicator.split("_")
-    # for idx, word in enumerate(indicator_word_lst):
-    #     indicator_word_lst[idx] = word.capitalize()
-
-    # if len(year) == 1:
-    #     return indicator_formatted
-    #     year_text = "({year})"
-    #     indicator_word_lst.append(year_text.format(year=str(year[0])))
-    # else:
-    #     year_range_text = "({start_year}-{end_year})"
-    #     indicator_word_lst.append(
-    #         year_range_text.format(
-    #             start_year=str(year[0]), end_year=str(year[-1])
-    #         )
-    #     )
-
-    # return " ".join(indicator_word_lst)
+    Inputs:
+        single_result (int or None): query result value
+    
+    Returns: "NA" string or query result (int) rounded to 2 decimal places
+    """
+    if single_result is None:
+        return "NA"
+    else:
+        return round(single_result, 2)
 
 
 def create_table(geographic_level, geographic_unit, indicator, periods):
@@ -202,7 +200,7 @@ def create_table(geographic_level, geographic_unit, indicator, periods):
 
             # Appends value for each year
             for r in results:
-                row.append(round(r.value, 2))
+                row.append(convert_none_to_na_and_round(r["value__avg"]))
 
         elif geographic_level == "Zipcode":
             # Obtain tracts in the selected zipcode
@@ -223,7 +221,8 @@ def create_table(geographic_level, geographic_unit, indicator, periods):
 
             # Appends value for each year
             for r in results:
-                row.append(round(r["value__avg"], 2))
+                #row.append(round(r["value__avg"], 2))
+                row.append(convert_none_to_na_and_round(r["value__avg"]))
 
         elif geographic_level == "Community":
             # Groupby community area and year, sorted by year in ascending order
@@ -237,7 +236,7 @@ def create_table(geographic_level, geographic_unit, indicator, periods):
 
             # Appends value for each year
             for r in results:
-                row.append(round(r["value__avg"], 2))
+                row.append(convert_none_to_na_and_round(r["value__avg"]))
 
         rows.append(row)
 
@@ -261,16 +260,10 @@ def create_subgroup_table_rows(subgroup_lst, rows, results):
 
         # Format subgroup name to a human readable format
         subgroup_formatted = subgroup.replace("_", " ").title()
-        # subgroup_word_lst = subgroup.split("_")
-        # for idx, word in enumerate(subgroup_word_lst):
-        #     subgroup_word_lst[idx] = word.capitalize()
 
         row = [subgroup_formatted]
         for r in results.filter(sub_group_indicator_name=subgroup):
-            if r["value__avg"] is None:
-                row.append('NA')
-            else:
-                row.append(round(r["value__avg"], 2))
+            row.append(convert_none_to_na_and_round(r["value__avg"]))
         rows.append(row)
     
     return rows
@@ -321,8 +314,6 @@ def create_subgroup_tables(geographic_level, geographic_unit, indicator, periods
                 .order_by("sub_group_indicator_name")
             )
 
-            print(results)
-
             rows = create_subgroup_table_rows(subgroup_lst, rows, results)
 
         if geographic_level == "Tract":
@@ -362,12 +353,8 @@ def create_subgroup_tables(geographic_level, geographic_unit, indicator, periods
  
                 # Append results to subgroup dictionary
                 for r in results:
-                    if r["value__avg"] is None:
-                        subgroup_dct[r["sub_group_indicator_name"]].append('NA')
-                    else:
-                        subgroup_dct[r["sub_group_indicator_name"]].append(
-                        round(r["value__avg"], 2)
-                    )
+                    subgroup_dct[r["sub_group_indicator_name"]].append(
+                        convert_none_to_na_and_round(r["value__avg"]))
 
             # Convert dictionary values to list of lists for table
             rows = [[subgroup] + row for subgroup, row in subgroup_dct.items()]

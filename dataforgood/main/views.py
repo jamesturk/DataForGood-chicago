@@ -62,6 +62,7 @@ def dataandvisualize(request):
         geograpahic_level = form.cleaned_data["geographic_level"]
         category = form.cleaned_data["category"]
         year = form.cleaned_data["year"]
+        generate_memo = form.cleaned_data["generate_memo"]
 
         geographic_level_dct = {
             "City of Chicago": [],
@@ -87,6 +88,7 @@ def dataandvisualize(request):
         print("Category Selected:", category)
         print("Indicator Selected:", indicator)
         print("Periods(s) Selected:", year)
+        print("Generate Memo:", generate_memo)
 
         subgroup_form = SubgroupForm(
             year_choices=[

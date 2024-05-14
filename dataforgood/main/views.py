@@ -254,26 +254,41 @@ def dataandvisualize(request):
                 year_dic['path'] = "maps/{}.html".format(name)
                 year_dic['year'] = year
                 heatmap_info.append(year_dic)
-        
-        # Writing and saving memo about the data
-        chart_descr = heatmap_data.describe()
-        analysis = WriteMemo(indicator, geograpahic_level, field, chart_descr, open_ai_key)
-        memo = analysis.invoke()
-        memo_path = save_memo(indicator, geograpahic_level, memo, docs_path)
 
-        context = {
-            "form": form,
-            "field": field,
-            "table_title": table_title,
-            "multi_year_subtable_field": multi_year_subtable_field,
-            "chart_data": chart_data,
-            "subgroup_chart_data": subgroup_chart_data,
-            "paths_titles": heatmap_info,
-            "subgroup_form": subgroup_form,
-            "memo": memo,
-            "memo_path": memo_path,
-        }
-        return render(request, "dataandvisualize.html", context)
+        if generate_memo == "Yes":
+        
+            # Writing and saving memo about the data
+            chart_descr = heatmap_data.describe()
+            analysis = WriteMemo(indicator, geograpahic_level, field, chart_descr, open_ai_key)
+            memo = analysis.invoke()
+            memo_path = save_memo(indicator, geograpahic_level, memo, docs_path)
+
+            context = {
+                "form": form,
+                "field": field,
+                "table_title": table_title,
+                "multi_year_subtable_field": multi_year_subtable_field,
+                "chart_data": chart_data,
+                "subgroup_chart_data": subgroup_chart_data,
+                "paths_titles": heatmap_info,
+                "subgroup_form": subgroup_form,
+                "memo": memo,
+                "memo_path": memo_path,
+            }
+            return render(request, "dataandvisualize.html", context)
+
+        else:
+            context = {
+                "form": form,
+                "field": field,
+                "table_title": table_title,
+                "multi_year_subtable_field": multi_year_subtable_field,
+                "chart_data": chart_data,
+                "subgroup_chart_data": subgroup_chart_data,
+                "paths_titles": heatmap_info,
+                "subgroup_form": subgroup_form,
+            }
+            return render(request, "dataandvisualize.html", context)
 
     return render(
         request,

@@ -54,7 +54,7 @@ def dataandvisualize(request):
         # Extract variables from SearchForm
         geograpahic_level = form.cleaned_data["geographic_level"]
         category = form.cleaned_data["category"]
-        year = form.cleaned_data["year"]
+        year = form.cleaned_data["periods"]
 
         geographic_level_dct = {
             "City of Chicago": [],
@@ -79,7 +79,7 @@ def dataandvisualize(request):
         print(geograpahic_level, "Selected:", geographic_unit)
         print("Category Selected:", category)
         print("Indicator Selected:", indicator)
-        print("Year(s) Selected:", year)
+        print("Periods(s) Selected:", year)
 
         subgroup_form = SubgroupForm(
             year_choices=[

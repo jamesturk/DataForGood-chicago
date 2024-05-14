@@ -74,6 +74,11 @@ POPULATION_CHOICES = [
     ("Median Age", "Median Age"),
 ]
 
+YES_NO_CHOICE = [
+    ('No', 'No'),
+    ('Yes', 'Yes')
+]
+
 # Indicator chocies for each category
 category_to_indicators = {
     "Economic": ECONOMIC_CHOCIES,
@@ -95,6 +100,7 @@ class SearchForm(forms.Form):
         self.fields["health_indicators"].required = False
         self.fields["housing_indicators"].required = False
         self.fields["population_indicators"].required = False
+        self.fields["generate_memo"].required = False
 
     geographic_level = forms.ChoiceField(
         choices=GEOGRAPHIC_LEVEL_CHOICES,
@@ -135,6 +141,11 @@ class SearchForm(forms.Form):
     year = forms.MultipleChoiceField(
         widget=forms.CheckboxSelectMultiple,
         choices=PERIOD_CHOICES,
+    )
+
+    generate_memo = forms.ChoiceField(
+        widget=forms.Select,
+        choices=YES_NO_CHOICE,
     )
 
 

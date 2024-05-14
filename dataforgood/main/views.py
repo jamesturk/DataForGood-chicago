@@ -257,7 +257,7 @@ def dataandvisualize(request):
         chart_descr = heatmap_data.describe()
         analysis = WriteMemo(indicator, geograpahic_level, field, chart_descr, open_ai_key)
         memo = analysis.invoke()
-        save_memo(indicator, geograpahic_level, memo, docs_path)
+        memo_path = save_memo(indicator, geograpahic_level, memo, docs_path)
 
         context = {
             "form": form,
@@ -269,6 +269,7 @@ def dataandvisualize(request):
             "paths_titles": heatmap_info,
             "subgroup_form": subgroup_form,
             "memo": memo,
+            "memo_path": memo_path,
         }
         return render(request, "dataandvisualize.html", context)
 

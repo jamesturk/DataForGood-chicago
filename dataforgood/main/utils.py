@@ -54,9 +54,9 @@ def convert_list_to_tuple(query_lst):
     """
     Converts lists of variables (e.g. years or tracts) into tuples to
     run model query for table creation.
-    An example:
-        [2018, 2019] -> (2018, 2019)
-        [2018] -> (2018,)
+    Examples:
+        - [2018, 2019] -> (2018, 2019)
+        - [2018] -> (2018,)
 
     Inputs:
         query_lst (list): list of query variable(s)
@@ -70,6 +70,28 @@ def convert_list_to_tuple(query_lst):
         query_tup = tuple(query_lst)
 
     return query_tup
+
+
+def convert_periods_to_years(periods):
+    """
+    Takes in the 5-year estimate period(s) selected by the user and retains
+    only the ending year of each period selected to conduct query
+    An example:
+        ['2011-2015', '2016-2020'] -> [2015, 2020]
+        ['2011-2015'] -> [2015]
+
+    Inputs:
+        period (list of str): 5-year period(s) selected by the user
+    
+    Returns:
+        years (list of int): the ending year for each 5-year estimate period
+            selected by the user
+    """
+    years = []
+    for p in periods:
+        years.append(int(p[5:]))
+    
+    return years
 
 
 def get_subgroups(model_sub):
@@ -98,29 +120,39 @@ def create_table_title(indicator, year):
 
     Inputs:
         indicator (str): indicator selected by the user in the form
-        year (list of int): year(s) selected by the user in the form
+        year (list of strs): 5-year periods selected by the user in the form
 
-    Returns: generated title of main table (str)
+    Returns:
+        indicator_formatted (str): readable indicator format and 5-year periods
+            selected by the user
     """
-    indicator_word_lst = indicator.split("_")
-    for idx, word in enumerate(indicator_word_lst):
-        indicator_word_lst[idx] = word.capitalize()
+    indicator_formatted = indicator.replace("_", " ").title() + " for "
+    
+    for year in year:
+        indicator_formatted += year + ", "
+    
+    return indicator_formatted
+    
+    # indicator_word_lst = indicator.split("_")
+    # for idx, word in enumerate(indicator_word_lst):
+    #     indicator_word_lst[idx] = word.capitalize()
 
-    if len(year) == 1:
-        year_text = "({year})"
-        indicator_word_lst.append(year_text.format(year=str(year[0])))
-    else:
-        year_range_text = "({start_year}-{end_year})"
-        indicator_word_lst.append(
-            year_range_text.format(
-                start_year=str(year[0]), end_year=str(year[-1])
-            )
-        )
+    # if len(year) == 1:
+    #     return indicator_formatted
+    #     year_text = "({year})"
+    #     indicator_word_lst.append(year_text.format(year=str(year[0])))
+    # else:
+    #     year_range_text = "({start_year}-{end_year})"
+    #     indicator_word_lst.append(
+    #         year_range_text.format(
+    #             start_year=str(year[0]), end_year=str(year[-1])
+    #         )
+    #     )
 
-    return " ".join(indicator_word_lst)
+    # return " ".join(indicator_word_lst)
 
 
-def create_table(geographic_level, geographic_unit, indicator, year):
+def create_table(geographic_level, geographic_unit, indicator, periods):
     """
     Generates a dictionary to be used a context variables in the html file to
     create a table on the webapp (for the main indicator/overall group).
@@ -132,27 +164,27 @@ def create_table(geographic_level, geographic_unit, indicator, year):
         geographic_unit (list of str or int): geographic unit(s) corresponding
             to the geographic level selected by the user in the form
         indicator (str): name of indicator selected by the user in the form
-        year (list of int): year(s) selected by the user
+        periods (list of str): periods(s) selected by the user
 
     Returns: a dictionary of two items
             - 'headers': header row of table (list of str)
             - 'rows': multiple rows for each geographic unit (list of lists of
                 str)
     """
-    headers = [geographic_level] + list(year)
+    headers = [geographic_level] + list(periods)
     rows = []
 
     model = MAIN_MODEL_MAPPING[indicator]
 
     # Converts list of years to tuple, if only one year selected,
     # converts list to tuple with a comma
-    year = convert_list_to_tuple(year)
+    years = convert_list_to_tuple(convert_periods_to_years(periods))
 
     if geographic_level == "City of Chicago":
         row = ["City Average"]
         results = (
             model.objects.values("year")
-            .filter(year__in=year)
+            .filter(year__in=years)
             .annotate(Avg("value"))
             .order_by("year")
         )
@@ -166,7 +198,7 @@ def create_table(geographic_level, geographic_unit, indicator, year):
         row = [unit]
 
         if geographic_level == "Tract":
-            results = model.objects.filter(census_tract_id=unit, year__in=year)
+            results = model.objects.filter(census_tract_id=unit, year__in=years)
 
             # Appends value for each year
             for r in results:
@@ -184,7 +216,7 @@ def create_table(geographic_level, geographic_unit, indicator, year):
             # takes the mean of observations
             results = (
                 model.objects.values("year")
-                .filter(census_tract_id__in=tracts_in_zipcode, year__in=year)
+                .filter(census_tract_id__in=tracts_in_zipcode, year__in=years)
                 .annotate(Avg("value"))
                 .order_by("year")
             )
@@ -198,7 +230,7 @@ def create_table(geographic_level, geographic_unit, indicator, year):
             # and takes the mean of observations
             results = (
                 model.objects.values("census_tract_id__community", "year")
-                .filter(census_tract_id__community=unit, year__in=year)
+                .filter(census_tract_id__community=unit, year__in=years)
                 .annotate(Avg("value"))
                 .order_by("year")
             )
@@ -228,19 +260,23 @@ def create_subgroup_table_rows(subgroup_lst, rows, results):
     for subgroup in subgroup_lst:
 
         # Format subgroup name to a human readable format
-        subgroup_word_lst = subgroup.split("_")
-        for idx, word in enumerate(subgroup_word_lst):
-            subgroup_word_lst[idx] = word.capitalize()
+        subgroup_formatted = subgroup.replace("_", " ").title()
+        # subgroup_word_lst = subgroup.split("_")
+        # for idx, word in enumerate(subgroup_word_lst):
+        #     subgroup_word_lst[idx] = word.capitalize()
 
-        row = [' '.join(subgroup_word_lst)]
+        row = [subgroup_formatted]
         for r in results.filter(sub_group_indicator_name=subgroup):
-            row.append(round(r["value__avg"], 2))
+            if r["value__avg"] is None:
+                row.append('NA')
+            else:
+                row.append(round(r["value__avg"], 2))
         rows.append(row)
     
     return rows
 
 
-def create_subgroup_tables(geographic_level, geographic_unit, indicator, year):
+def create_subgroup_tables(geographic_level, geographic_unit, indicator, periods):
     """
     Generates a dictionary to be used a context variables in the html file to
     create a table on the webapp (for the subgroups).
@@ -252,7 +288,7 @@ def create_subgroup_tables(geographic_level, geographic_unit, indicator, year):
         geographic_unit (list of str or int): geographic unit(s) corresponding
             to the geographic level selected by the user in the form
         indicator (str): name of indicator selected by the user in the form
-        year (list of int): year(s) selected by the user
+        periods (list of str): periods(s) selected by the user
 
     Returns: a nested dictionary of dictionaries, each dictionary corresponding
         one year.
@@ -270,7 +306,10 @@ def create_subgroup_tables(geographic_level, geographic_unit, indicator, year):
     # Obtain list of subgroups
     subgroup_lst = get_subgroups(model)
 
-    for one_year in year:
+    # Convert periods to years
+    years = convert_list_to_tuple(convert_periods_to_years(periods))
+
+    for period_str, one_year in zip(periods, years):
         headers = [geographic_level] + list(geographic_unit)
         rows = []
 
@@ -281,6 +320,8 @@ def create_subgroup_tables(geographic_level, geographic_unit, indicator, year):
                 .annotate(Avg("value"))
                 .order_by("sub_group_indicator_name")
             )
+
+            print(results)
 
             rows = create_subgroup_table_rows(subgroup_lst, rows, results)
 
@@ -318,10 +359,13 @@ def create_subgroup_tables(geographic_level, geographic_unit, indicator, year):
                     .annotate(Avg("value"))
                     .order_by("sub_group_indicator_name")
                 )
-
+ 
                 # Append results to subgroup dictionary
                 for r in results:
-                    subgroup_dct[r["sub_group_indicator_name"]].append(
+                    if r["value__avg"] is None:
+                        subgroup_dct[r["sub_group_indicator_name"]].append('NA')
+                    else:
+                        subgroup_dct[r["sub_group_indicator_name"]].append(
                         round(r["value__avg"], 2)
                     )
 
@@ -345,7 +389,7 @@ def create_subgroup_tables(geographic_level, geographic_unit, indicator, year):
 
             rows = create_subgroup_table_rows(subgroup_lst, rows, results)
 
-        table_many_years[one_year] = {"headers": headers, "rows": rows}
+        table_many_years[period_str] = {"headers": headers, "rows": rows}
 
     return table_many_years
 

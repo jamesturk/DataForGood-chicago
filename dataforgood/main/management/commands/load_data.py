@@ -113,8 +113,9 @@ class Command(BaseCommand):
             reader = csv.DictReader(file)
             instances = []
             for record in reader:
+                cleaned_record = {k: (None if v == '' else v) for k, v in record.items()}
                 try:
-                    instance = model(**record)
+                    instance = model(**cleaned_record)
                     instances.append(instance)
                 except ValueError as e:
                     self.stdout.write(

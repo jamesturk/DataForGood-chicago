@@ -86,6 +86,8 @@ SUBGROUP_NAMES = {
     "pop_two": "Two or More Races",
     "pop_other": "Some Other Race",
     "pop_ind_ala": "American Indian and Alaska Native",
+    "male_age": "Male",
+    "female_age": "Female", 
 }
 
 def convert_list_to_tuple(query_lst):

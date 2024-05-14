@@ -50,6 +50,44 @@ INDICATOR_UNIT_MAPPING = {
     "Median Age": "Years"
 }
 
+SUBGROUP_NAMES = {
+    "median_white": "White",
+    "median_hawai": "Native Hawaiian and Other Pacific Islander",
+    "median_asia": "Asian",
+    "median_ind_ala": "American Indian and Alaska Native",
+    "median_other": "Some Other Race",
+    "median_black": "Black",
+    "less_high": "Less Than High School Graduate",
+    "grad": "Graduate or Professional Degree",
+    "high": "High School Graduate",
+    "bachelor": "Bachelor's Degree",
+    "college": "Some College and Associate's Degree",
+    "kind_12": "Kindergarten to 12th Grade",
+    "grad": "Graduate or Professional School",
+    "college": "College, Undergraduate",
+    "nursery": "Nursery School, Preschool",
+    "ind_living": "With an Independent Living Difficulty",
+    "ambulatory": "With an Ambulatory Difficulty",
+    "self_care": "With a Self-Care Difficulty",
+    "vision": "With a Vision Difficulty",
+    "hearing": "With a Hearing Difficulty",
+    "cognitive": "With a Cognitive Difficulty",
+    "insured": "Insured",
+    "uninsured": "Uninsured",
+    "lower_rent": "Lower Contract Rent Quartile",
+    "upper_rent": "Upper Contract Rent Quartile",
+    "median_rent": "Median Contract Rent",
+    "household_family": "Total Number of Family Household",
+    "household_nonfamily": "Total Number of Non-family Household",
+    "pop_hawai": "Native Hawaiian and  Other Pacific Islander",
+    "pop_asia": "Asian",
+    "pop_black": "Black",
+    "pop_white": "White",
+    "pop_two": "Two or More Races",
+    "pop_other": "Some Other Race",
+    "pop_ind_ala": "American Indian and Alaska Native",
+}
+
 def convert_list_to_tuple(query_lst):
     """
     Converts lists of variables (e.g. years or tracts) into tuples to
@@ -260,11 +298,7 @@ def create_subgroup_table_rows(subgroup_lst, rows, results):
         rows (list of lists): a single list with each subgroup stored as a list
     """
     for subgroup in subgroup_lst:
-
-        # Format subgroup name to a human readable format
-        subgroup_formatted = subgroup.replace("_", " ").title()
-
-        row = [subgroup_formatted]
+        row = [SUBGROUP_NAMES[subgroup]]
         for r in results.filter(sub_group_indicator_name=subgroup):
             row.append(convert_none_to_na_and_round(r["value__avg"]))
         rows.append(row)
@@ -360,7 +394,8 @@ def create_subgroup_tables(geographic_level, geographic_unit, indicator, periods
                         convert_none_to_na_and_round(r["value__avg"]))
 
             # Convert dictionary values to list of lists for table
-            rows = [[subgroup] + row for subgroup, row in subgroup_dct.items()]
+            rows = [[SUBGROUP_NAMES[subgroup]] + row for subgroup, 
+                    row in subgroup_dct.items()]
 
         if geographic_level == "Community":
             results = (

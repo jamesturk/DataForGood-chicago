@@ -144,17 +144,17 @@ def dataandvisualize(request):
             }
 
         # Creating heat map for Community Area, Zip Code, and Tract Level
-        if geograpahic_level != "City of Chicago":
-            heatmap_data = pd.DataFrame(field["rows"], columns=field["headers"])
-            heatmap_info = []
+        heatmap_data = pd.DataFrame(field["rows"], columns=field["headers"])
+        heatmap_info = []
 
-            years = heatmap_data.columns[1:]
-            for year in years:
-                year_dic = {}
-                for column in heatmap_data.columns[1:]:
-                    heatmap_data[column] = heatmap_data[
-                        column].apply(lambda x: int(x) if x != 'NA' else np.nan)
-
+        years = heatmap_data.columns[1:]
+        for year in years:
+            year_dic = {}
+            for column in heatmap_data.columns[1:]:
+                heatmap_data[column] = heatmap_data[
+                    column].apply(lambda x: int(x) if x != 'NA' else np.nan)
+            
+            if geograpahic_level != "City of Chicago":
                 if geograpahic_level == "Community":
                     heatmap_data.iloc[:, 0] = heatmap_data.iloc[
                         :, 0

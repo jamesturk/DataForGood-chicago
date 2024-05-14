@@ -21,8 +21,8 @@ censusshape_path = os.path.join(BASE_DIR, "main/censustracts")
 html_path = os.path.join(BASE_DIR, "main/templates/maps")
 
 # Centroid of Chicago for heat map
-y_center = 41.730401
-x_center = -87.251444
+y_center = 41.434732
+x_center = -87.333050
 
 
 @register.filter
@@ -136,13 +136,13 @@ def dataandvisualize(request):
             }
 
         # Creating heat map for Community Area, Zip Code, and Tract Level
-        heatmap_htmls = []
-        title_list = []
         if geograpahic_level != "City of Chicago":
             heatmap_data = pd.DataFrame(field["rows"], columns=field["headers"])
+            heatmap_info = []
 
             years = heatmap_data.columns[1:]
             for year in years:
+                year_dic = {}
                 for column in heatmap_data.columns[1:]:
                     heatmap_data[column] = heatmap_data[
                         column].apply(lambda x: int(x) if x != 'NA' else np.nan)
@@ -173,7 +173,7 @@ def dataandvisualize(request):
 
                 # Adding base layer
                 mymap = folium.Map(
-                    location=[y_center, x_center], zoom_start=11, tiles=None
+                    location=[y_center, x_center], zoom_start=10, tiles=None
                 )
                 folium.TileLayer(
                     "CartoDB positron", name="Light Map", control=False
@@ -230,14 +230,22 @@ def dataandvisualize(request):
                 mymap.add_child(feat)
                 mymap.keep_in_front(feat)
                 folium.LayerControl().add_to(mymap)
-                title = "Heat Map of {} by Selected {}s in {}".format(
-                    indicator, geograpahic_level, year
-                )
-                title_list.append(title)
+                if geograpahic_level[-1:] == "y":
+                    title = "Heat Map of {} by Selected {}ies in {}".format(
+                        indicator, geograpahic_level[:-1], year
+                    )
+                else:
+                    title = "Heat Map of {} by Selected {}s in {}".format(
+                        indicator, geograpahic_level, year
+                    )
+
                 name = "heatmap_{}".format(uuid.uuid4())
                 map_file_path = "{}/{}.html".format(html_path, name)
                 mymap.save(map_file_path)
-                heatmap_htmls.append("maps/{}.html".format(name))
+                year_dic['title'] = title
+                year_dic['path'] = "maps/{}.html".format(name)
+                year_dic['year'] = year
+                heatmap_info.append(year_dic)
 
         context = {
             "form": form,
@@ -246,7 +254,7 @@ def dataandvisualize(request):
             "multi_year_subtable_field": multi_year_subtable_field,
             "chart_data": chart_data,
             "subgroup_chart_data": subgroup_chart_data,
-            "paths_titles": zip(heatmap_htmls, title_list),
+            "paths_titles": heatmap_info,
             "subgroup_form": subgroup_form,
         }
         return render(request, "dataandvisualize.html", context)

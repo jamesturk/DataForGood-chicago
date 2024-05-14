@@ -488,15 +488,15 @@
         </script>
         
         <div class="map-container">
-            {% for path, title in paths_titles %}
+            {% for item in paths_titles %}
                 <div style="margin-bottom: 20px;">
-                    <h2>{{ title }}</h2>
+                    <h2>{{ item.title }}</h2>
                     <div class="iframe-wrapper">
-                        {% include path %}
+                        {% include item.path %}
                     </div>
                 </div>
             {% endfor %}
-        </div>
+        </div>  
 
         <style>
             .iframe-wrapper {

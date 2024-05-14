@@ -2,6 +2,7 @@ import os
 import uuid
 
 import folium
+import numpy as np
 import geopandas as gpd
 import pandas as pd
 from django.shortcuts import render
@@ -143,7 +144,8 @@ def dataandvisualize(request):
             years = heatmap_data.columns[1:]
             for year in years:
                 for column in heatmap_data.columns[1:]:
-                    heatmap_data[column] = heatmap_data[column].astype(int)
+                    heatmap_data[column] = heatmap_data[
+                        column].apply(lambda x: int(x) if x != 'NA' else np.nan)
 
                 if geograpahic_level == "Community":
                     heatmap_data.iloc[:, 0] = heatmap_data.iloc[
@@ -191,6 +193,8 @@ def dataandvisualize(request):
                     bins=3,
                     legend_name=units,
                     smooth_factor=0,
+                    nan_fill_color="grey",
+                    nan_fill_opacity=0.4
                 ).add_to(mymap)
 
                 def style_function(x):

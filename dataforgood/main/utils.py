@@ -200,7 +200,10 @@ def create_table(geographic_level, geographic_unit, indicator, periods):
 
             # Appends value for each year
             for r in results:
-                row.append(convert_none_to_na_and_round(r["value__avg"]))
+                if r.value is None:
+                    row.append('NA')
+                else:
+                    row.append(r.value)
 
         elif geographic_level == "Zipcode":
             # Obtain tracts in the selected zipcode

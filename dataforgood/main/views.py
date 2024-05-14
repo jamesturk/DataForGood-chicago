@@ -2,6 +2,7 @@ import os
 import uuid
 
 import folium
+import environ
 import numpy as np
 import geopandas as gpd
 import pandas as pd
@@ -12,13 +13,18 @@ from django.views.decorators.csrf import csrf_protect
 from dataforgood.settings import BASE_DIR
 
 from .forms import SearchForm, SubgroupForm
-from .utils import create_subgroup_tables, create_table, create_table_title, INDICATOR_UNIT_MAPPING
+from .utils import create_subgroup_tables, create_table, create_table_title, WriteMemo, save_memo, INDICATOR_UNIT_MAPPING
 
 
 communityshape_path = os.path.join(BASE_DIR, "main/communityarea")
 zipcodeshape_path = os.path.join(BASE_DIR, "main/zipcode")
 censusshape_path = os.path.join(BASE_DIR, "main/censustracts")
 html_path = os.path.join(BASE_DIR, "main/templates/maps")
+docs_path = os.path.join(BASE_DIR, "main/templates/memos")
+
+env = environ.Env()
+environ.Env.read_env()
+open_ai_key = env("open_ai_key")
 
 # Centroid of Chicago for heat map
 y_center = 41.434732
@@ -246,6 +252,12 @@ def dataandvisualize(request):
                 year_dic['path'] = "maps/{}.html".format(name)
                 year_dic['year'] = year
                 heatmap_info.append(year_dic)
+        
+        # Writing and saving memo about the data
+        chart_descr = heatmap_data.describe()
+        analysis = WriteMemo(indicator, geograpahic_level, field, chart_descr, open_ai_key)
+        memo = analysis.invoke()
+        save_memo(indicator, geograpahic_level, memo, docs_path)
 
         context = {
             "form": form,
@@ -256,6 +268,7 @@ def dataandvisualize(request):
             "subgroup_chart_data": subgroup_chart_data,
             "paths_titles": heatmap_info,
             "subgroup_form": subgroup_form,
+            "memo": memo,
         }
         return render(request, "dataandvisualize.html", context)
 

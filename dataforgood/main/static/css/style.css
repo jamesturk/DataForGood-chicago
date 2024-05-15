@@ -229,6 +229,9 @@ footer p {
     text-align: center;
 }
 
+.community-list {
+    text-transform: capitalize;
+}
 
 
 

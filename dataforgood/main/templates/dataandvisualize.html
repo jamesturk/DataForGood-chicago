@@ -1,5 +1,4 @@
 {% load static %}
-
 <html>
 
     <head>
@@ -42,7 +41,17 @@
                 <script>
                     $(document).ready(function() {
                         $('#id_geographic_level').select2();
-                    });
+                        });
+                        function capitalizeText(text) {
+                            return text.toLowerCase().replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
+                        }
+                        
+                        document.addEventListener('DOMContentLoaded', function() {
+                            const labels = document.querySelectorAll('#community-list label');
+                            labels.forEach(function(label) {
+                                label.textContent = capitalizeText(label.textContent);
+                            });
+                        });
                 </script>
         
                 <div id="search-container">
@@ -325,7 +334,7 @@
             };
         </script>
 
-        <div class="hidden-section">
+        <div class="content">
             <div class="maintable" id="table">
                 <h3>{{ table_title }}</h3>
                 <table class="table1" border="1" id="main-table">

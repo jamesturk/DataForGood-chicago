@@ -20,7 +20,7 @@
             </ul>
         </nav>
     </header>
-    
+
     <body>
         <div class="instructions">
             <h2>Socio-economic Indicators Data Portal and Dashboard</h2>
@@ -227,13 +227,13 @@
                 }
             }
         </script>
-        
+
         <div>
             <button id="toggle-main-view">Switch Axes</button>
             <button id="download-main-chart">Download Chart</button>
         </div>
         <div id="chart-container"></div>
-        
+
         <script src="https://code.highcharts.com/highcharts.js"></script>
         <script src="https://code.highcharts.com/modules/exporting.js"></script>
         <script>
@@ -241,12 +241,12 @@
                 var chartData = {{ chart_data|safe }};
                 var currentView = 'category'; // Initialize the current view to 'category'
                 var chart; // Declare the chart variable
-        
+
                 function updateMainChart() {
                     var categories = chartData.categories;
                     var series = chartData.series;
                     var seriesData;
-        
+
                     if (currentView === 'category') {
                         seriesData = series;
                     } else {
@@ -254,14 +254,14 @@
                             var categoryData = series.map(function(serie) {
                                 return serie.data[index];
                             });
-        
+
                             return {
                                 name: category,
                                 data: categoryData
                             };
                         });
                     }
-        
+
                     var chartOptions = {
                         chart: {
                             type: 'bar'
@@ -290,20 +290,20 @@
                         },
                         series: seriesData
                     };
-        
+
                     if (chart) {
                         chart.destroy();
                     }
                     chart = Highcharts.chart('chart-container', chartOptions);
                 }
-        
+
                 updateMainChart();
-        
+
                 document.getElementById('toggle-main-view').addEventListener('click', function() {
                     currentView = currentView === 'category' ? 'series' : 'category';
                     updateMainChart();
                 });
-        
+
                 document.getElementById('download-main-chart').addEventListener('click', function() {
                     chart.exportChart({
                         type: 'image/png',
@@ -312,7 +312,7 @@
                 });
             });
         </script>
-        
+
         <div class="map-container">
             {% for item in paths_titles %}
                 <div style="margin-bottom: 20px;">
@@ -322,7 +322,7 @@
                     </div>
                 </div>
             {% endfor %}
-        </div>  
+        </div>
 
         <style>
             .iframe-wrapper {
@@ -413,7 +413,7 @@
             $(document).ready(function() {
                 var multiYearSubtableField = {{ multi_year_subtable_field|safe }};
                 var subgroupChartData = {{ subgroup_chart_data|safe }};
-                var currentView = 'tract'; 
+                var currentView = 'tract';
 
                 function updateSubgroupTable(year) {
                     var subtableData = multiYearSubtableField[year];
@@ -537,7 +537,7 @@
                     var subtableData = multiYearSubtableField[selectedYear];
                     updateChart(selectedYear, subtableData);
                 });
-                
+
                 $('#download-subtable-chart').click(function() {
                     var chart = Highcharts.charts[1];
                     chart.exportChart({
@@ -558,7 +558,7 @@
                 <button>Download Memo</button>
             </a>
         {% endif %}
-        
+
     </body>
 </body>
 </html>

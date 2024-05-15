@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import CensusTracts, ContractRent_Main, TractZipCode
+from .models import CensusTracts, TractZipCode
 
 # from .models2 import *
 from .utils import *
@@ -30,7 +30,7 @@ PERIOD_CHOICES = [
     ("2015-2019", "2015-2019"),
     ("2016-2020", "2016-2020"),
     ("2017-2021", "2017-2021"),
-    ("2018-2022", "2018-2022")
+    ("2018-2022", "2018-2022"),
 ]
 
 # Indicator Choices
@@ -74,10 +74,7 @@ POPULATION_CHOICES = [
     ("Median Age", "Median Age"),
 ]
 
-YES_NO_CHOICE = [
-    ('No', 'No'),
-    ('Yes', 'Yes')
-]
+YES_NO_CHOICE = [("No", "No"), ("Yes", "Yes")]
 
 # Indicator chocies for each category
 category_to_indicators = {

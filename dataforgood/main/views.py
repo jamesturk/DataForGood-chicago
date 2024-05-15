@@ -1,10 +1,10 @@
 import os
 import uuid
 
-import folium
 import environ
-import numpy as np
+import folium
 import geopandas as gpd
+import numpy as np
 import pandas as pd
 from django.shortcuts import render
 from django.template.defaulttags import register
@@ -13,7 +13,14 @@ from django.views.decorators.csrf import csrf_protect
 from dataforgood.settings import BASE_DIR
 
 from .forms import SearchForm, SubgroupForm
-from .utils import create_subgroup_tables, create_table, create_table_title, WriteMemo, save_memo, INDICATOR_UNIT_MAPPING
+from .utils import (
+    INDICATOR_UNIT_MAPPING,
+    WriteMemo,
+    create_subgroup_tables,
+    create_table,
+    create_table_title,
+    save_memo,
+)
 
 
 communityshape_path = os.path.join(BASE_DIR, "main/communityarea")
@@ -151,9 +158,10 @@ def dataandvisualize(request):
         for year in years:
             year_dic = {}
             for column in heatmap_data.columns[1:]:
-                heatmap_data[column] = heatmap_data[
-                    column].apply(lambda x: int(x) if x != 'NA' else np.nan)
-            
+                heatmap_data[column] = heatmap_data[column].apply(
+                    lambda x: int(x) if x != "NA" else np.nan
+                )
+
             if geograpahic_level != "City of Chicago":
                 if geograpahic_level == "Community":
                     heatmap_data.iloc[:, 0] = heatmap_data.iloc[
@@ -202,7 +210,7 @@ def dataandvisualize(request):
                     legend_name=units,
                     smooth_factor=0,
                     nan_fill_color="grey",
-                    nan_fill_opacity=0.4
+                    nan_fill_opacity=0.4,
                 ).add_to(mymap)
 
                 def style_function(x):
@@ -250,16 +258,17 @@ def dataandvisualize(request):
                 name = "heatmap_{}".format(uuid.uuid4())
                 map_file_path = "{}/{}.html".format(html_path, name)
                 mymap.save(map_file_path)
-                year_dic['title'] = title
-                year_dic['path'] = "maps/{}.html".format(name)
-                year_dic['year'] = year
+                year_dic["title"] = title
+                year_dic["path"] = "maps/{}.html".format(name)
+                year_dic["year"] = year
                 heatmap_info.append(year_dic)
 
         if generate_memo == "Yes":
-        
             # Writing and saving memo about the data
             chart_descr = heatmap_data.describe()
-            analysis = WriteMemo(indicator, geograpahic_level, field, chart_descr, open_ai_key)
+            analysis = WriteMemo(
+                indicator, geograpahic_level, field, chart_descr, open_ai_key
+            )
             memo = analysis.invoke()
             memo_path = save_memo(indicator, geograpahic_level, memo, docs_path)
 

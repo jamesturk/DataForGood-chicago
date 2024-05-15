@@ -21,8 +21,9 @@ from django.views.generic.base import RedirectView
 
 urlpatterns = [
     path(
-        "", RedirectView.as_view(url="/main/aboutus", permanent=False)
-        #"", RedirectView.as_view(url="/admin", permanent=False)
+        "",
+        RedirectView.as_view(url="/main/aboutus", permanent=False)
+        # "", RedirectView.as_view(url="/admin", permanent=False)
     ),  # Temporary redirect to /main/aboutus [yueyue changed]
     path("main/", include("main.urls")),
     path("admin/", admin.site.urls),

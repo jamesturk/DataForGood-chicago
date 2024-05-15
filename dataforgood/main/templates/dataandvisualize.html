@@ -1,5 +1,5 @@
 {% load static %}
-
+<!DOCTYPE html>
 <html>
 
     <head>
@@ -8,7 +8,6 @@
         <title>Data & Visualize </title>
         <link rel="stylesheet" href="{% static 'css/style.css' %}">
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
         <script src="https://code.highcharts.com/highcharts.js"></script>
         <script src="https://code.highcharts.com/modules/exporting.js"></script>
     </head>
@@ -40,32 +39,47 @@
             </ul>
         </div>
         <div class="query-form">
-
             <form class="SearchForm" method="GET" enctype="multipart/form-data">
                 {% csrf_token %}
-
+        
                 <p>{{ form.geographic_level.label_tag }}{{ form.geographic_level }}</p>
                 <script>
                     $(document).ready(function() {
-                        $('#id_geographic_level').select2();
+                        $('#id_geographic_level').change(function() {
+                            var selectedValue = $(this).val();
+                            if (selectedValue === 'Community') {
+                                $('#community_field').show();
+                                $('#tract_field').hide();
+                                $('#zipcode_field').hide();
+                            } else if (selectedValue === 'Zipcode') {
+                                $('#community_field').hide();
+                                $('#tract_field').hide();
+                                $('#zipcode_field').show();
+                            } else if (selectedValue === 'Tract') {
+                                $('#community_field').hide();
+                                $('#tract_field').show();
+                                $('#zipcode_field').hide();
+                            } else {
+                                $('#community_field').hide();
+                                $('#tract_field').hide();
+                                $('#zipcode_field').hide();
+                            }
                         });
+                
                         function capitalizeText(text) {
                             return text.toLowerCase().replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
                         }
-
+                
                         document.addEventListener('DOMContentLoaded', function() {
                             const labels = document.querySelectorAll('#community-list label');
                             labels.forEach(function(label) {
                                 label.textContent = capitalizeText(label.textContent);
                             });
                         });
+                    });
                 </script>
-
-                <div id="search-container">
-                    <input type="text" id="search-input" placeholder="Search area of interest">
-                </div>
-
-                <div class="scrollable-checkbox-list" id="tract_field">
+        
+                <div class="scrollable-checkbox-list" id="tract_field" style="display: none;">
                     <input type="checkbox" id="select_all_tract" onclick="toggleTractSelection(this)">
                     <label for="select_all_tract">Select All/Remove All</label>
                     <div id="tract-list">
@@ -77,8 +91,8 @@
                         {% endfor %}
                     </div>
                 </div>
-
-                <div class="scrollable-checkbox-list" id="zipcode_field">
+        
+                <div class="scrollable-checkbox-list" id="zipcode_field" style="display: none;">
                     <input type="checkbox" id="select_all_zipcode" onclick="toggleZipcodeSelection(this)">
                     <label for="select_all_zipcode">Select All/Remove All</label>
                     <div id="zipcode-list">
@@ -90,8 +104,8 @@
                         {% endfor %}
                     </div>
                 </div>
-
-                <div class="scrollable-checkbox-list" id="community_field">
+        
+                <div class="scrollable-checkbox-list" id="community_field" style="display: none;">
                     <div id="community-list">
                         {% for checkbox in form.community %}
                             <div class="checkbox">
@@ -340,7 +354,7 @@
             };
         </script>
 
-        <div class="hidden" id="hidden">
+        <div class="content">
             <div class="maintable" id="table">
                 <h3>{{ table_title }}</h3>
                 <table class="table1" border="1" id="main-table">
@@ -791,12 +805,17 @@
                 </a>
             {% endif %}
         </div>
-        <script>
-            document.querySelector('.SearchForm').addEventListener('submit', function(event) {
+        <!-- <script>
+            document.addEventListener('DOMContentLoaded', function() {
+              document.querySelector('.SearchForm').addEventListener('submit', function(event) {
                 event.preventDefault();
-                document.querySelector('.hidden').classList.remove('hidden');
+                var hiddenElement = document.querySelector('.hidden');
+                if (hiddenElement) {
+                  hiddenElement.classList.remove('hidden');
+                }
+              });
             });
-        </script>
+          </script> -->
 
 </body>
 </html>

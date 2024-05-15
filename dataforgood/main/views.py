@@ -113,13 +113,13 @@ def dataandvisualize(request):
             geograpahic_level, geographic_unit, indicator, year
         )
 
-        print("### MAIN TABLE ###")
-        print("Header:", field["headers"])
-        print("Rows:", field["rows"])
+        # print("### MAIN TABLE ###")
+        # print("Header:", field["headers"])
+        # print("Rows:", field["rows"])
 
-        print("### SUBGROUP TABLES DICTIONARY ###")
-        for year, dct in multi_year_subtable_field.items():
-            print(year, dct)
+        # print("### SUBGROUP TABLES DICTIONARY ###")
+        # for year, dct in multi_year_subtable_field.items():
+        #     print(year, dct)
         # Prepare data for the main chart
         chart_data = {
             "categories": field["headers"][1:],  # Years
@@ -159,7 +159,7 @@ def dataandvisualize(request):
             year_dic = {}
             for column in heatmap_data.columns[1:]:
                 heatmap_data[column] = heatmap_data[column].apply(
-                    lambda x: int(x) if x != "NA" else np.nan
+                    lambda x: float(x) if x != "NA" else np.nan
                 )
 
             if geograpahic_level != "City of Chicago":

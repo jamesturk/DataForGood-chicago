@@ -1,4 +1,5 @@
 {% load static %}
+
 <html>
 
     <head>
@@ -7,6 +8,7 @@
         <title>Data & Visualize </title>
         <link rel="stylesheet" href="{% static 'css/style.css' %}">
     </head>
+
     <header>
         <nav class="navbar">
             <div class="logo">Data For Good - Chicago</div>
@@ -35,8 +37,10 @@
         </div>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <div class="query-form">
+
             <form class="SearchForm" method="GET" enctype="multipart/form-data">
                 {% csrf_token %}
+
                 <p>{{ form.geographic_level.label_tag }}{{ form.geographic_level }}</p>
                 <script>
                     $(document).ready(function() {
@@ -94,7 +98,6 @@
                         {% endfor %}
                     </div>
                 </div>
-
                 <p>{{ form.category.label_tag }}{{ form.category }}</p>
                 <p>{{ form.indicator.label_tag }}</p>
                 <div  id="economic_field" style="display:none;">{{ form.economic_indicators }}</div>
@@ -334,7 +337,7 @@
             };
         </script>
 
-        <div class="content">
+        <div class="right-section" id="right-section">
             <div class="maintable" id="table">
                 <h3>{{ table_title }}</h3>
                 <table class="table1" border="1" id="main-table">
@@ -356,6 +359,8 @@
                     <button onclick="downloadTableAsCSV()">Download as CSV</button>
                 </div>
             </div>
+
+
             <script>
                 function downloadTableAsExcel() {
                     var table = document.getElementById("main-table");
@@ -397,13 +402,13 @@
                     }
                 }
             </script>
+
             <div>
                 <button id="toggle-main-view">Switch Axes</button>
                 <button id="download-main-chart">Download Chart</button>
             </div>
 
             <div id="chart-container"></div>
-
             <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
             <script src="https://code.highcharts.com/highcharts.js"></script>
             <script src="https://code.highcharts.com/modules/exporting.js"></script>
@@ -795,5 +800,6 @@
                 </a>
             {% endif %}
         </div>
+
 </body>
 </html>

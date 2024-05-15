@@ -1,27 +1,12 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-    <html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data For Good - Chicago</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Data & Visualize </title>
-        <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    </head>
-
-<body>
-
-    <header>
-        <nav class="navbar">
-            <div class="logo">Data For Good - Chicago</div>
-            <ul class="nav-links">
-                <li><a href="{% url 'aboutus' %}">About Us</a></li>
-                <li><a href="{% url 'dataandvisualize' %}">Data & Visualize</a></li>
-                <li><a href="{% url 'resources' %}">Resource</a></li>
-            </ul>
-        </nav>
-    </header>
     <style>
         .arcgis-app-container {
             position: relative;
@@ -45,6 +30,16 @@
     </style>
 </head>
 <body>
+    <header>
+        <nav class="navbar">
+            <div class="logo">Data For Good - Chicago</div>
+            <ul class="nav-links">
+                <li><a href="{% url 'aboutus' %}">About Us</a></li>
+                <li><a href="{% url 'dataandvisualize' %}">Data & Visualize</a></li>
+                <li><a href="{% url 'resources' %}">Resource</a></li>
+            </ul>
+        </nav>
+    </header>
 
     <main>
         <h1 class="city-title">City Resources</h1>

@@ -7,6 +7,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Data & Visualize </title>
         <link rel="stylesheet" href="{% static 'css/style.css' %}">
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+        <script src="https://code.highcharts.com/highcharts.js"></script>
+        <script src="https://code.highcharts.com/modules/exporting.js"></script>
     </head>
 
     <header>
@@ -35,7 +39,6 @@
                 <li>Detailed memo based on selected criterias to aid in decision-making.</li>
             </ul>
         </div>
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <div class="query-form">
 
             <form class="SearchForm" method="GET" enctype="multipart/form-data">
@@ -337,7 +340,7 @@
             };
         </script>
 
-        <div class="right-section" id="right-section">
+        <div class="hidden" id="hidden">
             <div class="maintable" id="table">
                 <h3>{{ table_title }}</h3>
                 <table class="table1" border="1" id="main-table">
@@ -409,9 +412,6 @@
             </div>
 
             <div id="chart-container"></div>
-            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-            <script src="https://code.highcharts.com/highcharts.js"></script>
-            <script src="https://code.highcharts.com/modules/exporting.js"></script>
             <script>
             document.addEventListener('DOMContentLoaded', function () {
                 var chartData = {{ chart_data|safe }};
@@ -512,13 +512,7 @@
 
             <div id="subtable-chart-container"></div>
 
-            <script src="https://code.highcharts.com/highcharts.js"></script>
-            <script src="https://code.highcharts.com/modules/exporting.js"></script>
             <script>
-                document.getElementById('search-form').addEventListener('submit', function(event) {
-                document.getElementById('chart-buttons').classList.remove('hidden');
-            });
-
                 document.addEventListener('DOMContentLoaded', function () {
                     var chartData = {{ chart_data|safe }};
                     var currentView = 'category'; // Initialize the current view to 'category'
@@ -647,9 +641,6 @@
             </div>
 
             <div id="subtable-chart-container"></div>
-            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-            <script src="https://code.highcharts.com/highcharts.js"></script>
-            <script src="https://code.highcharts.com/modules/exporting.js"></script>
             <script>
                 $(document).ready(function() {
                     var multiYearSubtableField = {{ multi_year_subtable_field|safe }};
@@ -800,6 +791,12 @@
                 </a>
             {% endif %}
         </div>
+        <script>
+            document.querySelector('.SearchForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                document.querySelector('.hidden').classList.remove('hidden');
+            });
+        </script>
 
 </body>
 </html>

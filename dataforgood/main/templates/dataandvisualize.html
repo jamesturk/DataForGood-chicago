@@ -20,7 +20,7 @@
             </ul>
         </nav>
     </header>
-
+    
     <body>
         <div class="instructions">
             <h2>Socio-economic Indicators Data Portal and Dashboard</h2>
@@ -37,22 +37,63 @@
                 <li>Detailed memo based on selected criterias to aid in decision-making.</li>
             </ul>
         </div>
+
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <div class="query-form">
-            <h4> Search Database </h4>
-            <form class="SearchForm" method="GET", enctype="multipart/form-data">
+            <h4>Search Database</h4>
+            <form class="SearchForm" method="GET" enctype="multipart/form-data">
                 {% csrf_token %}
                 <p>{{ form.geographic_level.label_tag }}{{ form.geographic_level }}</p>
+                <script>
+                    $(document).ready(function() {
+                        $('#id_geographic_level').select2();
+                    });
+                </script>
+        
+                <div id="search-container" style="display: none;">
+                    <input type="text" id="search-input" placeholder="Search area of interest">
+                </div>
+        
                 <div class="scrollable-checkbox-list" id="tract_field">
                     <input type="checkbox" id="select_all_tract" onclick="toggleTractSelection(this)">
                     <label for="select_all_tract">Select All/Remove All</label>
-                    {{ form.tract }}
+                    <button type="button" class="toggle-list" data-target="tract-list">Area of Interests</button>
+                    <div id="tract-list" style="display: none;">
+                        {% for checkbox in form.tract %}
+                            <div class="checkbox">
+                                {{ checkbox.tag }}
+                                <label for="{{ checkbox.id_for_label }}">{{ checkbox.choice_label }}</label>
+                            </div>
+                        {% endfor %}
+                    </div>
                 </div>
+                
                 <div class="scrollable-checkbox-list" id="zipcode_field">
                     <input type="checkbox" id="select_all_zipcode" onclick="toggleZipcodeSelection(this)">
                     <label for="select_all_zipcode">Select All/Remove All</label>
-                    {{ form.zipcode }}
+                    <button type="button" class="toggle-list" data-target="zipcode-list">Area of Interests</button>
+                    <div id="zipcode-list" style="display: none;">
+                        {% for checkbox in form.zipcode %}
+                            <div class="checkbox">
+                                {{ checkbox.tag }}
+                                <label for="{{ checkbox.id_for_label }}">{{ checkbox.choice_label }}</label>
+                            </div>
+                        {% endfor %}
+                    </div>
                 </div>
-                <div class="scrollable-checkbox-list" id="community_field">{{ form.community }}</div>
+                
+                <div class="scrollable-checkbox-list" id="community_field">
+                    <button type="button" class="toggle-list" data-target="community-list">Area of Interests</button>
+                    <div id="community-list" style="display: none;">
+                        {% for checkbox in form.community %}
+                            <div class="checkbox">
+                                {{ checkbox.tag }}
+                                <label for="{{ checkbox.id_for_label }}">{{ checkbox.choice_label }}</label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
                 <p>{{ form.category.label_tag }}{{ form.category }}</p>
                 <p>{{ form.indicator.label_tag }}</p>
                 <div  id="economic_field" style="display:none;">{{ form.economic_indicators }}</div>
@@ -76,6 +117,7 @@
                     {{ form.generate_memo }}
                 </div>
             <button type="submit"> Submit </button>
+            <button type="reset">Clear Form</button>
             </form>
         </div>
 
@@ -161,6 +203,56 @@
                     checkboxes[i].checked = source.checked;
                 }
             };
+
+            $(document).ready(function() {
+                // Show/hide search input based on selected geographic level
+                $('#id_geographic_level').change(function() {
+                    var selectedValue = $(this).val();
+                    if (selectedValue === 'Tract' || selectedValue === 'Zipcode' || selectedValue === 'Community') {
+                        $('#search-container').show();
+                    } else {
+                        $('#search-container').hide();
+                    }
+                });
+
+                $('#search-input').on('input', function() {
+                    var searchTerm = $(this).val().toLowerCase();
+                    var selectedValue = $('#id_geographic_level').val();
+
+                    if (selectedValue === 'Tract') {
+                        $('#tract-list .checkbox').each(function() {
+                            var label = $(this).find('label').text().toLowerCase();
+                            if (label.includes(searchTerm)) {
+                                $(this).show();
+                            } else {
+                                $(this).hide();
+                            }
+                        });
+                    } else if (selectedValue === 'Zipcode') {
+                        $('#zipcode-list .checkbox').each(function() {
+                            var label = $(this).find('label').text().toLowerCase();
+                            if (label.includes(searchTerm)) {
+                                $(this).show();
+                            } else {
+                                $(this).hide();
+                            }
+                        });
+                    } else if (selectedValue === 'Community') {
+                        $('#community-list .checkbox').each(function() {
+                            var label = $(this).find('label').text().toLowerCase();
+                            if (label.includes(searchTerm)) {
+                                $(this).show();
+                            } else {
+                                $(this).hide();
+                            }
+                        });
+                    }
+                });
+                $('.toggle-list').click(function() {
+                    var target = $(this).data('target');
+                    $('#' + target).toggle();
+                });
+            });
         </script>
 
         <div class="maintable" id="table">
@@ -227,13 +319,13 @@
                 }
             }
         </script>
-
+        
         <div>
             <button id="toggle-main-view">Switch Axes</button>
             <button id="download-main-chart">Download Chart</button>
         </div>
         <div id="chart-container"></div>
-
+        
         <script src="https://code.highcharts.com/highcharts.js"></script>
         <script src="https://code.highcharts.com/modules/exporting.js"></script>
         <script>
@@ -241,12 +333,12 @@
                 var chartData = {{ chart_data|safe }};
                 var currentView = 'category'; // Initialize the current view to 'category'
                 var chart; // Declare the chart variable
-
+        
                 function updateMainChart() {
                     var categories = chartData.categories;
                     var series = chartData.series;
                     var seriesData;
-
+        
                     if (currentView === 'category') {
                         seriesData = series;
                     } else {
@@ -254,14 +346,14 @@
                             var categoryData = series.map(function(serie) {
                                 return serie.data[index];
                             });
-
+        
                             return {
                                 name: category,
                                 data: categoryData
                             };
                         });
                     }
-
+        
                     var chartOptions = {
                         chart: {
                             type: 'bar'
@@ -290,20 +382,20 @@
                         },
                         series: seriesData
                     };
-
+        
                     if (chart) {
                         chart.destroy();
                     }
                     chart = Highcharts.chart('chart-container', chartOptions);
                 }
-
+        
                 updateMainChart();
-
+        
                 document.getElementById('toggle-main-view').addEventListener('click', function() {
                     currentView = currentView === 'category' ? 'series' : 'category';
                     updateMainChart();
                 });
-
+        
                 document.getElementById('download-main-chart').addEventListener('click', function() {
                     chart.exportChart({
                         type: 'image/png',
@@ -312,7 +404,7 @@
                 });
             });
         </script>
-
+        
         <div class="map-container">
             {% for item in paths_titles %}
                 <div style="margin-bottom: 20px;">
@@ -322,7 +414,7 @@
                     </div>
                 </div>
             {% endfor %}
-        </div>
+        </div>  
 
         <style>
             .iframe-wrapper {
@@ -413,7 +505,7 @@
             $(document).ready(function() {
                 var multiYearSubtableField = {{ multi_year_subtable_field|safe }};
                 var subgroupChartData = {{ subgroup_chart_data|safe }};
-                var currentView = 'tract';
+                var currentView = 'tract'; 
 
                 function updateSubgroupTable(year) {
                     var subtableData = multiYearSubtableField[year];
@@ -537,7 +629,7 @@
                     var subtableData = multiYearSubtableField[selectedYear];
                     updateChart(selectedYear, subtableData);
                 });
-
+                
                 $('#download-subtable-chart').click(function() {
                     var chart = Highcharts.charts[1];
                     chart.exportChart({
@@ -558,7 +650,7 @@
                 <button>Download Memo</button>
             </a>
         {% endif %}
-
+        
     </body>
 </body>
 </html>

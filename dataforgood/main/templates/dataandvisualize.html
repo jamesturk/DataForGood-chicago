@@ -8,9 +8,6 @@
         <title>Data & Visualize </title>
         <link rel="stylesheet" href="{% static 'css/style.css' %}">
     </head>
-
-<body>
-
     <header>
         <nav class="navbar">
             <div class="logo">Data For Good - Chicago</div>
@@ -21,27 +18,74 @@
             </ul>
         </nav>
     </header>
+<body>
+        <div class="instructions">
+            <h2>Socio-economic Indicators Data Portal and Dashboard</h2>
+            <h2>Explore the Indicators</h2>
+            <p>The Socio-economic Indicators Data and Visualizations Portal and Dashboard offers a comprehensive platform for users to interact with various data from Census. It enables querying of different indicators based on geography (City of Chicago, Neighborhood, Zip Code, and Tract), along with the ability to visualize comparisons for each region, create maps to show spatial patterns, and track how these patterns evolve over time. Additionally, the portal provides detailed visualizations for selected indicators and their relevant subgroups, allowing users to gain a deeper understanding of socio-economic trends at both macro and micro levels.</p>
+            <p>
+                SELECT geographic level, category, and year through dropdowns to pick the data you'd like to retrieve, and choose whether you want to generate a memo based on your selected criterias then click Submit.
+            </p>
+            <h4>Portal Features</h4>
+            <ul>
+                <li>Interactive querying of socio-economic indicators by geography, category, and year.</li>
+                <li>Visualization of comparing the conditions of neighborhoods yearly.</li>
+                <li>Mapping functionality to view spatial patterns and their evolution.</li>
+                <li>Detailed memo based on selected criterias to aid in decision-making.</li>
+            </ul>
+        </div>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <div class="query-form">
-            <h4> Search Database </h4>
-
-            <form class="SearchForm" method="GET", enctype="multipart/form-data", id="search-form">
+            <form class="SearchForm" method="GET" enctype="multipart/form-data">
                 {% csrf_token %}
-
                 <p>{{ form.geographic_level.label_tag }}{{ form.geographic_level }}</p>
-
+                <script>
+                    $(document).ready(function() {
+                        $('#id_geographic_level').select2();
+                    });
+                </script>
+        
+                <div id="search-container">
+                    <input type="text" id="search-input" placeholder="Search area of interest">
+                </div>
+        
                 <div class="scrollable-checkbox-list" id="tract_field">
                     <input type="checkbox" id="select_all_tract" onclick="toggleTractSelection(this)">
                     <label for="select_all_tract">Select All/Remove All</label>
-                    {{ form.tract }}
+                    <div id="tract-list">
+                        {% for checkbox in form.tract %}
+                            <div class="checkbox">
+                                {{ checkbox.tag }}
+                                <label for="{{ checkbox.id_for_label }}">{{ checkbox.choice_label }}</label>
+                            </div>
+                        {% endfor %}
+                    </div>
                 </div>
-
+                
                 <div class="scrollable-checkbox-list" id="zipcode_field">
                     <input type="checkbox" id="select_all_zipcode" onclick="toggleZipcodeSelection(this)">
                     <label for="select_all_zipcode">Select All/Remove All</label>
-                    {{ form.zipcode }}
+                    <div id="zipcode-list">
+                        {% for checkbox in form.zipcode %}
+                            <div class="checkbox">
+                                {{ checkbox.tag }}
+                                <label for="{{ checkbox.id_for_label }}">{{ checkbox.choice_label }}</label>
+                            </div>
+                        {% endfor %}
+                    </div>
                 </div>
                 
-                <div class="scrollable-checkbox-list" id="community_field">{{ form.community }}</div>
+                <div class="scrollable-checkbox-list" id="community_field">
+                    <div id="community-list">
+                        {% for checkbox in form.community %}
+                            <div class="checkbox">
+                                {{ checkbox.tag }}
+                                <label for="{{ checkbox.id_for_label }}">{{ checkbox.choice_label }}</label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
                 <p>{{ form.category.label_tag }}{{ form.category }}</p>
                 <p>{{ form.indicator.label_tag }}</p>
                 <div  id="economic_field" style="display:none;">{{ form.economic_indicators }}</div>
@@ -65,8 +109,139 @@
                     {{ form.generate_memo }}
                 </div>
             <button type="submit"> Submit </button>
+            <button type="reset">Clear Form</button>
             </form>
         </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const geoLevelSelect = document.getElementById('id_geographic_level');
+                const tractField = document.getElementById('tract_field');
+                const zipcodeField = document.getElementById('zipcode_field');
+                const communityField = document.getElementById('community_field');
+
+                const categorySelect = document.getElementById('id_category');
+                const economicField = document.getElementById('economic_field');
+                const educationField = document.getElementById('education_field');
+                const healthField = document.getElementById('health_field');
+                const housingField = document.getElementById('housing_field');
+                const populationField = document.getElementById('population_field');
+
+
+
+                function handleGeoLevelChange() {
+                    const selectedValue = geoLevelSelect.value;
+                    // Hide all fields initially
+                    tractField.style.display = 'none';
+                    zipcodeField.style.display = 'none';
+                    communityField.style.display = 'none';
+                    // Show relevant field based on the selection
+                    if (selectedValue === 'Tract') {
+                        tractField.style.display = 'block';
+                    } else if (selectedValue === 'Zipcode') {
+                        zipcodeField.style.display = 'block';
+                    } else if (selectedValue == 'Community') {
+                        communityField.style.display = 'block';
+                    }
+                }
+                geoLevelSelect.addEventListener('change', handleGeoLevelChange);
+                handleGeoLevelChange();
+
+                function handleIndicatorChange() {
+                    const selectedValue = categorySelect.value;
+                    // Hide all fields initially
+                    economicField.style.display = 'none';
+                    educationField.style.display = 'none';
+                    healthField.style.display = 'none';
+                    housingField.style.display = 'none';
+                    populationField.style.display = 'none';
+                    // Show relevant field based on the selection
+                    if (selectedValue === 'Economic') {
+                        economicField.style.display = 'block';
+                    } else if (selectedValue === 'Education') {
+                        educationField.style.display = 'block';
+                    } else if (selectedValue === 'Health') {
+                        healthField.style.display = 'block';
+                    } else if (selectedValue == 'Housing') {
+                        housingField.style.display = 'block';
+                    } else if (selectedValue == 'Population') {
+                        populationField.style.display = 'block';
+                    }
+                }
+                categorySelect.addEventListener('change', handleIndicatorChange);
+                handleIndicatorChange();
+            });
+
+            // function to select/remove all for years
+            function toggleYearSelection(source) {
+                checkboxes = document.querySelectorAll('[name="year"]');
+                for(var i = 0, n = checkboxes.length; i < n; i++) {
+                    checkboxes[i].checked = source.checked;
+                }
+            };
+
+            // function to select/remove all for tracts
+            function toggleTractSelection(source) {
+                var checkboxes = document.querySelectorAll('input[name="tract"]');
+                for (var i = 0, n = checkboxes.length; i < n; i++) {
+                    checkboxes[i].checked = source.checked;
+                }
+            };
+
+            // function to select/remove all for zipcodes
+            function toggleZipcodeSelection(source) {
+                var checkboxes = document.querySelectorAll('input[name="zipcode"]');
+                for (var i = 0, n = checkboxes.length; i < n; i++) {
+                    checkboxes[i].checked = source.checked;
+                }
+            };
+
+            $(document).ready(function() {
+                // Show/hide search input based on selected geographic level
+                $('#id_geographic_level').change(function() {
+                    var selectedValue = $(this).val();
+                    if (selectedValue === 'Tract' || selectedValue === 'Zipcode' || selectedValue === 'Community') {
+                        $('#search-container').show();
+                    } else {
+                        $('#search-container').hide();
+                    }
+                });
+
+                $('#search-input').on('input', function() {
+                    var searchTerm = $(this).val().toLowerCase();
+                    var selectedValue = $('#id_geographic_level').val();
+
+                    if (selectedValue === 'Tract') {
+                        $('#tract-list .checkbox').each(function() {
+                            var label = $(this).find('label').text().toLowerCase();
+                            if (label.includes(searchTerm)) {
+                                $(this).show();
+                            } else {
+                                $(this).hide();
+                            }
+                        });
+                    } else if (selectedValue === 'Zipcode') {
+                        $('#zipcode-list .checkbox').each(function() {
+                            var label = $(this).find('label').text().toLowerCase();
+                            if (label.includes(searchTerm)) {
+                                $(this).show();
+                            } else {
+                                $(this).hide();
+                            }
+                        });
+                    } else if (selectedValue === 'Community') {
+                        $('#community-list .checkbox').each(function() {
+                            var label = $(this).find('label').text().toLowerCase();
+                            if (label.includes(searchTerm)) {
+                                $(this).show();
+                            } else {
+                                $(this).hide();
+                            }
+                        });
+                    }
+                });
+            });
+        </script>
 
         <script>
             document.addEventListener('DOMContentLoaded', function() {
@@ -150,7 +325,7 @@
             };
         </script>
 
-        <div class="right-section" id="right-section">
+        <div class="hidden-section">
             <div class="maintable" id="table">
                 <h3>{{ table_title }}</h3>
                 <table class="table1" border="1" id="main-table">
@@ -172,8 +347,6 @@
                     <button onclick="downloadTableAsCSV()">Download as CSV</button>
                 </div>
             </div>
-
-            
             <script>
                 function downloadTableAsExcel() {
                     var table = document.getElementById("main-table");
@@ -215,13 +388,82 @@
                     }
                 }
             </script>
-        
-            <div class="hidden" id="chart-buttons">
+            <div>
                 <button id="toggle-main-view">Switch Axes</button>
                 <button id="download-main-chart">Download Chart</button>
             </div>
             
             <div id="chart-container"></div>
+            
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <script src="https://code.highcharts.com/highcharts.js"></script>
+            <script src="https://code.highcharts.com/modules/exporting.js"></script>
+            <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var chartData = {{ chart_data|safe }};
+                var currentView = 'category'; // Initialize the current view to 'category'
+
+                function updateMainChart() {
+                    var categories = chartData.categories;
+                    var series = chartData.series;
+
+                    var seriesData;
+
+                    if (currentView === 'category') {
+                        seriesData = series;
+                    } else {
+                        seriesData = categories.map(function(category, index) {
+                            var categoryData = series.map(function(serie) {
+                                return serie.data[index];
+                            });
+
+                            return {
+                                name: category,
+                                data: categoryData
+                            };
+                        });
+                    }
+
+                    var chartOptions = {
+                        chart: {
+                            type: 'bar'
+                        },
+                        title: {                            
+                            text: '{{ table_title }}'
+                        },
+                        xAxis: {
+                            categories: currentView === 'category' ? categories : series.map(function(serie) {
+                                return serie.name;
+                            })
+                        },
+                        yAxis: {
+                            min: 0,
+                            title: {
+                                text: 'Value'
+                            }
+                        },
+                        legend: {
+                            reversed: true
+                        },
+                        plotOptions: {
+                            series: {
+                                stacking: 'normal'
+                            }
+                        },
+                        series: seriesData
+                    };
+
+                    Highcharts.chart('chart-container', chartOptions);
+                }
+
+                updateMainChart();
+
+                document.getElementById('toggle-main-view').addEventListener('click', function() {
+                    currentView = currentView === 'category' ? 'series' : 'category';
+                    updateMainChart();
+                });
+            });
+            </script>
 
             <div class="map-container">
                 {% for item in paths_titles %}
@@ -255,297 +497,294 @@
             </div>
 
             <div id="subtable-chart-container"></div>
-
-        </div>
-        
-        <script src="https://code.highcharts.com/highcharts.js"></script>
-        <script src="https://code.highcharts.com/modules/exporting.js"></script>
-        <script>
-            document.getElementById('search-form').addEventListener('submit', function(event) {
-            document.getElementById('chart-buttons').classList.remove('hidden');
-        });
-
-            document.addEventListener('DOMContentLoaded', function () {
-                var chartData = {{ chart_data|safe }};
-                var currentView = 'category'; // Initialize the current view to 'category'
-                var chart; // Declare the chart variable
-        
-                function updateMainChart() {
-                    var categories = chartData.categories;
-                    var series = chartData.series;
-                    var seriesData;
-        
-                    if (currentView === 'category') {
-                        seriesData = series;
-                    } else {
-                        seriesData = categories.map(function(category, index) {
-                            var categoryData = series.map(function(serie) {
-                                return serie.data[index];
-                            });
-        
-                            return {
-                                name: category,
-                                data: categoryData
-                            };
-                        });
-                    }
-        
-                    var chartOptions = {
-                        chart: {
-                            type: 'bar'
-                        },
-                        title: {
-                            text: '{{ table_title }}',
-                            style: {
-                                fontFamily: 'Arial, sans-serif', // Change the font family
-                                fontSize: '25px' // Change the font size
-                            }
-                        },
-                        xAxis: {
-                            categories: currentView === 'category' ? categories : series.map(function(serie) {
-                                return serie.name;
-                            })
-                        },
-                        yAxis: {
-                            min: 0,
-                            title: {
-                                text: 'Value'
-                            }
-                        },
-                        legend: {
-                            reversed: true
-                        },
-                        plotOptions: {
-                            series: {
-                                stacking: 'normal'
-                            }
-                        },
-                        series: seriesData
-                    };
-        
-                    if (chart) {
-                        chart.destroy();
-                    }
-                    chart = Highcharts.chart('chart-container', chartOptions);
-                }
-        
-                updateMainChart();
-        
-                document.getElementById('toggle-main-view').addEventListener('click', function() {
-                    currentView = currentView === 'category' ? 'series' : 'category';
-                    updateMainChart();
-                });
-        
-                document.getElementById('download-main-chart').addEventListener('click', function() {
-                    chart.exportChart({
-                        type: 'image/png',
-                        filename: 'main-chart'
-                    });
-                });
+            
+            <script src="https://code.highcharts.com/highcharts.js"></script>
+            <script src="https://code.highcharts.com/modules/exporting.js"></script>
+            <script>
+                document.getElementById('search-form').addEventListener('submit', function(event) {
+                document.getElementById('chart-buttons').classList.remove('hidden');
             });
-        </script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
-        <script>
-            function downloadSubtableAsExcel() {
-                var table = document.getElementById("subtable");
-                var wb = XLSX.utils.table_to_book(table);
-                XLSX.writeFile(wb, "subtable.xlsx");
-            }
 
-            function downloadSubtableAsCSV() {
-                var table = document.getElementById("subtable");
-                var csv = [];
-                var rows = table.querySelectorAll("tr");
-
-                for (var i = 0; i < rows.length; i++) {
-                    var row = [], cols = rows[i].querySelectorAll("td, th");
-
-                    for (var j = 0; j < cols.length; j++) {
-                        row.push(cols[j].innerText);
-                    }
-
-                    csv.push(row.join(","));
-                }
-
-                var csvString = csv.join("\n");
-                var blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
-
-                if (navigator.msSaveBlob) { // IE 10+
-                    navigator.msSaveBlob(blob, "subtable.csv");
-                } else {
-                    var link = document.createElement("a");
-                    if (link.download !== undefined) {
-                        var url = URL.createObjectURL(blob);
-                        link.setAttribute("href", url);
-                        link.setAttribute("download", "subtable.csv");
-                        link.style.visibility = 'hidden';
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                    }
-                }
-            }
-        </script>
-
-        <div>
-            <button id="toggle-view">Switch Axes</button>
-            <button id="download-subtable-chart">Download Chart</button>
-        </div>
-
-        <div id="subtable-chart-container"></div>
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script src="https://code.highcharts.com/highcharts.js"></script>
-        <script src="https://code.highcharts.com/modules/exporting.js"></script>
-        <script>
-            $(document).ready(function() {
-                var multiYearSubtableField = {{ multi_year_subtable_field|safe }};
-                var subgroupChartData = {{ subgroup_chart_data|safe }};
-                var currentView = 'tract'; 
-
-                function updateSubgroupTable(year) {
-                    var subtableData = multiYearSubtableField[year];
-                    $('#subtable-year').text(year);
-                    $('#subtable-headers').empty();
-                    $('#subtable-rows').empty();
-
-                    subtableData.headers.forEach(function(header) {
-                        $('#subtable-headers').append('<th>' + header + '</th>');
-                    });
-
-                    subtableData.rows.forEach(function(row) {
-                        var rowHtml = '<tr>';
-                        row.forEach(function(value) {
-                            rowHtml += '<td>' + value + '</td>';
-                        });
-                        rowHtml += '</tr>';
-                        $('#subtable-rows').append(rowHtml);
-                    });
-
-                    // Update the subtable chart based on the current view
-                    updateChart(year, subtableData);
-                }
-
-                function updateChart(year, subtableData) {
-                    var tractCategories = subtableData.rows.map(function(row) {
-                        return row[0];
-                    });
-
-                    var raceGroups = subtableData.headers.slice(1);
-
-                    var seriesData;
-
-                    if (currentView === 'tract') {
-                        seriesData = raceGroups.map(function(raceGroup, index) {
-                            return {
-                                name: raceGroup,
-                                data: subtableData.rows.map(function(row) {
-                                    return parseFloat(row[index + 1]) || null;
-                                })
-                            };
-                        });
-                    } else {
-                        seriesData = tractCategories.map(function(tract, index) {
-                            var tractData = subtableData.rows[index].slice(1).map(function(value) {
-                                return parseFloat(value) || null;
+                document.addEventListener('DOMContentLoaded', function () {
+                    var chartData = {{ chart_data|safe }};
+                    var currentView = 'category'; // Initialize the current view to 'category'
+                    var chart; // Declare the chart variable
+            
+                    function updateMainChart() {
+                        var categories = chartData.categories;
+                        var series = chartData.series;
+                        var seriesData;
+            
+                        if (currentView === 'category') {
+                            seriesData = series;
+                        } else {
+                            seriesData = categories.map(function(category, index) {
+                                var categoryData = series.map(function(serie) {
+                                    return serie.data[index];
+                                });
+            
+                                return {
+                                    name: category,
+                                    data: categoryData
+                                };
                             });
-
-                            return {
-                                name: tract,
-                                data: tractData
-                            };
-                        });
-                    }
-
-                    var chartOptions = {
-                        chart: {
-                            type: 'column'
-                        },
-                        title: {
-                            text: 'Subgroup Data for ' + year
-                        },
-                        xAxis: {
-                            categories: currentView === 'tract' ? tractCategories : raceGroups
-                        },
-                        yAxis: {
-                            min: 0,
-                            title: {
-                                text: 'Value'
+                        }
+            
+                        var chartOptions = {
+                            chart: {
+                                type: 'bar'
                             },
-                            stackLabels: {
-                                enabled: true,
+                            title: {
+                                text: '{{ table_title }}',
                                 style: {
-                                    fontWeight: 'bold',
-                                    color: ( // theme
-                                        Highcharts.defaultOptions.title.style &&
-                                        Highcharts.defaultOptions.title.style.color
-                                    ) || 'gray'
+                                    fontFamily: 'Arial, sans-serif', // Change the font family
+                                    fontSize: '25px' // Change the font size
                                 }
-                            }
-                        },
-                        legend: {
-                            align: 'right',
-                            x: -30,
-                            verticalAlign: 'top',
-                            y: 25,
-                            floating: true,
-                            backgroundColor:
-                                Highcharts.defaultOptions.legend.backgroundColor || 'white',
-                            borderColor: '#CCC',
-                            borderWidth: 1,
-                            shadow: false
-                        },
-                        tooltip: {
-                            headerFormat: '<b>{point.x}</b><br/>',
-                            pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'
-                        },
-                        plotOptions: {
-                            column: {
-                                stacking: 'normal',
-                                dataLabels: {
-                                    enabled: true
+                            },
+                            xAxis: {
+                                categories: currentView === 'category' ? categories : series.map(function(serie) {
+                                    return serie.name;
+                                })
+                            },
+                            yAxis: {
+                                min: 0,
+                                title: {
+                                    text: 'Value'
                                 }
-                            }
-                        },
-                        series: seriesData
-                    };
-
-                    Highcharts.chart('subtable-chart-container', chartOptions);
-                }
-
-                $('#subgroup-form').submit(function(event) {
-                    event.preventDefault();
-                    var selectedYear = $('#id_subgroup_year').val();
-                    updateSubgroupTable(selectedYear);
-                });
-
-                $('#toggle-view').click(function() {
-                    currentView = currentView === 'tract' ? 'raceGroup' : 'tract';
-                    var selectedYear = $('#id_subgroup_year').val();
-                    var subtableData = multiYearSubtableField[selectedYear];
-                    updateChart(selectedYear, subtableData);
-                });
-                
-                $('#download-subtable-chart').click(function() {
-                    var chart = Highcharts.charts[1];
-                    chart.exportChart({
-                        type: 'image/png',
-                        filename: 'subtable-chart'
+                            },
+                            legend: {
+                                reversed: true
+                            },
+                            plotOptions: {
+                                series: {
+                                    stacking: 'normal'
+                                }
+                            },
+                            series: seriesData
+                        };
+            
+                        if (chart) {
+                            chart.destroy();
+                        }
+                        chart = Highcharts.chart('chart-container', chartOptions);
+                    }
+            
+                    updateMainChart();
+            
+                    document.getElementById('toggle-main-view').addEventListener('click', function() {
+                        currentView = currentView === 'category' ? 'series' : 'category';
+                        updateMainChart();
+                    });
+            
+                    document.getElementById('download-main-chart').addEventListener('click', function() {
+                        chart.exportChart({
+                            type: 'image/png',
+                            filename: 'main-chart'
+                        });
                     });
                 });
-            });
-        </script>
-        <div>
-            <h3>Generated Memo:</h3>
-            <p><strong>This memo was generated using OpenAI's GPT 3.5-Turbo model. While efforts have been made to ensure accuracy, please review and verify the content carefully.</strong></p>
-            <p style="white-space: pre-line;">{{ memo }}</p>
-        </div>
+            </script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+            <script>
+                function downloadSubtableAsExcel() {
+                    var table = document.getElementById("subtable");
+                    var wb = XLSX.utils.table_to_book(table);
+                    XLSX.writeFile(wb, "subtable.xlsx");
+                }
 
-        {% if memo_path %}
-            <a href="{{ memo_path }}" download="memo.docx">
-                <button>Download Memo</button>
-            </a>
-        {% endif %}
-        
-    
+                function downloadSubtableAsCSV() {
+                    var table = document.getElementById("subtable");
+                    var csv = [];
+                    var rows = table.querySelectorAll("tr");
+
+                    for (var i = 0; i < rows.length; i++) {
+                        var row = [], cols = rows[i].querySelectorAll("td, th");
+
+                        for (var j = 0; j < cols.length; j++) {
+                            row.push(cols[j].innerText);
+                        }
+
+                        csv.push(row.join(","));
+                    }
+
+                    var csvString = csv.join("\n");
+                    var blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
+
+                    if (navigator.msSaveBlob) { // IE 10+
+                        navigator.msSaveBlob(blob, "subtable.csv");
+                    } else {
+                        var link = document.createElement("a");
+                        if (link.download !== undefined) {
+                            var url = URL.createObjectURL(blob);
+                            link.setAttribute("href", url);
+                            link.setAttribute("download", "subtable.csv");
+                            link.style.visibility = 'hidden';
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                        }
+                    }
+                }
+            </script>
+
+            <div>
+                <button id="toggle-view">Switch Axes</button>
+                <button id="download-subtable-chart">Download Chart</button>
+            </div>
+
+            <div id="subtable-chart-container"></div>
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <script src="https://code.highcharts.com/highcharts.js"></script>
+            <script src="https://code.highcharts.com/modules/exporting.js"></script>
+            <script>
+                $(document).ready(function() {
+                    var multiYearSubtableField = {{ multi_year_subtable_field|safe }};
+                    var subgroupChartData = {{ subgroup_chart_data|safe }};
+                    var currentView = 'tract'; 
+
+                    function updateSubgroupTable(year) {
+                        var subtableData = multiYearSubtableField[year];
+                        $('#subtable-year').text(year);
+                        $('#subtable-headers').empty();
+                        $('#subtable-rows').empty();
+
+                        subtableData.headers.forEach(function(header) {
+                            $('#subtable-headers').append('<th>' + header + '</th>');
+                        });
+
+                        subtableData.rows.forEach(function(row) {
+                            var rowHtml = '<tr>';
+                            row.forEach(function(value) {
+                                rowHtml += '<td>' + value + '</td>';
+                            });
+                            rowHtml += '</tr>';
+                            $('#subtable-rows').append(rowHtml);
+                        });
+
+                        // Update the subtable chart based on the current view
+                        updateChart(year, subtableData);
+                    }
+
+                    function updateChart(year, subtableData) {
+                        var tractCategories = subtableData.rows.map(function(row) {
+                            return row[0];
+                        });
+
+                        var raceGroups = subtableData.headers.slice(1);
+
+                        var seriesData;
+
+                        if (currentView === 'tract') {
+                            seriesData = raceGroups.map(function(raceGroup, index) {
+                                return {
+                                    name: raceGroup,
+                                    data: subtableData.rows.map(function(row) {
+                                        return parseFloat(row[index + 1]) || null;
+                                    })
+                                };
+                            });
+                        } else {
+                            seriesData = tractCategories.map(function(tract, index) {
+                                var tractData = subtableData.rows[index].slice(1).map(function(value) {
+                                    return parseFloat(value) || null;
+                                });
+
+                                return {
+                                    name: tract,
+                                    data: tractData
+                                };
+                            });
+                        }
+
+                        var chartOptions = {
+                            chart: {
+                                type: 'column'
+                            },
+                            title: {
+                                text: 'Subgroup Data for ' + year
+                            },
+                            xAxis: {
+                                categories: currentView === 'tract' ? tractCategories : raceGroups
+                            },
+                            yAxis: {
+                                min: 0,
+                                title: {
+                                    text: 'Value'
+                                },
+                                stackLabels: {
+                                    enabled: true,
+                                    style: {
+                                        fontWeight: 'bold',
+                                        color: ( // theme
+                                            Highcharts.defaultOptions.title.style &&
+                                            Highcharts.defaultOptions.title.style.color
+                                        ) || 'gray'
+                                    }
+                                }
+                            },
+                            legend: {
+                                align: 'right',
+                                x: -30,
+                                verticalAlign: 'top',
+                                y: 25,
+                                floating: true,
+                                backgroundColor:
+                                    Highcharts.defaultOptions.legend.backgroundColor || 'white',
+                                borderColor: '#CCC',
+                                borderWidth: 1,
+                                shadow: false
+                            },
+                            tooltip: {
+                                headerFormat: '<b>{point.x}</b><br/>',
+                                pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'
+                            },
+                            plotOptions: {
+                                column: {
+                                    stacking: 'normal',
+                                    dataLabels: {
+                                        enabled: true
+                                    }
+                                }
+                            },
+                            series: seriesData
+                        };
+
+                        Highcharts.chart('subtable-chart-container', chartOptions);
+                    }
+
+                    $('#subgroup-form').submit(function(event) {
+                        event.preventDefault();
+                        var selectedYear = $('#id_subgroup_year').val();
+                        updateSubgroupTable(selectedYear);
+                    });
+
+                    $('#toggle-view').click(function() {
+                        currentView = currentView === 'tract' ? 'raceGroup' : 'tract';
+                        var selectedYear = $('#id_subgroup_year').val();
+                        var subtableData = multiYearSubtableField[selectedYear];
+                        updateChart(selectedYear, subtableData);
+                    });
+                    
+                    $('#download-subtable-chart').click(function() {
+                        var chart = Highcharts.charts[1];
+                        chart.exportChart({
+                            type: 'image/png',
+                            filename: 'subtable-chart'
+                        });
+                    });
+                });
+            </script>
+            <div>
+                <h3>Generated Memo:</h3>
+                <p><strong>This memo was generated using OpenAI's GPT 3.5-Turbo model. While efforts have been made to ensure accuracy, please review and verify the content carefully.</strong></p>
+                <p style="white-space: pre-line;">{{ memo }}</p>
+            </div>
+
+            {% if memo_path %}
+                <a href="{{ memo_path }}" download="memo.docx">
+                    <button>Download Memo</button>
+                </a>
+            {% endif %}
+        </div>
 </body>
 </html>

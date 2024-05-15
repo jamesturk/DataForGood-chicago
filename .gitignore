@@ -141,3 +141,6 @@ heatmap_*.html
 **/migrations/*.py
 **/migrations/*.pyc
 !**/migrations/__init__.py
+
+# Memo docs
+/dataforgood/main/templates/memos

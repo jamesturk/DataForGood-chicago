@@ -22,7 +22,7 @@ class BaseIndicator(models.Model):
     indicator_id = models.IntegerField()
     census_tract = models.ForeignKey(CensusTracts, on_delete=models.CASCADE)
     year = models.IntegerField()
-    value = models.IntegerField()
+    value = models.IntegerField(null=True, blank=True)
 
     class Meta:
         abstract = True

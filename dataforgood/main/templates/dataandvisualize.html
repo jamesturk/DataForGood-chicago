@@ -56,6 +56,10 @@
                         <label>{{ checkbox.tag }} {{ checkbox.choice_label }}</label><br>
                     {% endfor %}
                 </div>
+                <div class="generate-memo">
+                    <label for="generate">Generate Memo</label>
+                    {{ form.generate_memo }}
+                </div>
             <button type="submit"> Submit </button>
             </form>
         </div>
@@ -295,15 +299,15 @@
         </script>
         
         <div class="map-container">
-            {% for path, title in paths_titles %}
+            {% for item in paths_titles %}
                 <div style="margin-bottom: 20px;">
-                    <h2>{{ title }}</h2>
+                    <h2>{{ item.title }}</h2>
                     <div class="iframe-wrapper">
-                        {% include path %}
+                        {% include item.path %}
                     </div>
                 </div>
             {% endfor %}
-        </div>
+        </div>  
 
         <style>
             .iframe-wrapper {
@@ -528,6 +532,18 @@
                 });
             });
         </script>
+        <div>
+            <h3>Generated Memo:</h3>
+            <p><strong>This memo was generated using OpenAI's GPT 3.5-Turbo model. While efforts have been made to ensure accuracy, please review and verify the content carefully.</strong></p>
+            <p style="white-space: pre-line;">{{ memo }}</p>
+        </div>
+
+        {% if memo_path %}
+            <a href="{{ memo_path }}" download="memo.docx">
+                <button>Download Memo</button>
+            </a>
+        {% endif %}
+        
     </body>
 </body>
 </html>

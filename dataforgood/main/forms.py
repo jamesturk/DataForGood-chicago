@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import CensusTracts, MedianEarning_Main, TractZipCode
+from .models import CensusTracts, ContractRent_Main, TractZipCode
 
 # from .models2 import *
 from .utils import *
@@ -23,6 +23,17 @@ GEOGRAPHIC_LEVEL_CHOICES = [
     ("Tract", "Tract"),
 ]
 
+# Year choices
+PERIOD_CHOICES = [
+    ("2013-2017", "2013-2017"),
+    ("2014-2018", "2014-2018"),
+    ("2015-2019", "2015-2019"),
+    ("2016-2020", "2016-2020"),
+    ("2017-2021", "2017-2021"),
+    ("2018-2022", "2018-2022")
+]
+
+# Indicator Choices
 ECONOMIC_CHOCIES = [
     (
         "Median Income in the Past 12 Months (inflation-adjusted)",
@@ -63,6 +74,11 @@ POPULATION_CHOICES = [
     ("Median Age", "Median Age"),
 ]
 
+YES_NO_CHOICE = [
+    ('No', 'No'),
+    ('Yes', 'Yes')
+]
+
 # Indicator chocies for each category
 category_to_indicators = {
     "Economic": ECONOMIC_CHOCIES,
@@ -84,6 +100,7 @@ class SearchForm(forms.Form):
         self.fields["health_indicators"].required = False
         self.fields["housing_indicators"].required = False
         self.fields["population_indicators"].required = False
+        self.fields["generate_memo"].required = False
 
     geographic_level = forms.ChoiceField(
         choices=GEOGRAPHIC_LEVEL_CHOICES,
@@ -121,10 +138,14 @@ class SearchForm(forms.Form):
         POPULATION_CHOICES, "id_population_indicators"
     )
 
-    # To be modified to become dyanmic dependin gon the indicator selected by user
     year = forms.MultipleChoiceField(
         widget=forms.CheckboxSelectMultiple,
-        choices=get_choices(MedianEarning_Main, "year"),
+        choices=PERIOD_CHOICES,
+    )
+
+    generate_memo = forms.ChoiceField(
+        widget=forms.Select,
+        choices=YES_NO_CHOICE,
     )
 
 

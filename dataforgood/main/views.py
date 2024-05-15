@@ -2,6 +2,8 @@ import os
 import uuid
 
 import folium
+import environ
+import numpy as np
 import geopandas as gpd
 import pandas as pd
 from django.shortcuts import render
@@ -11,17 +13,22 @@ from django.views.decorators.csrf import csrf_protect
 from dataforgood.settings import BASE_DIR
 
 from .forms import SearchForm, SubgroupForm
-from .utils import create_subgroup_tables, create_table, create_table_title, INDICATOR_UNIT_MAPPING
+from .utils import create_subgroup_tables, create_table, create_table_title, WriteMemo, save_memo, INDICATOR_UNIT_MAPPING
 
 
 communityshape_path = os.path.join(BASE_DIR, "main/communityarea")
 zipcodeshape_path = os.path.join(BASE_DIR, "main/zipcode")
 censusshape_path = os.path.join(BASE_DIR, "main/censustracts")
 html_path = os.path.join(BASE_DIR, "main/templates/maps")
+docs_path = os.path.join(BASE_DIR, "main/templates/memos")
+
+env = environ.Env()
+environ.Env.read_env()
+open_ai_key = env("open_ai_key")
 
 # Centroid of Chicago for heat map
-y_center = 41.730401
-x_center = -87.251444
+y_center = 41.434732
+x_center = -87.333050
 
 
 @register.filter
@@ -55,6 +62,7 @@ def dataandvisualize(request):
         geograpahic_level = form.cleaned_data["geographic_level"]
         category = form.cleaned_data["category"]
         year = form.cleaned_data["year"]
+        generate_memo = form.cleaned_data["generate_memo"]
 
         geographic_level_dct = {
             "City of Chicago": [],
@@ -79,7 +87,8 @@ def dataandvisualize(request):
         print(geograpahic_level, "Selected:", geographic_unit)
         print("Category Selected:", category)
         print("Indicator Selected:", indicator)
-        print("Year(s) Selected:", year)
+        print("Periods(s) Selected:", year)
+        print("Generate Memo:", generate_memo)
 
         subgroup_form = SubgroupForm(
             year_choices=[
@@ -135,16 +144,17 @@ def dataandvisualize(request):
             }
 
         # Creating heat map for Community Area, Zip Code, and Tract Level
-        heatmap_htmls = []
-        title_list = []
-        if geograpahic_level != "City of Chicago":
-            heatmap_data = pd.DataFrame(field["rows"], columns=field["headers"])
+        heatmap_data = pd.DataFrame(field["rows"], columns=field["headers"])
+        heatmap_info = []
 
-            years = heatmap_data.columns[1:]
-            for year in years:
-                for column in heatmap_data.columns[1:]:
-                    heatmap_data[column] = heatmap_data[column].astype(int)
-
+        years = heatmap_data.columns[1:]
+        for year in years:
+            year_dic = {}
+            for column in heatmap_data.columns[1:]:
+                heatmap_data[column] = heatmap_data[
+                    column].apply(lambda x: int(x) if x != 'NA' else np.nan)
+            
+            if geograpahic_level != "City of Chicago":
                 if geograpahic_level == "Community":
                     heatmap_data.iloc[:, 0] = heatmap_data.iloc[
                         :, 0
@@ -171,7 +181,7 @@ def dataandvisualize(request):
 
                 # Adding base layer
                 mymap = folium.Map(
-                    location=[y_center, x_center], zoom_start=11, tiles=None
+                    location=[y_center, x_center], zoom_start=10, tiles=None
                 )
                 folium.TileLayer(
                     "CartoDB positron", name="Light Map", control=False
@@ -191,6 +201,8 @@ def dataandvisualize(request):
                     bins=3,
                     legend_name=units,
                     smooth_factor=0,
+                    nan_fill_color="grey",
+                    nan_fill_opacity=0.4
                 ).add_to(mymap)
 
                 def style_function(x):
@@ -226,26 +238,57 @@ def dataandvisualize(request):
                 mymap.add_child(feat)
                 mymap.keep_in_front(feat)
                 folium.LayerControl().add_to(mymap)
-                title = "Heat Map of {} by Selected {}s in {}".format(
-                    indicator, geograpahic_level, year
-                )
-                title_list.append(title)
+                if geograpahic_level[-1:] == "y":
+                    title = "Heat Map of {} by Selected {}ies in {}".format(
+                        indicator, geograpahic_level[:-1], year
+                    )
+                else:
+                    title = "Heat Map of {} by Selected {}s in {}".format(
+                        indicator, geograpahic_level, year
+                    )
+
                 name = "heatmap_{}".format(uuid.uuid4())
                 map_file_path = "{}/{}.html".format(html_path, name)
                 mymap.save(map_file_path)
-                heatmap_htmls.append("maps/{}.html".format(name))
+                year_dic['title'] = title
+                year_dic['path'] = "maps/{}.html".format(name)
+                year_dic['year'] = year
+                heatmap_info.append(year_dic)
 
-        context = {
-            "form": form,
-            "field": field,
-            "table_title": table_title,
-            "multi_year_subtable_field": multi_year_subtable_field,
-            "chart_data": chart_data,
-            "subgroup_chart_data": subgroup_chart_data,
-            "paths_titles": zip(heatmap_htmls, title_list),
-            "subgroup_form": subgroup_form,
-        }
-        return render(request, "dataandvisualize.html", context)
+        if generate_memo == "Yes":
+        
+            # Writing and saving memo about the data
+            chart_descr = heatmap_data.describe()
+            analysis = WriteMemo(indicator, geograpahic_level, field, chart_descr, open_ai_key)
+            memo = analysis.invoke()
+            memo_path = save_memo(indicator, geograpahic_level, memo, docs_path)
+
+            context = {
+                "form": form,
+                "field": field,
+                "table_title": table_title,
+                "multi_year_subtable_field": multi_year_subtable_field,
+                "chart_data": chart_data,
+                "subgroup_chart_data": subgroup_chart_data,
+                "paths_titles": heatmap_info,
+                "subgroup_form": subgroup_form,
+                "memo": memo,
+                "memo_path": memo_path,
+            }
+            return render(request, "dataandvisualize.html", context)
+
+        else:
+            context = {
+                "form": form,
+                "field": field,
+                "table_title": table_title,
+                "multi_year_subtable_field": multi_year_subtable_field,
+                "chart_data": chart_data,
+                "subgroup_chart_data": subgroup_chart_data,
+                "paths_titles": heatmap_info,
+                "subgroup_form": subgroup_form,
+            }
+            return render(request, "dataandvisualize.html", context)
 
     return render(
         request,

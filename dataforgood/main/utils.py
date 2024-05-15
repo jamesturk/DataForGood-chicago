@@ -1,5 +1,11 @@
+import uuid
+
 from django import forms
 from django.db.models import Avg
+from langchain_openai import ChatOpenAI
+from langchain.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+from docx import Document
 
 from .models import MedianIncome_Main, MeanIncome_Main, ContractRent_Main, \
     HouseholdType_Main, MedianEarning_Main, Enrollment_Main, Disability_Main, \
@@ -50,13 +56,185 @@ INDICATOR_UNIT_MAPPING = {
     "Median Age": "Years"
 }
 
+SUBGROUP_NAMES = {
+    "mean_white": "White",
+    "mean_black": "Black",
+    "mean_hawai": "Native Hawaiian and Other Pacific Islander",
+    "mean_ind_ala": "American Indian and Alaska Native",
+    "mean_asia": "Asian",
+    "mean_other": "Some Other Race",
+    "median_white": "White",
+    "median_hawai": "Native Hawaiian and Other Pacific Islander",
+    "median_asia": "Asian",
+    "median_ind_ala": "American Indian and Alaska Native",
+    "median_other": "Some Other Race",
+    "median_black": "Black",
+    "less_high": "Less Than High School Graduate",
+    "grad": "Graduate or Professional Degree",
+    "high": "High School Graduate",
+    "bachelor": "Bachelor's Degree",
+    "college": "Some College and Associate's Degree",
+    "kind_12": "Kindergarten to 12th Grade",
+    "grad": "Graduate or Professional School",
+    "college": "College, Undergraduate",
+    "nursery": "Nursery School, Preschool",
+    "ind_living": "With an Independent Living Difficulty",
+    "ambulatory": "With an Ambulatory Difficulty",
+    "self_care": "With a Self-Care Difficulty",
+    "vision": "With a Vision Difficulty",
+    "hearing": "With a Hearing Difficulty",
+    "cognitive": "With a Cognitive Difficulty",
+    "insured": "Insured",
+    "uninsured": "Uninsured",
+    "lower_rent": "Lower Contract Rent Quartile",
+    "upper_rent": "Upper Contract Rent Quartile",
+    "median_rent": "Median Contract Rent",
+    "household_family": "Total Number of Family Household",
+    "household_nonfamily": "Total Number of Non-family Household",
+    "pop_hawai": "Native Hawaiian and  Other Pacific Islander",
+    "pop_asia": "Asian",
+    "pop_black": "Black",
+    "pop_white": "White",
+    "pop_two": "Two or More Races",
+    "pop_other": "Some Other Race",
+    "pop_ind_ala": "American Indian and Alaska Native",
+    "male_age": "Male",
+    "female_age": "Female", 
+}
+
+# Source: Modified class, context, and instructions from 
+# https://github.com/abejburton/census_llm
+
+class WriteMemo:
+    """
+    This class uses GPT 3.5 Turbo to explain the selected indicator data. 
+    """
+
+    def __init__(self, indicator, geo_level, dictionary, describe, open_ai_key):
+        self.indicator = indicator
+        self.geo_level = geo_level
+        self.dictionary = dictionary
+        self.describe = describe
+
+        template = """
+        Role: You are a data analyst for a small nonprofit in Chicago.
+        
+        Context:
+        Your goal is to write a memo about the data from  the American 
+        Community Survey's (ACS) 5-year estimate data, which are "period" 
+        estimates that represent data collected over a period of time. 
+        The primary advantage of using multiyear estimates is the increased 
+        statistical reliability of the data for less populated areas and small 
+        population subgroups. The data is focused on a selected indicator, 
+        a selected geographic level, and selected years, all of which are 
+        chosen by the user.
+        
+        You will receive 4 pieces of information to form a truthful analysis
+        and write a professional memo that can be interpreted by a 
+        nontechnical audience.
+
+        The first piece of information is a string value of the selected 
+        indicator that the analysis will be focused on.
+
+        The second piece of information is the selected geographic level. 
+        There are three geographic levels, Census Tracts, Zip codes, and 
+        Community Areas, and the user only picks one. The data is only focused 
+        on the geographic levels in Chicago so do not mention 
+        other cities, states, or countries.
+        
+        The third piece of information is the python output of dictionary of 
+        a pandas dataframe of selected data from the American Community Survey. 
+        The dictionary's keys are the dataframe's column names and the 
+        dictionary's values are the dataframe's rows of values which correspond 
+        to the columns. The first column will be the geographic level of data 
+        that was selected by the user. The following columns will be the years 
+        selected by the user. The years will range from 2017 to 2022. The 
+        values in the year columns reflect the values of indicator selected 
+        by the user. The values in the first column reflect the selected 
+        census tracts, community areas, or zip codes. 
+        
+        The fourth piece of information will be the results of calling the 
+        describe() method on the dataframe that is selected by the user (this 
+        is not across all the geographic areas of Chicago). 
+        Please do not conduct analysis on the first column of the dataframe. 
+        Please provide a description of the dataframe, including the mean, 
+        minimum, and maximum values in a year for the indicator. 
+        For each geographic area in each year in the 
+        dictionary please list what quartile it is in and be sure to mention 
+        which geographic area is associated with the value. If the geographic
+        are in the specified year is the minimum or maximum value in the
+        selected dataframe, point it out. 
+
+        If there are multiple years in the dataframe, point out if the value 
+        for the indicator for a geographic area is increasing or decreasing. 
+        Lastly, please provide insight about the selected indicator and
+        what factors the nonprofit may want to investigate further that are
+        related to the selected indicator and how a nonprofit could help 
+        improve the indicator values for geographic areas that have the lowest 
+        values.
+
+        Instructions:
+        Explain that you did analysis on an indicator (mention indicator name)
+        using data from the American Community Survey's (ACS) 
+        5-year estimate data for certain geographic areas in Chicago (list 
+        out the selected geographic areas) in certain years (list out the
+        selected years) and will be explaining the output of 
+        the analysis.
+        
+        Read the four pieces of information provided. Explain any key findings
+        that you find. Base your analysis solely on the information provided in
+        this prompt. Don't make anything up, just provide coherent basic analysis
+        based on the information.
+        -----
+        
+        Information: {information}
+        """
+        prompt = ChatPromptTemplate.from_template(template)
+        model = ChatOpenAI(model="gpt-3.5-turbo", temperature=0, api_key=open_ai_key)
+        self.response = prompt | model | StrOutputParser()
+
+    def invoke(self):
+        return self.response.invoke({"information": [self.indicator, 
+                                                  self.geo_level, 
+                                                  self.dictionary, 
+                                                  self.describe]})
+
+def save_memo(indicator, geo_level, memo, docs_path):
+    """
+    This function saves the memo outputted by ChatGPT to a word file. 
+
+    Inputs:
+        - indicator (str): name of indicator selected by the user
+        - geo_level (str): geographic level of data selected  by the user
+        - memo (str): string of ChatGPT's response 
+    
+    Returns:
+        - path (str): string of the path where the memo is saved 
+    """
+    document = Document()
+
+    # Font style
+    style = document.styles['Normal']
+    style.font.name = 'Calibri'
+
+    # Adding Memo title and body
+    document.add_heading('Analysis of {} in Selected Chicago {}'.format(
+        indicator, geo_level), 0)
+    p = document.add_paragraph(memo)
+    path = docs_path + '/memo_{}.docx'.format(uuid.uuid4())
+
+    document.save(path)
+
+    return path
+
+
 def convert_list_to_tuple(query_lst):
     """
     Converts lists of variables (e.g. years or tracts) into tuples to
     run model query for table creation.
-    An example:
-        [2018, 2019] -> (2018, 2019)
-        [2018] -> (2018,)
+    Examples:
+        - [2018, 2019] -> (2018, 2019)
+        - [2018] -> (2018,)
 
     Inputs:
         query_lst (list): list of query variable(s)
@@ -70,6 +248,28 @@ def convert_list_to_tuple(query_lst):
         query_tup = tuple(query_lst)
 
     return query_tup
+
+
+def convert_periods_to_years(periods):
+    """
+    Takes in the 5-year estimate period(s) selected by the user and retains
+    only the ending year of each period selected to conduct query
+    An example:
+        ['2011-2015', '2016-2020'] -> [2015, 2020]
+        ['2011-2015'] -> [2015]
+
+    Inputs:
+        period (list of str): 5-year period(s) selected by the user
+    
+    Returns:
+        years (list of int): the ending year for each 5-year estimate period
+            selected by the user
+    """
+    years = []
+    for p in periods:
+        years.append(int(p[5:]))
+    
+    return years
 
 
 def get_subgroups(model_sub):
@@ -98,29 +298,37 @@ def create_table_title(indicator, year):
 
     Inputs:
         indicator (str): indicator selected by the user in the form
-        year (list of int): year(s) selected by the user in the form
+        year (list of strs): 5-year periods selected by the user in the form
 
-    Returns: generated title of main table (str)
+    Returns:
+        indicator_formatted (str): readable indicator format and 5-year periods
+            selected by the user
     """
-    indicator_word_lst = indicator.split("_")
-    for idx, word in enumerate(indicator_word_lst):
-        indicator_word_lst[idx] = word.capitalize()
+    indicator_formatted = indicator.replace("_", " ").title() + " for "
+    
+    for year in year:
+        indicator_formatted += year + ", "
+    
+    return indicator_formatted
 
-    if len(year) == 1:
-        year_text = "({year})"
-        indicator_word_lst.append(year_text.format(year=str(year[0])))
+
+def convert_none_to_na_and_round(single_result):
+    """
+    Takes in a query result value returns the result (rounded to 2 decimal
+        places) if the query is not None, else return "NA" string
+    
+    Inputs:
+        single_result (int or None): query result value
+    
+    Returns: "NA" string or query result (int) rounded to 2 decimal places
+    """
+    if single_result is None:
+        return "NA"
     else:
-        year_range_text = "({start_year}-{end_year})"
-        indicator_word_lst.append(
-            year_range_text.format(
-                start_year=str(year[0]), end_year=str(year[-1])
-            )
-        )
-
-    return " ".join(indicator_word_lst)
+        return round(single_result, 2)
 
 
-def create_table(geographic_level, geographic_unit, indicator, year):
+def create_table(geographic_level, geographic_unit, indicator, periods):
     """
     Generates a dictionary to be used a context variables in the html file to
     create a table on the webapp (for the main indicator/overall group).
@@ -132,27 +340,27 @@ def create_table(geographic_level, geographic_unit, indicator, year):
         geographic_unit (list of str or int): geographic unit(s) corresponding
             to the geographic level selected by the user in the form
         indicator (str): name of indicator selected by the user in the form
-        year (list of int): year(s) selected by the user
+        periods (list of str): periods(s) selected by the user
 
     Returns: a dictionary of two items
             - 'headers': header row of table (list of str)
             - 'rows': multiple rows for each geographic unit (list of lists of
                 str)
     """
-    headers = [geographic_level] + list(year)
+    headers = [geographic_level] + list(periods)
     rows = []
 
     model = MAIN_MODEL_MAPPING[indicator]
 
     # Converts list of years to tuple, if only one year selected,
     # converts list to tuple with a comma
-    year = convert_list_to_tuple(year)
+    years = convert_list_to_tuple(convert_periods_to_years(periods))
 
     if geographic_level == "City of Chicago":
         row = ["City Average"]
         results = (
             model.objects.values("year")
-            .filter(year__in=year)
+            .filter(year__in=years)
             .annotate(Avg("value"))
             .order_by("year")
         )
@@ -166,11 +374,14 @@ def create_table(geographic_level, geographic_unit, indicator, year):
         row = [unit]
 
         if geographic_level == "Tract":
-            results = model.objects.filter(census_tract_id=unit, year__in=year)
+            results = model.objects.filter(census_tract_id=unit, year__in=years)
 
             # Appends value for each year
             for r in results:
-                row.append(round(r.value, 2))
+                if r.value is None:
+                    row.append('NA')
+                else:
+                    row.append(r.value)
 
         elif geographic_level == "Zipcode":
             # Obtain tracts in the selected zipcode
@@ -184,28 +395,29 @@ def create_table(geographic_level, geographic_unit, indicator, year):
             # takes the mean of observations
             results = (
                 model.objects.values("year")
-                .filter(census_tract_id__in=tracts_in_zipcode, year__in=year)
+                .filter(census_tract_id__in=tracts_in_zipcode, year__in=years)
                 .annotate(Avg("value"))
                 .order_by("year")
             )
 
             # Appends value for each year
             for r in results:
-                row.append(round(r["value__avg"], 2))
+                #row.append(round(r["value__avg"], 2))
+                row.append(convert_none_to_na_and_round(r["value__avg"]))
 
         elif geographic_level == "Community":
             # Groupby community area and year, sorted by year in ascending order
             # and takes the mean of observations
             results = (
                 model.objects.values("census_tract_id__community", "year")
-                .filter(census_tract_id__community=unit, year__in=year)
+                .filter(census_tract_id__community=unit, year__in=years)
                 .annotate(Avg("value"))
                 .order_by("year")
             )
 
             # Appends value for each year
             for r in results:
-                row.append(round(r["value__avg"], 2))
+                row.append(convert_none_to_na_and_round(r["value__avg"]))
 
         rows.append(row)
 
@@ -226,21 +438,15 @@ def create_subgroup_table_rows(subgroup_lst, rows, results):
         rows (list of lists): a single list with each subgroup stored as a list
     """
     for subgroup in subgroup_lst:
-
-        # Format subgroup name to a human readable format
-        subgroup_word_lst = subgroup.split("_")
-        for idx, word in enumerate(subgroup_word_lst):
-            subgroup_word_lst[idx] = word.capitalize()
-
-        row = [' '.join(subgroup_word_lst)]
+        row = [SUBGROUP_NAMES[subgroup]]
         for r in results.filter(sub_group_indicator_name=subgroup):
-            row.append(round(r["value__avg"], 2))
+            row.append(convert_none_to_na_and_round(r["value__avg"]))
         rows.append(row)
     
     return rows
 
 
-def create_subgroup_tables(geographic_level, geographic_unit, indicator, year):
+def create_subgroup_tables(geographic_level, geographic_unit, indicator, periods):
     """
     Generates a dictionary to be used a context variables in the html file to
     create a table on the webapp (for the subgroups).
@@ -252,7 +458,7 @@ def create_subgroup_tables(geographic_level, geographic_unit, indicator, year):
         geographic_unit (list of str or int): geographic unit(s) corresponding
             to the geographic level selected by the user in the form
         indicator (str): name of indicator selected by the user in the form
-        year (list of int): year(s) selected by the user
+        periods (list of str): periods(s) selected by the user
 
     Returns: a nested dictionary of dictionaries, each dictionary corresponding
         one year.
@@ -270,7 +476,10 @@ def create_subgroup_tables(geographic_level, geographic_unit, indicator, year):
     # Obtain list of subgroups
     subgroup_lst = get_subgroups(model)
 
-    for one_year in year:
+    # Convert periods to years
+    years = convert_list_to_tuple(convert_periods_to_years(periods))
+
+    for period_str, one_year in zip(periods, years):
         headers = [geographic_level] + list(geographic_unit)
         rows = []
 
@@ -318,15 +527,15 @@ def create_subgroup_tables(geographic_level, geographic_unit, indicator, year):
                     .annotate(Avg("value"))
                     .order_by("sub_group_indicator_name")
                 )
-
+ 
                 # Append results to subgroup dictionary
                 for r in results:
                     subgroup_dct[r["sub_group_indicator_name"]].append(
-                        round(r["value__avg"], 2)
-                    )
+                        convert_none_to_na_and_round(r["value__avg"]))
 
             # Convert dictionary values to list of lists for table
-            rows = [[subgroup] + row for subgroup, row in subgroup_dct.items()]
+            rows = [[SUBGROUP_NAMES[subgroup]] + row for subgroup, 
+                    row in subgroup_dct.items()]
 
         if geographic_level == "Community":
             results = (
@@ -345,7 +554,8 @@ def create_subgroup_tables(geographic_level, geographic_unit, indicator, year):
 
             rows = create_subgroup_table_rows(subgroup_lst, rows, results)
 
-        table_many_years[one_year] = {"headers": headers, "rows": rows}
+        rows = sorted(rows)
+        table_many_years[period_str] = {"headers": headers, "rows": rows}
 
     return table_many_years
 

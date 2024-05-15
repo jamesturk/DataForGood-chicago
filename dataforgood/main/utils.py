@@ -359,6 +359,27 @@ def convert_none_to_na_and_round(single_result):
         return round(single_result, 2)
 
 
+def adjust_row_len(results, years):
+    """
+    Checks the number of query result instances returned. If the number differs
+    from the number of years queried by the user, append "NA"s to the end of the 
+    row list to ensure row lengths are equal for all geographic units queried.
+
+    Inputs:
+        results (Queryset object): queryset of results for one geogrpahic unit
+        years (list of int): years queried by the user
+    
+    Returns:
+        lst (lst of str): additional "NA" values in a list
+
+    """
+    lst = []
+    diff = len(years) - len(results)
+    if diff != 0:
+        lst.extend(["NA"] * diff)
+    return lst
+
+
 def create_table(geographic_level, geographic_unit, indicator, periods):
     """
     Generates a dictionary to be used a context variables in the html file to
@@ -413,6 +434,9 @@ def create_table(geographic_level, geographic_unit, indicator, periods):
                     row.append("NA")
                 else:
                     row.append(r.value)
+            
+            # Handles cases where row lengths differ
+            row.extend(adjust_row_len(results, years))
 
         elif geographic_level == "Zipcode":
             # Obtain tracts in the selected zipcode
@@ -435,6 +459,9 @@ def create_table(geographic_level, geographic_unit, indicator, periods):
             for r in results:
                 # row.append(round(r["value__avg"], 2))
                 row.append(convert_none_to_na_and_round(r["value__avg"]))
+            
+            # Handles cases where row lengths differ
+            row.extend(adjust_row_len(results, years))
 
         elif geographic_level == "Community":
             # Groupby community area and year, sorted by year in ascending order
@@ -449,13 +476,16 @@ def create_table(geographic_level, geographic_unit, indicator, periods):
             # Appends value for each year
             for r in results:
                 row.append(convert_none_to_na_and_round(r["value__avg"]))
+            
+            # Handles cases where row lengths differ
+            row.extend(adjust_row_len(results, years))
 
         rows.append(row)
 
     return {"headers": headers, "rows": rows}
 
 
-def create_subgroup_table_rows(subgroup_lst, rows, results):
+def create_subgroup_table_rows(subgroup_lst, rows, results, years):
     """
     Creates a row for each subgroup based on query results.
 
@@ -464,6 +494,7 @@ def create_subgroup_table_rows(subgroup_lst, rows, results):
         rows (list of lists): a single list to store each row as a list
         results (Django queryset): a queryset item of dictionaries, each
             dictionary is a query result instance
+        years (list of int): list of years selected by the user
 
     Returns:
         rows (list of lists): a single list with each subgroup stored as a list
@@ -472,6 +503,9 @@ def create_subgroup_table_rows(subgroup_lst, rows, results):
         row = [SUBGROUP_NAMES[subgroup]]
         for r in results.filter(sub_group_indicator_name=subgroup):
             row.append(convert_none_to_na_and_round(r["value__avg"]))
+        # Handles cases where row lengths differ
+        row.extend(adjust_row_len(results, years))
+        
         rows.append(row)
 
     return rows
@@ -524,7 +558,7 @@ def create_subgroup_tables(
                 .order_by("sub_group_indicator_name")
             )
 
-            rows = create_subgroup_table_rows(subgroup_lst, rows, results)
+            rows = create_subgroup_table_rows(subgroup_lst, rows, results, years)
 
         if geographic_level == "Tract":
             results = (
@@ -536,7 +570,7 @@ def create_subgroup_tables(
                 .order_by("sub_group_indicator_name", "census_tract_id")
             )
 
-            rows = create_subgroup_table_rows(subgroup_lst, rows, results)
+            rows = create_subgroup_table_rows(subgroup_lst, rows, results, years)
 
         if geographic_level == "Zipcode":
             # Create a dictionary to save values for each subgroup
@@ -588,7 +622,7 @@ def create_subgroup_tables(
                 )
             )
 
-            rows = create_subgroup_table_rows(subgroup_lst, rows, results)
+            rows = create_subgroup_table_rows(subgroup_lst, rows, results, years)
 
         rows = sorted(rows)
         table_many_years[period_str] = {"headers": headers, "rows": rows}

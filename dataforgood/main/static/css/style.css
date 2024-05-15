@@ -1,152 +1,240 @@
-/* Reset margins and paddings for consistency */
-
-.content-wrapper {
-    display: flex;
-    flex-direction: column;
-    flex: 1; /* This allows the content wrapper to grow and occupy any available space */
+/* General styles */
+body, html {
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
 }
 
-html, body {
-    height: 100%; /* Ensures the full height of the viewport is used */
-    margin: 0; /* Reset default margin */
-    padding: 0; /* Reset default padding */
-    display: flex;
-    flex-direction: column; /* Stack children elements vertically */
-}
-
-header {
-    background-color: #004080; /* Dark blue, more professional than plain black */
-    color: #fff;
-    padding: 20px; /* Uniform padding */
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Subtle shadow under header */
+/* Navbar styles */
+.navbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-}
-
-.logo {
-    font-size: 24px;
-    padding: 0; /* No vertical padding needed here */
-    display: block; /* Changed from inline-block for cleaner alignment */
-}
-
-.nav-links {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    align-items: center;
-}
-
-.nav-links li {
-    padding: 10px 20px;
-}
-
-.nav-links a {
-    text-decoration: none;
-    color: white;
-    display: block;
-}
-
-.nav-links a:hover, .nav-links a:focus {
-    background-color: #0056b3; /* Slightly lighter blue for hover/focus */
-    transition: background-color 0.3s ease; /* Smooth transition for hover effect */
-}
-.hero {
-    position: relative;
-    color: #fff; /* Assuming a dark background image */
-    text-align: center;
-    padding: 60px 120px;
-    background-image: url('{% images "bg.jpg" %}'); /* Update with the path to your image */
-    background-color: #0b498d;  /* Cover ensures the background covers the entire section */
-    background-position: center; /* Center the background image */
-    background-repeat: no-repeat; /* Prevent the background from repeating */
-}
-
-/* Section styling for Data Exploration, Analysis, Visualization */
-.section {
-    text-align: center;
-    padding: 40px 20px;
-    background-color: #ffffff; /* White background for sections */
-    margin: 20px;
-    border-radius: 8px; /* Rounded corners for section */
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
-.section h2 {
-    color: #333;
-    font-size: 1.8rem;
-}
-
-.hero p {
-    color: #fff;
-    font-size: 1.3rem;
-    margin-top: 10px;
-}
-
-.content-wrapper {
-    flex: 1; /* Allows the content wrapper to expand to fill available space */
-    display: flex;
-    flex-direction: column; 
-}
-
-footer {
-    /* Ensure footer has its specific styles, it should naturally stick to the bottom now */
-    background-color: #004080; /* Example background color */
-    color: #fff; /* Example text color */
-    text-align: center; /* Centers the text within the footer */
-    padding: 20px 0; /* Padding for aesthetic spacing */
-}
-
-/* Enhancements for better layout and readability */
-h1, h3 {
-    text-align: center;
+    padding: 1rem 2rem;
+    background-color: #0056b3;
     color: #fff;
 }
 
-h1 {
-    margin-top: 20px;
-    font-size: 2.5rem; /* Larger for main titles */
-}
-
-main {
-    flex: 1
-}
-
-h3 {
+.navbar .logo {
     font-size: 1.5rem;
-    color: #555; /* Darker grey for sub-headers */
-    margin-top: 30px; /* More space above sub-headers */
+    font-weight: bold;
 }
 
-.table1, .table2 {
-    width: 100%; /* Full width tables for better utilization of space */
-    margin: 20px 0;
-    background-color: white;
-    border-collapse: collapse;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Consistent shadow for all tables */
+.navbar .nav-links {
+    list-style: none;
+    display: flex;
+    gap: 1rem;
 }
 
-td, th {
-    border: 1px solid #ddd; /* Light grey border for readability */
-    padding: 8px; /* Adequate padding */
-    text-align: left; /* Left align text in tables for better readability */
+.navbar .nav-links li {
+    margin: 0;
 }
 
-.query-form {
-    background: #ffffff; /* White background for forms */
-    padding: 15px;
-    border-radius: 8px; /* Rounded corners */
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    margin: 20px; /* Consistent margin */
-}
-
-input[type=submit] {
-    background-color: #004080; /* Same as header for consistency */
-    padding: 10px 15px;
+.navbar .nav-links a {
+    color: #fff;
+    text-decoration: none;
     font-size: 1rem;
 }
 
-input[type=submit]:hover {
-    background-color: #0056b3; /* Lighter blue for hover */
+.navbar .nav-links a:hover {
+    text-decoration: underline;
 }
+
+/* Hero section styles */
+
+.hero {
+    background: url('{% static 'images/bg.jpg' %}') no-repeat center center/cover;
+    color: #fff;
+    text-align: center;
+    padding: 5rem 2rem;
+}
+
+.hero-content {
+    color: #0056b3;
+    max-width: 600px;
+    margin: auto;
+}
+
+.hero h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.hero p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+}
+
+.explore-button {
+    background-color: #0056b3;
+    color: #fff;
+    padding: 0.75rem 1.5rem;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+.explore-button:hover {
+    background-color: #003d80;
+}
+
+/* Section styles */
+section {
+    padding: 2rem;
+    text-align: center;
+}
+
+section h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+section p {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+section ul {
+    list-style: none;
+    padding: 0;
+}
+
+section ul li {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Footer styles */
+footer {
+    background-color: #f8f9fa;
+    color: #333;
+    text-align: center;
+    padding: 1rem 2rem;
+    border-top: 1px solid #eaeaea;
+}
+
+footer p {
+    margin: 0;
+}
+
+/* data & viz */
+
+.scrollable-checkbox-list {
+    max-height: 150px; /* Set the desired maximum height */
+    overflow-y: auto;  /* Enable vertical scrolling */
+    border: 1px solid #ccc; /* Optional: Add a border for better visibility */
+    padding: 5px; /* Optional: Add padding for better spacing */
+}
+
+.scrollable-checkbox-list input[type="checkbox"] {
+    margin-right: 5px; /* Optional: Add some space between checkboxes and labels */
+}
+
+.query-form {
+    font-size: 15px;
+    flex: 1; /* Takes 1/3 of the screen */
+    max-width: 100%;
+    margin: 0 auto;
+    width: 1000px; /* Ensure the container only takes up as much space as needed */
+    text-align: center;/* Optional: Add a border for separation */
+}
+
+.query-form p {
+    font-size: 18px;
+}
+
+
+.query-form h4 {
+    font-size: 20px;
+}
+
+.maintable {
+    margin: 0 auto;
+    width: 1500px; /* Ensure the container only takes up as much space as needed */
+    padding: 20px;
+    text-align: center;
+}
+
+.maintable h3{
+    font-size: 2rem;
+}
+
+.chart-container {
+    font-size: 10rem;
+    margin-right: 100px;
+    width: 100%;
+    height: 600px; /* Ensure the container only takes up as much space as needed */
+    padding: 0;
+    text-align: center;
+    max-width: 500px;
+}
+
+.table1 {
+    margin: 20px;
+    width: 1500px; /* Ensure the container only takes up as much space as needed */
+    padding: 0;
+    text-align: center;
+}
+
+.map-container {
+    font-size: 2rem;
+    margin: 10px;
+    width: 2000px; /* Ensure the container only takes up as much space as needed */
+    padding: 0;
+    text-align: center;
+}
+
+.iframe-wrapper {
+    margin: 0 auto;
+    width: 1000px;
+    height: 370px; /* Ensure the container only takes up as much space as needed */
+    padding: 0;
+    text-align: center;
+}
+
+.subtable {
+    margin: 0 auto;
+    width: 1500px; /* Ensure the container only takes up as much space as needed */
+    padding: 0;
+    text-align: center;
+}
+
+.table2 {
+    margin: 20px;
+    width: 1500px; /* Ensure the container only takes up as much space as needed */
+    padding: 0;
+    text-align: center;
+}
+
+.subtable-chart-container {
+    font-size: 20rem;
+    margin: 20px;
+    width: 1500px; /* Ensure the container only takes up as much space as needed */
+    padding: 0;
+    text-align: center;
+}
+
+.hidden {
+    display: none;
+}
+
+.div {
+    margin: 20px;
+    width: 1500px; /* Ensure the container only takes up as much space as needed */
+    padding: 0;
+    text-align: center;
+}
+
+
+
+
+
+
+
+
+
+

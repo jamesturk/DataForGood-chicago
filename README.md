@@ -177,6 +177,14 @@ Check our pyproject.toml file for all the packages used. Some include:
 Source: U.S. Census Bureau\
 Way of Collection: API Key
 
+(2) OpenAI API:\
+Source: OpenAI\
+Way of Collection: API Key
+
+(3) City of Chicago:\
+Source: City of Chicago's Data Portal\
+Way of Collection: Downloaded shapefiles
+
 #### **Credentials**
 ##### Getting Census API key
 - Request an API key with this link: https://api.census.gov/data/key_signup.html

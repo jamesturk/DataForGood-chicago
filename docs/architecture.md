@@ -62,29 +62,22 @@ Welcome to the DataForGood Chicago project! This document will provide you with 
 
 
 - Database Models:
-    - geo_reference: This model contains geographic information such as census tract ID, community name, zip code, latitude, longitude, and geometry (GIS polygon).
-    - economic_characteristics: This model stores economic indicators like median income of households for each census tract and year.
-    - economic_sub_indicator: This model holds sub-indicators related to economic characteristics, such as median income by race, for each census tract and year.
-    - Note: The provided examples focus on economic indicators, but similar models exist for other indicator categories like housing, education, etc.
+    - `main_tractzipcode`: This model maps each of Chicago's census tracts to their corresponding zip code.
 
-- Updated Entity-Relationship Diagram:
-![image](https://github.com/uchicago-capp-30320/DataForGood-chicago/assets/111541644/3e6785f0-f20b-4bc0-a56d-7f24b7d1f4ac)
+    - `main_censustracts`: This model maps each of Chicago's census tracts to their corresponding community areas.
 
-- Data Flow: When a user interacts with the application and selects specific parameters (geographic level, indicator category, years, and indicator), the backend retrieves the relevant data from the database models and sends it to the frontend for visualization. We would like to note that our application allows the user to select indicators within one broader category (ie only selecting economic indicator variables) so that users can get a deeper view of one category at a time.
+    - `main_meanincome_main`: This model stores the mean income of households for each census tract and year.
 
-- Dependency Graph
-![image](https://github.com/uchicago-capp-30320/DataForGood-chicago/assets/111541644/c1eec53c-a973-4723-8f8f-ebc6eee3b126)
+    - `main_meanincome_sub`: This model stores the mean income of households by race for each census tract and year. The racial categories include: White, Black or African American, Indian and Alaska Native, Asian, Native Hawaiian and other Pacific Islander, and Other.
 
-The graph shows the relationships between the different entities in the ERD:
+    - (Note: The provided examples focus on one example of an economic indicator, but similar models exist for other indicator categories like housing, education, etc.)
 
-The `geo_reference` entity is the central entity that all other entities depend on. It likely contains geographic information such as census tract ID, community name, zip code, etc.
+- Simplified Version of the Entity-Relationship Diagram:
+![image](https://github.com/uchicago-capp-30320/DataForGood-chicago/assets/111541644/e86d0b43-2b6a-40bb-b246-8ba29f9368be)
 
-The `economic_characteristics`, `housing_characteristics`, `education_characteristics`, `population_characteristics`, and `health_characteristics` entities all have a foreign key reference to the `geo_reference` entity. This indicates that each of these entities is associated with a specific geographic location.
+**Please see `models.md` file for a more comprehensive diagram**
 
-The `economic_sub_indicator` entity has a foreign key reference to the `economic_characteristics` entity. This suggests that the `economic_sub_indicator` entity provides more detailed or subcategory information related to economic characteristics.
-
-Similarly, the `housing_sub_indicator`, `education_sub_indicator`, `population_sub_indicator`, and `health_sub_indicator` entities have foreign key references to their respective main entities (`housing_characteristics`, `education_characteristics`, `population_characteristics`, and `health_characteristics`). These sub-indicator entities likely contain more specific or subcategory information related to their main entities.
-
+- Data Flow: When a user interacts with the application and selects specific parameters (geographic level, indicator category, indicator, and years), the backend retrieves the relevant data from the database models and sends it to the frontend for visualization. We would like to note that our application allows the user to select indicators within one broader category (ie only selecting economic indicator variables) so that users can get a deeper view of one category at a time.
 
 ### Frontend and User Interface:
 - Draft UI Design:
@@ -95,17 +88,19 @@ Similarly, the `housing_sub_indicator`, `education_sub_indicator`, `population_s
 
 ### Key Concepts:
 
-1. Data Table and Data Visualization: After the user selects the desired parameters, the frontend receives the data from the backend and generates data tables and visualizations. Users can hide the visualizations for sub-indicators that they feel are unnecessary to show up in their memo or out of their interests. The following is a list of filters that are available for users to customize:
+1. Data Table and Data Visualization: After the user selects the desired parameters, the frontend receives the data from the backend and generates data tables and visualizations. The following is a list of filters that are available for users to customize:
     - Geographic Levels: Users can explore data at different geographic granularities, such as citywide, by zip code, by community area, and by census tracts.
-    - Indicator Categories: The application provides data across various categories, including population characteristics, education, economics, housing, etc.
+    - Indicator Categories: The application provides data across various categories, including population characteristics, education, economics, and housing.
     - Years: Users can select a specific 5-year estimate or a range of individual years (e.g., 2018-2022 5-year estimate or 2021-2022 yearly) to view the data for those time periods.
     - Indicators: Each indicator category may have indicators that provide more detailed information of the general groups (e.g., *Total Population* within the `population_characteristics`).
-    - Sub-indicators: Each indicator category may have indicators that provide more detailed information of the general groups (e.g., breakdown of race groups for the indicator *Total Population*). We will present the data tables and visuals for all sub-indicators, and users can decide to hide the unnecessary visuals or data tables.
+    - Sub-indicators: Each indicator category may have indicators that provide more detailed information of the general groups (e.g., breakdown of race groups for the indicator *Total Population*). We will present the data tables and visuals for all sub-indicators, and users can decide to display certain visuals using the dropdowns and download them.
 
-2. Memo generation: The application allows users to press a button to generate memo based on the selected view of data tables and data visualizations
-3. Data Export: The application allows users to export the data tables and visualizations in various formats, including Excel (.xlsx), PDF, and JPEG.
-4. Resource: The application allows users to interact with the embedded ArcGIS Instant App to view city resources.
-5. Endpoints:
+2. Memo generation: The application allows users to select whether they would like to generate memo when they are choosing their desired parameters. Users are also able to download their memo to an editable Word document.
+
+3. Data Export: The application allows users to export the data tables and visualizations in various formats, including Excel (.xlsx), CSV, JPEG, PNG, etc.
+   
+5. Resource: The application allows users to interact with the embedded ArcGIS Instant App to view city resources.
+6. Endpoints:
     - /main/aboutus: Displays information about the project, including a description and objectives.
     - /main/data&visualize: The main page for data visualization, where users can select parameters and view data tables and charts.
     - /main/resources: Provides an embedded ArcGIS web app with interactive feature layers.

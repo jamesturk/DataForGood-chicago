@@ -494,15 +494,40 @@
             </script>
 
             <div class="map-container">
+                <h3>Heat Map of Selected Areas of Interest, Indicator, and Year(s)</h3>
+                <select id="map-select">
+                <option value="">Please select a year of heatmap to view</option>
                 {% for item in paths_titles %}
-                    <div style="margin-bottom: 20px;">
-                        <h2>{{ item.title }}</h2>
-                        <div class="iframe-wrapper">
-                            {% include item.path %}
-                        </div>
+                    <option value="{{ item.path }}">{{ item.title }}</option>
+                {% endfor %}
+                </select>
+            
+                <div id="map-display">
+                {% for item in paths_titles %}
+                    <div style="margin-bottom: 20px; display: none;" id="{{ item.path }}">
+                    <h2>{{ item.title }}</h2>
+                    <div class="iframe-wrapper">
+                        {% include item.path %}
+                    </div>
                     </div>
                 {% endfor %}
+                </div>
             </div>
+            
+            <script>
+                document.getElementById('map-select').addEventListener('change', function() {
+                var selectedPath = this.value;
+                var mapDivs = document.getElementById('map-display').children;
+            
+                for (var i = 0; i < mapDivs.length; i++) {
+                    if (mapDivs[i].id === selectedPath) {
+                    mapDivs[i].style.display = 'block';
+                    } else {
+                    mapDivs[i].style.display = 'none';
+                    }
+                }
+                });
+            </script>
 
             <div class="subtable" id="table">
                 <h3>Table and Visualization for Subgroups By Year</h3>

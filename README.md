@@ -18,7 +18,140 @@ Overall, the application aims to bridge the gap between data availability, acces
 - Maxine Xu: Project Manager, Supporting GIS Engineer, Supporting Backend Engineer/Data Engineer
 
 ### **Repository Layout**
-![image](https://github.com/uchicago-capp-30320/DataForGood-chicago/assets/111541644/188e7962-27e7-4355-97fd-5578f09373fb)
+```
+DataForGood-chicago
+├── LICENSE
+├── README.md
+├── dataforgood: contains code for the web app, including settings, URLs, views, models, templates, and static files.
+│   ├── admin_login_info.text
+│   ├── dataforgood
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-311.pyc
+│   │   │   ├── settings.cpython-311.pyc
+│   │   │   ├── urls.cpython-311.pyc
+│   │   │   └── wsgi.cpython-311.pyc
+│   │   ├── asgi.py
+│   │   ├── settings.py
+│   │   ├── urls.py
+│   │   └── wsgi.py
+│   ├── db.sqlite3
+│   ├── main: Django app for the main functionality of the web app
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-311.pyc
+│   │   │   ├── admin.cpython-311.pyc
+│   │   │   ├── apps.cpython-311.pyc
+│   │   │   ├── forms.cpython-311.pyc
+│   │   │   ├── models.cpython-311.pyc
+│   │   │   ├── urls.cpython-311.pyc
+│   │   │   ├── utils.cpython-311.pyc
+│   │   │   └── views.cpython-311.pyc
+│   │   ├── admin.py
+│   │   ├── apps.py
+│   │   ├── censustracts: shape files for Chicago's census tracts from City of Chicago's Data Portal
+│   │   ├── communityarea: shape files for Chicago's community areas from City of Chicago's Data Portal
+│   │   ├── forms.py
+│   │   ├── management:
+│   │   │   └── commands
+│   │   │       ├── __init__.py
+│   │   │       └── load_data.py
+│   │   ├── models.py
+│   │   ├── static: Directory for static files (e.g., CSS, images, JavaScript).
+│   │   │   ├── css
+│   │   │   │   └── style.css
+│   │   │   ├── images
+│   │   │   │   ├── banner.webp
+│   │   │   │   └── bg.jpg
+│   │   │   └── js
+│   │   │       └── script.js
+│   │   ├── templates: Directory for HTML templates used by Django.
+│   │   │   ├── aboutus.html
+│   │   │   ├── dataandvisualize.html
+│   │   │   ├── index.html
+│   │   │   ├── maps
+│   │   │   ├── memos
+│   │   │   ├── resources.html
+│   │   │   └── style.css
+│   │   ├── tests.py
+│   │   ├── urls.py
+│   │   ├── utils.py
+│   │   ├── views.py
+│   │   └── zipcode
+│   └── manage.py
+├── dfg_chi
+│   ├── __init__.py
+│   ├── backend
+│   │   ├── data_downloaded
+│   │   │   ├── Economics
+│   │   │   │   ├── MeanIncome
+│   │   │   │   │   ├── main
+│   │   │   │   │   └── sub
+│   │   │   │   ├── MedianIncome
+│   │   │   │   │   ├── main
+│   │   │   │   │   └── sub
+│   │   │   │   └── README
+│   │   │   ├── Education
+│   │   │   │   ├── Enrollment
+│   │   │   │   │   ├── main
+│   │   │   │   │   └── sub
+│   │   │   │   └── MedianEarning
+│   │   │   │       ├── main
+│   │   │   │       └── sub
+│   │   │   ├── Health
+│   │   │   │   ├── Disability
+│   │   │   │   │   ├── main
+│   │   │   │   │   └── sub
+│   │   │   │   └── Insurance
+│   │   │   │       ├── main
+│   │   │   │       └── sub
+│   │   │   ├── Housing
+│   │   │   │   ├── ContractRent
+│   │   │   │   │   ├── README
+│   │   │   │   │   ├── main
+│   │   │   │   │   └── sub
+│   │   │   │   ├── HouseholdType
+│   │   │   │   │   ├── README
+│   │   │   │   │   ├── main
+│   │   │   │   │   └── sub
+│   │   │   │   └── README
+│   │   │   ├── Population
+│   │   │   │   ├── MedianAge
+│   │   │   │   │   ├── main
+│   │   │   │   │   └── sub
+│   │   │   │   └── Races
+│   │   │   │       ├── main
+│   │   │   │       └── sub
+│   │   │   ├── census_tracts.csv
+│   │   │   └── data_5yr
+│   │   └── variables.json
+│   ├── gis
+│   │   └── README.md
+│   ├── main.py
+│   ├── static
+│   │   ├── README.md
+│   │   ├── bootstrap
+│   │   │   └── README.md
+│   │   ├── css
+│   │   │   └── README.md
+│   │   └── js
+│   │       └── README.md
+│   └── templates
+│       └── README.md
+├── docs: Documentation for our project.
+│   ├── architecture.md
+│   ├── changelog.md
+│   ├── decisions
+│   │   └── README.md
+│   ├── endpoints
+│   │   └── endpoints.md
+│   ├── index.md
+│   ├── models.md
+│   └── test
+├── homebrew
+├── poetry.lock
+└── pyproject.toml
+```
 __________________
 #### Issue Tracker: Using GitHub Issue Tracker
 

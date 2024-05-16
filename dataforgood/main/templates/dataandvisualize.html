@@ -494,7 +494,7 @@
             </script>
 
             <div class="map-container">
-                <h3>Condition of Selected Geographies</h3>
+                <h2>Condition of Selected Geographies</h2>
                 <select id="map-select">
                 <option value="">Select a year of heatmap to view</option>
                 {% for item in paths_titles %}
@@ -505,7 +505,6 @@
                 <div id="map-display">
                 {% for item in paths_titles %}
                     <div style="margin-bottom: 20px; display: none;" id="{{ item.path }}">
-                    <h2>{{ item.title }}</h2>
                     <div class="iframe-wrapper">
                         {% include item.path %}
                     </div>
@@ -530,7 +529,7 @@
             </script>
 
             <div class="subtable" id="table">
-                <h3>Table and Visualization for Subgroups By Year</h3>
+                <h2>Table and Visualization for Subgroups By Year</h2>
                 <text>* Please select a specific year and press submit to view the data table and visualization *</text>
                 <form id="subgroup-form">
                     {{ subgroup_form.as_p }}

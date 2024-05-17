@@ -1,7 +1,7 @@
 import uuid
 
 from django import forms
-from django.db.models import Avg
+from django.db.models import Avg, Sum
 from docx import Document
 from langchain.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
@@ -72,6 +72,19 @@ INDICATOR_UNIT_MAPPING = {
     "Insurance Coverage: Total Population": "Number of People",
     "Total Population and Race Group": "Number of People",
     "Median Age": "Years",
+}
+
+AGGERGATE_OPERATORS = {
+    "Median Income in the Past 12 Months (inflation-adjusted)": "Average",
+    "Mean Income in the Past 12 Months (inflation-adjusted)": "Average",
+    "Aggregate Contract Rent": "Average",
+    "Total Number of Households": "Total",
+    "Median Earnings in the Past 12 Months": "Average",
+    "Population 3 years and over enrolled in school": "Total",
+    "Total Population With Disability": "Total",
+    "Insurance Coverage: Total Population": "Total",
+    "Total Population and Race Group": "Total",
+    "Median Age": "Average",
 }
 
 SUBGROUP_NAMES = {
@@ -359,7 +372,7 @@ def convert_none_to_na_and_round(single_result):
         return round(single_result, 2)
 
 
-def adjust_row_len(results, years):
+def pad_na_str_maintable(results, years):
     """
     Checks the number of query result instances returned. If the number differs
     from the number of years queried by the user, append "NA"s to the end of the
@@ -377,6 +390,30 @@ def adjust_row_len(results, years):
     diff = len(years) - len(results)
     if diff != 0:
         lst.extend(["NA"] * diff)
+
+    return lst
+
+
+def pad_na_str_subtable(results, subgroup_lst):
+    """
+    Checks the number of query result instances returned. If the number differs
+    from the number of subgroups for the seleceted indicator, append "NA"s to 
+    the end of the row list to ensure row lengths are equal for each subgroup.
+
+    Inputs:
+        results (Queryset object): queryset of results for one geogrpahic unit
+        subgroup_lst (list of str): number of subgroups for the selected
+            indicator
+
+    Returns:
+        lst (lst of str): additional "NA" values in a list
+
+    """
+    lst = []
+    diff = len(subgroup_lst) - len(results)
+    if diff != 0:
+        lst.extend(["NA"] * diff)
+
     return lst
 
 
@@ -410,15 +447,25 @@ def create_table(geographic_level, geographic_unit, indicator, periods):
 
     if geographic_level == "City of Chicago":
         row = ["City Average"]
-        results = (
-            model.objects.values("year")
-            .filter(year__in=years)
-            .annotate(Avg("value"))
-            .order_by("year")
-        )
+
+        if AGGERGATE_OPERATORS[indicator] == 'Average':
+            results = (
+                model.objects.values("year")
+                .filter(year__in=years)
+                .annotate(agg_val = Avg("value"))
+                .order_by("year")
+            )
+        
+        elif AGGERGATE_OPERATORS[indicator] == 'Total':
+            results = (
+                model.objects.values("year")
+                .filter(year__in=years)
+                .annotate(agg_val = Sum("value"))
+                .order_by("year")
+            )
 
         for r in results:
-            row.append(round(r["value__avg"], 2))
+            row.append(round(r["agg_val"], 2))
         rows.append(row)
 
     # Creates a row for each geographic unit
@@ -436,7 +483,7 @@ def create_table(geographic_level, geographic_unit, indicator, periods):
                     row.append(r.value)
 
             # Handles cases where row lengths differ
-            row.extend(adjust_row_len(results, years))
+            row.extend(pad_na_str_maintable(results, years))
 
         elif geographic_level == "Zipcode":
             # Obtain tracts in the selected zipcode
@@ -446,39 +493,53 @@ def create_table(geographic_level, geographic_unit, indicator, periods):
                 .distinct()
             )
 
-            # Groupby year, sorted by year in ascending order and
-            # takes the mean of observations
-            results = (
-                model.objects.values("year")
-                .filter(census_tract_id__in=tracts_in_zipcode, year__in=years)
-                .annotate(Avg("value"))
-                .order_by("year")
-            )
+            if AGGERGATE_OPERATORS[indicator] == 'Average':
+                results = (
+                    model.objects.values("year")
+                    .filter(census_tract_id__in=tracts_in_zipcode, year__in=years)
+                    .annotate(agg_val = Avg("value"))
+                    .order_by("year")
+                )
+            
+            elif AGGERGATE_OPERATORS[indicator] == 'Total':
+                results = (
+                    model.objects.values("year")
+                    .filter(census_tract_id__in=tracts_in_zipcode, year__in=years)
+                    .annotate(agg_val = Sum("value"))
+                    .order_by("year")
+                )
 
             # Appends value for each year
             for r in results:
-                # row.append(round(r["value__avg"], 2))
-                row.append(convert_none_to_na_and_round(r["value__avg"]))
+                row.append(convert_none_to_na_and_round(r["agg_val"]))
 
             # Handles cases where row lengths differ
-            row.extend(adjust_row_len(results, years))
+            row.extend(pad_na_str_maintable(results, years))
 
         elif geographic_level == "Community":
-            # Groupby community area and year, sorted by year in ascending order
-            # and takes the mean of observations
-            results = (
-                model.objects.values("census_tract_id__community", "year")
-                .filter(census_tract_id__community=unit, year__in=years)
-                .annotate(Avg("value"))
-                .order_by("year")
-            )
+
+            if AGGERGATE_OPERATORS[indicator] == 'Average':
+                results = (
+                    model.objects.values("census_tract_id__community", "year")
+                    .filter(census_tract_id__community=unit, year__in=years)
+                    .annotate(agg_val = Avg("value"))
+                    .order_by("year")
+                )
+            
+            elif AGGERGATE_OPERATORS[indicator] == 'Total':
+                results = (
+                    model.objects.values("census_tract_id__community", "year")
+                    .filter(census_tract_id__community=unit, year__in=years)
+                    .annotate(agg_val = Sum("value"))
+                    .order_by("year")
+                )
 
             # Appends value for each year
             for r in results:
-                row.append(convert_none_to_na_and_round(r["value__avg"]))
+                row.append(convert_none_to_na_and_round(r["agg_val"]))
 
             # Handles cases where row lengths differ
-            row.extend(adjust_row_len(results, years))
+            row.extend(pad_na_str_maintable(results, years))
 
         rows.append(row)
 
@@ -502,9 +563,9 @@ def create_subgroup_table_rows(subgroup_lst, rows, results, years):
     for subgroup in subgroup_lst:
         row = [SUBGROUP_NAMES[subgroup]]
         for r in results.filter(sub_group_indicator_name=subgroup):
-            row.append(convert_none_to_na_and_round(r["value__avg"]))
+            row.append(convert_none_to_na_and_round(r["agg_val"]))
         # Handles cases where row lengths differ
-        row.extend(adjust_row_len(results, years))
+        row.extend(pad_na_str_subtable(results, subgroup_lst))
 
         rows.append(row)
 
@@ -551,12 +612,32 @@ def create_subgroup_tables(
         rows = []
 
         if geographic_level == "City of Chicago":
-            results = (
-                model.objects.values("sub_group_indicator_name")
-                .filter(year=one_year)
-                .annotate(Avg("value"))
-                .order_by("sub_group_indicator_name")
-            )
+
+            if AGGERGATE_OPERATORS[indicator] == 'Average':
+
+                # Adjust header for city-level to show whether an average or
+                # total sum was used for the indicator aggregation
+                headers = [geographic_level] + ['Average Value']
+
+                results = (
+                    model.objects.values("sub_group_indicator_name")
+                    .filter(year=one_year)
+                    .annotate(agg_val = Avg("value"))
+                    .order_by("sub_group_indicator_name")
+                )
+            
+            elif AGGERGATE_OPERATORS[indicator] == 'Total':
+
+                # Adjust header for city-level to show whether an average or
+                # total sum was used for the indicator aggregation
+                headers = [geographic_level] + ['Total Value']
+
+                results = (
+                    model.objects.values("sub_group_indicator_name")
+                    .filter(year=one_year)
+                    .annotate(agg_val = Sum("value"))
+                    .order_by("sub_group_indicator_name")
+                )
 
             rows = create_subgroup_table_rows(
                 subgroup_lst, rows, results, years
@@ -568,7 +649,7 @@ def create_subgroup_tables(
                     census_tract_id__in=geographic_unit, year=one_year
                 )
                 .values("census_tract_id", "sub_group_indicator_name")
-                .annotate(Avg("value"))
+                .annotate(agg_val = Avg("value"))
                 .order_by("sub_group_indicator_name", "census_tract_id")
             )
 
@@ -589,20 +670,30 @@ def create_subgroup_tables(
                     .distinct()
                 )
 
-                # Obtain subgroup averages for one zipcode
-                results = (
-                    model.objects.filter(
-                        census_tract_id__in=tracts_in_zipcode, year=one_year
+                if AGGERGATE_OPERATORS[indicator] == 'Average':
+                    results = (
+                        model.objects.filter(
+                            census_tract_id__in=tracts_in_zipcode, year=one_year
+                        )
+                        .values("sub_group_indicator_name")
+                        .annotate(agg_val = Avg("value"))
+                        .order_by("sub_group_indicator_name")
                     )
-                    .values("sub_group_indicator_name")
-                    .annotate(Avg("value"))
-                    .order_by("sub_group_indicator_name")
-                )
+                
+                elif AGGERGATE_OPERATORS[indicator] == 'Total':
+                    results = (
+                        model.objects.filter(
+                            census_tract_id__in=tracts_in_zipcode, year=one_year
+                        )
+                        .values("sub_group_indicator_name")
+                        .annotate(agg_val = Sum("value"))
+                        .order_by("sub_group_indicator_name")
+                    )
 
                 # Append results to subgroup dictionary
                 for r in results:
                     subgroup_dct[r["sub_group_indicator_name"]].append(
-                        convert_none_to_na_and_round(r["value__avg"])
+                        convert_none_to_na_and_round(r["agg_val"])
                     )
 
             # Convert dictionary values to list of lists for table
@@ -612,19 +703,36 @@ def create_subgroup_tables(
             ]
 
         if geographic_level == "Community":
-            results = (
-                model.objects.filter(
-                    census_tract_id__community__in=geographic_unit,
-                    year=one_year,
+
+            if AGGERGATE_OPERATORS[indicator] == 'Average':
+                results = (
+                    model.objects.filter(
+                        census_tract_id__community__in=geographic_unit,
+                        year=one_year,
+                    )
+                    .values(
+                        "census_tract_id__community", "sub_group_indicator_name"
+                    )
+                    .annotate(agg_val = Avg("value"))
+                    .order_by(
+                        "sub_group_indicator_name", "census_tract_id__community"
+                    )
                 )
-                .values(
-                    "census_tract_id__community", "sub_group_indicator_name"
+            
+            elif AGGERGATE_OPERATORS[indicator] == 'Total':
+                results = (
+                    model.objects.filter(
+                        census_tract_id__community__in=geographic_unit,
+                        year=one_year,
+                    )
+                    .values(
+                        "census_tract_id__community", "sub_group_indicator_name"
+                    )
+                    .annotate(agg_val = Sum("value"))
+                    .order_by(
+                        "sub_group_indicator_name", "census_tract_id__community"
+                    )
                 )
-                .annotate(Avg("value"))
-                .order_by(
-                    "sub_group_indicator_name", "census_tract_id__community"
-                )
-            )
 
             rows = create_subgroup_table_rows(
                 subgroup_lst, rows, results, years

@@ -40,16 +40,37 @@ x_center = -87.333050
 
 @register.filter
 def get_item(dictionary, key):
+    """
+    Retrieves the value associated with the specified key from the given dictionary.
+
+    Args:
+        dictionary (dict): The dictionary to retrieve the value from.
+        key: The key to lookup in the dictionary.
+
+    Returns:
+        The value associated with the key in the dictionary, or None if the key is not found.
+    """
     return dictionary.get(key)
 
 
-# Main Page - /main/
+# Main Page - /main/ ?do we still need it?
 def index(request):
     return render(request, "index.html")
 
 
 # About Us Page - /main/about_us/
 def aboutus(request):
+    """
+    Renders the About Us page of the application.
+
+    This function handles the request for the About Us page URL (/main/about_us/) and renders the "aboutus.html" template.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The rendered "aboutus.html" template as an HTTP response.
+    """
     return render(request, "aboutus.html")
 
 
@@ -57,6 +78,48 @@ def aboutus(request):
 # Data and Visualize with FORMS - /main/data&visualize/
 @csrf_protect
 def dataandvisualize(request):
+    """
+    Renders the data and visualization page of the application.
+
+    This function handles the request for the data and visualization page URL (/main/dataandvisualize/).
+    It processes the user's selections from the search form, retrieves the corresponding data, and generates
+    visualizations based on the selected parameters.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The rendered "dataandvisualize.html" template with the processed data and visualizations.
+
+    Functionality:
+        1. Initializes the search form and subgroup form.
+        2. Handles the GET request and validates the form data.
+        3. Extracts the selected variables from the search form.
+        4. Creates the main table and subgroup tables based on the selected parameters.
+        5. Prepares data for the main chart and subgroup charts.
+        6. Generates heat maps for Community Area, Zip Code, and Tract levels.
+        7. If selected, generates a memo about the data using the WriteMemo class and saves it.
+        8. Renders the "dataandvisualize.html" template with the processed data, visualizations, and memo (if generated).
+
+    Template:
+        - dataandvisualize.html: The template file for displaying the data and visualizations.
+
+    Form Classes:
+        - SearchForm: The form class for handling user selections.
+        - SubgroupForm: The form class for handling subgroup selections.
+
+    Helper Functions:
+        - create_table_title: Creates the title for the main table.
+        - create_table: Creates the main table based on the selected parameters.
+        - create_subgroup_tables: Creates the subgroup tables based on the selected parameters.
+        - save_memo: Saves the generated memo to a file.
+
+    Note:
+        - The function uses various helper functions and classes to process the data and generate visualizations.
+        - It assumes the existence of certain file paths and mappings (e.g., communityshape_path, INDICATOR_UNIT_MAPPING).
+        - The WriteMemo class is used to generate a memo about the data using an external API (open_ai_key).
+    """
+
     form = SearchForm(request.GET or None)
     subgroup_form = SubgroupForm(year_choices=[])
 
@@ -308,4 +371,15 @@ def dataandvisualize(request):
 
 # Resources Page - /main/resources/
 def resources(request):
+    """
+    Renders the resources page of the application.
+
+    This function handles the request for the resources page URL (/main/resources/) and renders the "resources.html" template.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The rendered "resources.html" template as an HTTP response.
+    """
     return render(request, "resources.html")

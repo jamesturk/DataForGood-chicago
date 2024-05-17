@@ -11,11 +11,11 @@ Key components include:
 Overall, the application aims to bridge the gap between data availability, accessibility, and its effective utilization by nonprofit organizations. It seeks to empower nonprofits to make informed decisions, optimize resource navigation and allocation, and enhance their impact on the communities they serve.
 
 ### **Team Member and Team Roles**
-- Bryan Foo Suon Chuang: Lead Frontend Engineer, Supporting QA Engineer, Supporting GIS Engineer
-- Yujie Jiang: Lead Backend Engineer/Data Engineer, Lead UI/UX Designer
-- Ruoyi Wu: Lead QA Engineer, Supporting Backend Engineer/Data Engineer
-- Yueyue Wang: Lead GIS Engineer, Chief Architect, Supporting Frontend Engineer
-- Maxine Xu: Project Manager, Supporting GIS Engineer, Supporting Backend Engineer/Data Engineer
+- Bryan Foo Suon Chuang: Lead Frontend Engineer, Supporting QA Engineer
+- Yujie Jiang: Supporting Backend Engineer/Data Engineer, Lead UI/UX Designer
+- Ruoyi Wu: Lead QA Engineer, Lead Backend Engineer
+- Yueyue Wang: Chief Architect, Supporting Frontend Engineer, Supporting GIS Engineer, 
+- Maxine Xu: Project Manager, Lead GIS Engineer, Supporting Backend Engineer/Data Engineer
 
 ### **Repository Layout**
 ```
@@ -165,11 +165,28 @@ Steps:
 __________________
 
 #### **Packages used**
-Check our pyproject.toml file for all the packages used. Some include:
+Check our pyproject.toml file for all the packages used and their relative version. Some include:
 - census
 - django
 - pandas
-
+- python
+- pre-commit
+- pytest
+- requests
+- census
+- pandas
+- psycopg2-binary
+- django-extensions
+- django-environ
+- geopandas
+- matplotlib
+- numpy
+- folium
+- python-dotenv
+- langchain-openai
+- python-docx
+- langchain
+- docx
 
 #### **Data Source**
 
@@ -188,7 +205,7 @@ Way of Collection: Downloaded shapefiles
 #### **Credentials**
 ##### Getting Census API key
 - Request an API key with this link: https://api.census.gov/data/key_signup.html
-- Once you have a key, create a new file called `.env` in the root directory of this project by running `touch .env`.
+- Once you have the keys, please create a new file called `.env` in the root directory of this project by running `touch .env`.
 - In this .env file, assign the key to the variable `CENSUS_API_KEY` without spaces or quotations (i.e. CENSUS_API_KEY=123456789)
 
 - An example of requesting census data and shapefile to map the results are in [this notebook](census_test.ipynb)
@@ -197,9 +214,21 @@ Way of Collection: Downloaded shapefiles
 - Create an OpenAI account or sign into your existing account here: https://openai.com/blog/openai-api/
 - Once you have a key, assign the key to the variable `open_ai_key` without spaces or quotations (i.e. open_ai_key=123456789)
 
+#### **.env Setup**
+- The path of `.env` should look like: DataForGood-chicago/dataforgood/.env
+- The format in `.env` should look like the following:
+SECRET_KEY=
+DB_NAME=
+DB_USER=
+DB_PASSWORD=
+DB_HOST=
+DB_PORT=
+open_ai_key=
+CENSUS_API_KEY=
 __________________
 
-#### **Launching our web application**
+#### **Launching the Web Application**
+
 
 1. Clone the repository.
 ```
@@ -207,13 +236,21 @@ git clone git@github.com:uchicago-capp-30320/DataForGood-chicago.git
 ```
 2. Navigate to the repository.
 ```
-cd ./dataforgood
+cd ./DataForGood-chicago/dataforgood
 ```
-3. Establish Dependencies.
+3. If you haven't done it already:
+```
+pip install poetry
+```
+4. Set the path of downloaded poetry
+```
+export PATH="$HOME/.local/bin:$PATH"
+```
+5. Establish Dependencies.
 ```
 poetry install
 ```
-4. Activate the virtual environment.
+6. Activate the virtual environment.
 ```
 poetry shell
 ```

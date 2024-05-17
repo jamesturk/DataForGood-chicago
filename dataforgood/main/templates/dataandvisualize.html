@@ -357,7 +357,7 @@
                 }
             };
         </script>
-
+        
         <div class="2" id="content">
             <div class="maintable" id="table">
                 <h3>{{ table_title }}</h3>
@@ -817,5 +817,14 @@
                 </a>
             {% endif %}
         </div>
+        <script>
+            $(document).ready(function() {
+                $('#content').hide();
+                $('#search-form').on('submit', function(event) {
+                    event.preventDefault();
+                    $('#content').show();
+                })
+                });
+        </script>
 </body>
 </html>

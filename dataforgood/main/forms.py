@@ -87,6 +87,45 @@ category_to_indicators = {
 
 
 class SearchForm(forms.Form):
+    """
+    A form class for handling user selections on the search page.
+
+    Attributes:
+        geographic_level (ChoiceField): A dropdown field for selecting the geographic level.
+        tract (MultipleChoiceField): A multiple choice field for selecting census tracts.
+        zipcode (MultipleChoiceField): A multiple choice field for selecting zip codes.
+        community (MultipleChoiceField): A multiple choice field for selecting communities.
+        category (ChoiceField): A dropdown field for selecting the data category.
+        economic_indicators (MultipleChoiceField): A multiple choice field for selecting economic indicators.
+        education_indicators (MultipleChoiceField): A multiple choice field for selecting education indicators.
+        health_indicators (MultipleChoiceField): A multiple choice field for selecting health indicators.
+        housing_indicators (MultipleChoiceField): A multiple choice field for selecting housing indicators.
+        population_indicators (MultipleChoiceField): A multiple choice field for selecting population indicators.
+        year (MultipleChoiceField): A multiple choice field for selecting the year(s) of data.
+        generate_memo (ChoiceField): A dropdown field for selecting whether to generate a memo.
+
+    Methods:
+        __init__(self, *args, **kwargs): Initializes the form and sets the required attribute of certain fields to False.
+
+    Helper Functions:
+        create_multiple_choice_geo: Creates a multiple choice field for geographic selections.
+        create_multiple_choice_indicator: Creates a multiple choice field for indicator selections.
+
+    Form Fields:
+        - geographic_level: A dropdown field for selecting the geographic level.
+        - tract: A multiple choice field for selecting census tracts.
+        - zipcode: A multiple choice field for selecting zip codes.
+        - community: A multiple choice field for selecting communities.
+        - category: A dropdown field for selecting the data category.
+        - economic_indicators: A multiple choice field for selecting economic indicators.
+        - education_indicators: A multiple choice field for selecting education indicators.
+        - health_indicators: A multiple choice field for selecting health indicators.
+        - housing_indicators: A multiple choice field for selecting housing indicators.
+        - population_indicators: A multiple choice field for selecting population indicators.
+        - year: A multiple choice field for selecting the year(s) of data.
+        - generate_memo: A dropdown field for selecting whether to generate a memo.
+    """
+
     def __init__(self, *args, **kwargs):
         super(SearchForm, self).__init__(*args, **kwargs)
         self.fields["tract"].required = False
@@ -147,6 +186,21 @@ class SearchForm(forms.Form):
 
 
 class SubgroupForm(forms.Form):
+    """
+    A form class for handling subgroup selections based on the available years.
+
+    Attributes:
+        subgroup_year (ChoiceField): A dropdown field for selecting the subgroup year.
+
+    Methods:
+        __init__(self, year_choices, *args, **kwargs): Initializes the form and sets the choices for the subgroup_year field based on the provided year_choices.
+
+    Form Fields:
+        - subgroup_year: A dropdown field for selecting the subgroup year.
+
+    Note:
+        - The choices for the subgroup_year field are dynamically set based on the year_choices provided during form initialization.
+    """
     subgroup_year = forms.ChoiceField(
         choices=[], widget=forms.Select(attrs={"class": "form-control"})
     )

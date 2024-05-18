@@ -17,9 +17,8 @@ from .forms import SearchForm, SubgroupForm
 from .utils import (
     INDICATOR_UNIT_MAPPING,
     WriteMemo,
-    create_subgroup_tables,
-    create_table,
-    create_table_title,
+    MainTable,
+    SubgroupTable,
     save_memo,
 )
 
@@ -167,23 +166,25 @@ def dataandvisualize(request):
             ]
         )
         # Create main table context variables
-        table_title = create_table_title(indicator, year)
-        field = create_table(
-            geograpahic_level, geographic_unit, indicator, year
-        )
+        maintable = MainTable(
+                    geograpahic_level,
+                    geographic_unit,
+                    indicator,
+                    year
+                )
+        field = maintable.table
+        table_title = maintable.table_title
 
         # Create subtable context variables
-        multi_year_subtable_field = create_subgroup_tables(
-            geograpahic_level, geographic_unit, indicator, year
+        subgroup_tables = SubgroupTable(
+            geograpahic_level,
+            geographic_unit,
+            indicator,
+            year
         )
 
-        # print("### MAIN TABLE ###")
-        # print("Header:", field["headers"])
-        # print("Rows:", field["rows"])
-
-        # print("### SUBGROUP TABLES DICTIONARY ###")
-        # for year, dct in multi_year_subtable_field.items():
-        #     print(year, dct)
+        multi_year_subtable_field = subgroup_tables.many_subtables
+    
         # Prepare data for the main chart
         chart_data = {
             "categories": field["headers"][1:],  # Years

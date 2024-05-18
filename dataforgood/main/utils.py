@@ -358,8 +358,11 @@ class MainTable:
         """
         indicator_formatted = self.indicator.replace("_", " ").title() + " for "
 
-        for period in self.periods:
-            indicator_formatted += period + ", "
+        for idx, period in enumerate(self.periods):
+            if idx == len(self.periods) - 1:
+                indicator_formatted += period
+            else:
+                indicator_formatted += period + ", "
 
         return indicator_formatted
 

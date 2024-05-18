@@ -477,7 +477,7 @@
             </div>
 
             {% if memo_path %}
-                <a href="{{ memo_path }}" download="memo.docx">
+                <a href="{% url 'download_memo' %}?memo_path={{ memo_path }}">
                     <button>Download Memo</button>
                 </a>
             {% endif %}

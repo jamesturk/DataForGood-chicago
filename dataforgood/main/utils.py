@@ -213,10 +213,10 @@ class WriteMemo:
         selected years) and will be explaining the output of
         the analysis.
 
-        Read the four pieces of information provided. Explain any key findings
-        that you find. Base your analysis solely on the information provided in
-        this prompt. Don't make anything up, just provide coherent basic analysis
-        based on the information.
+        Read the four pieces of information provided and explain any key 
+        findings you identify. Base your analysis solely on the details 
+        given in this prompt. Do not make assumptions; provide a
+        clear and truthful analysis based on the provided information.
         -----
 
         Information: {information}

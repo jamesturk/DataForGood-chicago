@@ -1,8 +1,9 @@
 $(document).ready(function() {
     var multiYearSubtableField = {{ multi_year_subtable_field|safe }};
     var subgroupChartData = {{ subgroup_chart_data|safe }};
+    console.log(subgroupChartData,'subgroupChartData')
     var currentView = 'tract';
-
+    $('.con3').hide();  //maybe deletion needed
     function updateSubgroupTable(year) {
         var subtableData = multiYearSubtableField[year];
         $('#subtable-year').text(year);
@@ -16,7 +17,7 @@ $(document).ready(function() {
         subtableData.rows.forEach(function(row) {
             var rowHtml = '<tr>';
             row.forEach(function(value) {
-                rowHtml += '<td>' + value + '</td>';
+                rowHtml += '<th>' + value + '</th>';
             });
             rowHtml += '</tr>';
             $('#subtable-rows').append(rowHtml);

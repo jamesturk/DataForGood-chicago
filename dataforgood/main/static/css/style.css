@@ -134,7 +134,7 @@ footer p {
 /* data & viz */
 
 .scrollable-checkbox-list {
-    max-height: 150px; /* Set the desired maximum height */
+    max-height: 250px; /* Set the desired maximum height */
     overflow-y: auto;  /* Enable vertical scrolling */
     border: 1px solid #ccc; /* Optional: Add a border for better visibility */
     padding: 20px 5px; /* Optional: Add padding for better spacing */
@@ -200,8 +200,11 @@ footer p {
 }
 .table1 th{
     padding: 15px 0;
+    border: 1px solid black;
+    text-align: center;
 }
 .table1 td{
+    border: 1px solid black;
     padding: 15px 0;
 }
 .map-container {
@@ -352,7 +355,7 @@ h2{
 
 select{
     height: 40px;
-    width: 200px;
+    width: 400px;
     border: 2px solid #0C4180;
     padding: 0 10px;
     outline: none;
@@ -375,4 +378,13 @@ select{
 }
 .sm_title{
     font-family: "Bebas Neue", sans-serif;
+}
+
+.feature>li{
+    font-family: "Commissioner", sans-serif;}
+
+.form-control{
+    width: 200px !important;
+    display: block;
+    margin: auto;
 }

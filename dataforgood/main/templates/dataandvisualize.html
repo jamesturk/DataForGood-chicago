@@ -38,7 +38,7 @@
                     SELECT geographic level, category, and year through dropdowns to pick the data you'd like to retrieve, and choose whether you want to generate a memo based on your selected criterias then click Submit.
                 </p>
                 <h3>Portal Features</h3>
-                <ul>
+                <ul class="feature">
                     <li>Interactive querying of socio-economic indicators by geography, category, and year.</li>
                     <li>Visualization of comparing the conditions of neighborhoods yearly.</li>
                     <li>Mapping functionality to view spatial patterns and their evolution.</li>
@@ -113,7 +113,7 @@
                         <label for="generate">Generate Memo</label>
                         {{ form.generate_memo }}
                     </div>
-                    <button type="submit"> Submit </button>
+                    <button type="submit" class="btn_submit"> Submit </button>
                     <button type="reset">Clear Form</button>
                 </form>
             </div>
@@ -121,11 +121,12 @@
 
         <script src = "{% static 'js/form_selection_part1.js' %}"> </script>
         <script src = "{% static 'js/form_selection_part2.js' %}"> </script>
+
         <div class="con3">
             <div class="2" id="content">
                 <div class="maintable" id="table">
                     <h3 class="h3_title">{{ table_title }}</h3>
-                    <table class="table1" border="1" id="main-table" cellpadding="0" cellspacing="0">
+                    <table class="table1" border="1" id="main-table">
                         <tr>
                             {% for header in field.headers %}
                             <th>{{ header }}</th>
@@ -155,7 +156,7 @@
 
                 <script>
                     document.addEventListener('DOMContentLoaded', function () {
-                        var chartData = {{ chart_data|safe }};
+                        var chartData = {{ chart_data | safe }};
                         var currentView = 'category'; // Initialize the current view to 'category'
 
                         function updateMainChart() {
@@ -266,7 +267,7 @@
 
                 <script>
                     document.addEventListener('DOMContentLoaded', function () {
-                        var chartData = {{ chart_data|safe }};
+                        var chartData = {{ chart_data | safe }};
                         var currentView = 'category'; // Initialize the current view to 'category'
                         var chart; // Declare the chart variable
 
@@ -347,8 +348,8 @@
                 <div id="subtable-chart-container"></div>
                 <script>
                     $(document).ready(function() {
-                        var multiYearSubtableField = {{ multi_year_subtable_field|safe }};
-                        var subgroupChartData = {{ subgroup_chart_data|safe }};
+                        var multiYearSubtableField = {{ multi_year_subtable_field | safe }};
+                        var subgroupChartData = {{ subgroup_chart_data | safe }};
                         var currentView = 'tract';
 
                         function updateSubgroupTable(year) {
@@ -491,15 +492,16 @@
 
     </div>
 
-    <!-- <script>
+    <script>
         $(document).ready(function() {
-            $('#content').hide();
-            $('#search-form').on('submit', function(event) {
-                event.preventDefault();
-                $('#content').show();
-            })
+            let src=location.search
+            if(src==""){
+                $('.con3').hide()
+            }else{
+                $('.con3').show()
+            }
             });
-    </script> -->
+    </script>
     <footer>© 2024 DataForGood - Chicago. All rights by </footer>
     </body>
 </html>

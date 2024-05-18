@@ -98,7 +98,7 @@ Welcome to the DataForGood Chicago project! This document will provide you with 
 2. Memo generation: The application allows users to select whether they would like to generate memo when they are choosing their desired parameters. Users are also able to download their memo to an editable Word document.
 
 3. Data Export: The application allows users to export the data tables and visualizations in various formats, including Excel (.xlsx), CSV, JPEG, PNG, etc.
-   
+
 5. Resource: The application allows users to interact with the embedded ArcGIS Instant App to view city resources.
 6. Endpoints:
     - /main/aboutus: Displays information about the project, including a description and objectives.

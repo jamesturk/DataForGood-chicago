@@ -10,6 +10,8 @@
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://code.highcharts.com/highcharts.js"></script>
         <script src="https://code.highcharts.com/modules/exporting.js"></script>
+        <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
     </head>
 
     <header>
@@ -112,9 +114,9 @@
             </form>
         </div>
 
-        <script src = "{% static 'js/form_selection_part1.js' %}"> </script> 
+        <script src = "{% static 'js/form_selection_part1.js' %}"> </script>
         <script src = "{% static 'js/form_selection_part2.js' %}"> </script>
-        
+
         <div class="2" id="content">
             <div class="maintable" id="table">
                 <h3>{{ table_title }}</h3>
@@ -138,56 +140,16 @@
                 </div>
             </div>
 
-
-            <script>
-                function downloadTableAsExcel() {
-                    var table = document.getElementById("main-table");
-                    var wb = XLSX.utils.table_to_book(table);
-                    XLSX.writeFile(wb, "main-table.xlsx");
-                }
-
-                function downloadTableAsCSV() {
-                    var table = document.getElementById("main-table");
-                    var csv = [];
-                    var rows = table.querySelectorAll("tr");
-
-                    for (var i = 0; i < rows.length; i++) {
-                        var row = [], cols = rows[i].querySelectorAll("td, th");
-
-                        for (var j = 0; j < cols.length; j++) {
-                            row.push(cols[j].innerText);
-                        }
-
-                        csv.push(row.join(","));
-                    }
-
-                    var csvString = csv.join("\n");
-                    var blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
-
-                    if (navigator.msSaveBlob) { // IE 10+
-                        navigator.msSaveBlob(blob, "main-table.csv");
-                    } else {
-                        var link = document.createElement("a");
-                        if (link.download !== undefined) {
-                            var url = URL.createObjectURL(blob);
-                            link.setAttribute("href", url);
-                            link.setAttribute("download", "main-table.csv");
-                            link.style.visibility = 'hidden';
-                            document.body.appendChild(link);
-                            link.click();
-                            document.body.removeChild(link);
-                        }
-                    }
-                }
-            </script>
+            <script src = "{% static 'js/download_main_table.js' %}"> </script>
 
             <div>
                 <button id="toggle-main-view">Switch Axes</button>
             </div>
 
             <div id="chart-container"></div>
+
             <script>
-            document.addEventListener('DOMContentLoaded', function () {
+                document.addEventListener('DOMContentLoaded', function () {
                 var chartData = {{ chart_data|safe }};
                 var currentView = 'category'; // Initialize the current view to 'category'
 
@@ -261,7 +223,7 @@
                     <option value="{{ item.path }}">{{ item.title }}</option>
                 {% endfor %}
                 </select>
-            
+
                 <div id="map-display">
                 {% for item in paths_titles %}
                     <div style="margin-bottom: 20px; display: none;" id="{{ item.path }}">
@@ -272,21 +234,8 @@
                 {% endfor %}
                 </div>
             </div>
-            
-            <script>
-                document.getElementById('map-select').addEventListener('change', function() {
-                var selectedPath = this.value;
-                var mapDivs = document.getElementById('map-display').children;
-            
-                for (var i = 0; i < mapDivs.length; i++) {
-                    if (mapDivs[i].id === selectedPath) {
-                    mapDivs[i].style.display = 'block';
-                    } else {
-                    mapDivs[i].style.display = 'none';
-                    }
-                }
-                });
-            </script>
+
+            <script src = "{% static 'js/update_heatmap.js' %}"> </script>
 
             <div class="subtable" id="table">
                 <h2>Table and Visualization for Subgroups By Year</h2>
@@ -312,120 +261,79 @@
 
             <script>
                 document.addEventListener('DOMContentLoaded', function () {
-                    var chartData = {{ chart_data|safe }};
-                    var currentView = 'category'; // Initialize the current view to 'category'
-                    var chart; // Declare the chart variable
+                var chartData = {{ chart_data|safe }};
+                var currentView = 'category'; // Initialize the current view to 'category'
+                var chart; // Declare the chart variable
 
-                    function updateMainChart() {
-                        var categories = chartData.categories;
-                        var series = chartData.series;
-                        var seriesData;
+                function updateMainChart() {
+                    var categories = chartData.categories;
+                    var series = chartData.series;
+                    var seriesData;
 
-                        if (currentView === 'category') {
-                            seriesData = series;
-                        } else {
-                            seriesData = categories.map(function(category, index) {
-                                var categoryData = series.map(function(serie) {
-                                    return serie.data[index];
-                                });
-
-                                return {
-                                    name: category,
-                                    data: categoryData
-                                };
-                            });
-                        }
-
-                        var chartOptions = {
-                            chart: {
-                                type: 'bar'
-                            },
-                            title: {
-                                text: '{{ table_title }}',
-                                style: {
-                                    fontFamily: 'Arial, sans-serif', // Change the font family
-                                    fontSize: '25px' // Change the font size
-                                }
-                            },
-                            xAxis: {
-                                categories: currentView === 'category' ? categories : series.map(function(serie) {
-                                    return serie.name;
-                                })
-                            },
-                            yAxis: {
-                                min: 0,
-                                title: {
-                                    text: 'Value'
-                                }
-                            },
-                            legend: {
-                                reversed: true
-                            },
-                            plotOptions: {
-                                series: {
-                                    stacking: 'normal'
-                                }
-                            },
-                            series: seriesData
-                        };
-
-                        if (chart) {
-                            chart.destroy();
-                        }
-                        chart = Highcharts.chart('chart-container', chartOptions);
-                    }
-
-                    updateMainChart();
-
-                    document.getElementById('toggle-main-view').addEventListener('click', function() {
-                        currentView = currentView === 'category' ? 'series' : 'category';
-                        updateMainChart();
-                    });
-
-                });
-            </script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
-            <script>
-                function downloadSubtableAsExcel() {
-                    var table = document.getElementById("subtable");
-                    var wb = XLSX.utils.table_to_book(table);
-                    XLSX.writeFile(wb, "subtable.xlsx");
-                }
-
-                function downloadSubtableAsCSV() {
-                    var table = document.getElementById("subtable");
-                    var csv = [];
-                    var rows = table.querySelectorAll("tr");
-
-                    for (var i = 0; i < rows.length; i++) {
-                        var row = [], cols = rows[i].querySelectorAll("td, th");
-
-                        for (var j = 0; j < cols.length; j++) {
-                            row.push(cols[j].innerText);
-                        }
-
-                        csv.push(row.join(","));
-                    }
-
-                    var csvString = csv.join("\n");
-                    var blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
-
-                    if (navigator.msSaveBlob) { // IE 10+
-                        navigator.msSaveBlob(blob, "subtable.csv");
+                    if (currentView === 'category') {
+                        seriesData = series;
                     } else {
-                        var link = document.createElement("a");
-                        if (link.download !== undefined) {
-                            var url = URL.createObjectURL(blob);
-                            link.setAttribute("href", url);
-                            link.setAttribute("download", "subtable.csv");
-                            link.style.visibility = 'hidden';
-                            document.body.appendChild(link);
-                            link.click();
-                            document.body.removeChild(link);
-                        }
+                        seriesData = categories.map(function(category, index) {
+                            var categoryData = series.map(function(serie) {
+                                return serie.data[index];
+                            });
+
+                            return {
+                                name: category,
+                                data: categoryData
+                            };
+                        });
                     }
+
+                    var chartOptions = {
+                        chart: {
+                            type: 'bar'
+                        },
+                        title: {
+                            text: '{{ table_title }}',
+                            style: {
+                                fontFamily: 'Arial, sans-serif', // Change the font family
+                                fontSize: '25px' // Change the font size
+                            }
+                        },
+                        xAxis: {
+                            categories: currentView === 'category' ? categories : series.map(function(serie) {
+                                return serie.name;
+                            })
+                        },
+                        yAxis: {
+                            min: 0,
+                            title: {
+                                text: 'Value'
+                            }
+                        },
+                        legend: {
+                            reversed: true
+                        },
+                        plotOptions: {
+                            series: {
+                                stacking: 'normal'
+                            }
+                        },
+                        series: seriesData
+                    };
+
+                    if (chart) {
+                        chart.destroy();
+                    }
+                    chart = Highcharts.chart('chart-container', chartOptions);
                 }
+
+                updateMainChart();
+
+                document.getElementById('toggle-main-view').addEventListener('click', function() {
+                    currentView = currentView === 'category' ? 'series' : 'category';
+                    updateMainChart();
+                });
+
+            });
             </script>
+            <script src = "{% static 'js/download_subtable.js' %}"></script>
 
             <div>
                 <button id="toggle-view">Switch Axes</button>
@@ -574,7 +482,7 @@
                 </a>
             {% endif %}
         </div>
-        <script>
+        <!-- <script>
             $(document).ready(function() {
                 $('#content').hide();
                 $('#search-form').on('submit', function(event) {
@@ -582,6 +490,6 @@
                     $('#content').show();
                 })
                 });
-        </script>
+        </script> -->
 </body>
 </html>

@@ -201,6 +201,7 @@ class SubgroupForm(forms.Form):
     Note:
         - The choices for the subgroup_year field are dynamically set based on the year_choices provided during form initialization.
     """
+
     subgroup_year = forms.ChoiceField(
         choices=[], widget=forms.Select(attrs={"class": "form-control"})
     )

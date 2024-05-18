@@ -22,7 +22,7 @@ function downloadSubtableAsCSV() {
     var csvString = csv.join("\n");
     var blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
 
-    if (navigator.msSaveBlob) { 
+    if (navigator.msSaveBlob) { // IE 10+
         navigator.msSaveBlob(blob, "subtable.csv");
     } else {
         var link = document.createElement("a");

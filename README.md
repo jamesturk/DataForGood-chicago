@@ -14,7 +14,7 @@ Overall, the application aims to bridge the gap between data availability, acces
 - Bryan Foo Suon Chuang: Lead Frontend Engineer, Supporting QA Engineer
 - Yujie Jiang: Supporting Backend Engineer/Data Engineer, Lead UI/UX Designer
 - Ruoyi Wu: Lead QA Engineer, Lead Backend Engineer
-- Yueyue Wang: Chief Architect, Supporting Frontend Engineer, Supporting GIS Engineer, 
+- Yueyue Wang: Chief Architect, Supporting Frontend Engineer, Supporting GIS Engineer,
 - Maxine Xu: Project Manager, Lead GIS Engineer, Supporting Backend Engineer/Data Engineer
 
 ### **Repository Layout**

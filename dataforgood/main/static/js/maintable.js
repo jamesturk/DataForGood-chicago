@@ -1,11 +1,11 @@
 document.addEventListener('DOMContentLoaded', function () {
     var chartData = {{ chart_data|safe }};
     var currentView = 'category'; // Initialize the current view to 'category'
-    var chart; // Declare the chart variable
 
     function updateMainChart() {
         var categories = chartData.categories;
         var series = chartData.series;
+
         var seriesData;
 
         if (currentView === 'category') {
@@ -28,11 +28,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 type: 'bar'
             },
             title: {
-                text: '{{ table_title }}',
-                style: {
-                    fontFamily: 'Arial, sans-serif', // Change the font family
-                    fontSize: '25px' // Change the font size
-                }
+                text: '{{ table_title }}'
             },
             xAxis: {
                 categories: currentView === 'category' ? categories : series.map(function(serie) {
@@ -56,10 +52,7 @@ document.addEventListener('DOMContentLoaded', function () {
             series: seriesData
         };
 
-        if (chart) {
-            chart.destroy();
-        }
-        chart = Highcharts.chart('chart-container', chartOptions);
+        Highcharts.chart('chart-container', chartOptions);
     }
 
     updateMainChart();
@@ -68,5 +61,4 @@ document.addEventListener('DOMContentLoaded', function () {
         currentView = currentView === 'category' ? 'series' : 'category';
         updateMainChart();
     });
-
 });

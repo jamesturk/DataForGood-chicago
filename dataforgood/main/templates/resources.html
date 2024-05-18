@@ -13,16 +13,18 @@
         <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Commissioner:wght@100..900&display=swap" rel="stylesheet">
     </head>
     <body>
-    <header>
-        <nav class="navbar">
-            <div class="logo">Data For Good - Chicago</div>
-            <ul class="nav-links">
-                <li><a href="{% url 'aboutus' %}">About Us</a></li>
-                <li><a href="{% url 'dataandvisualize' %}">Data & Visualize</a></li>
-                <li><a href="{% url 'resources' %}">Resource</a></li>
-            </ul>
-        </nav>
-    </header>
+        <header>
+            <nav class="navbar">
+                <div class="logo">
+                    <a href="{% url 'aboutus' %}">Data For Good - Chicago</a>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="{% url 'aboutus' %}">About Us</a></li>
+                    <li><a href="{% url 'dataandvisualize' %}">Data & Visualize</a></li>
+                    <li><a href="{% url 'resources' %}">Resource</a></li>
+                </ul>
+            </nav>
+        </header>
     <main>
         <div class="instructions">
             <h1 class="city-title">City Resources</h1>

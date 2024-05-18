@@ -9,18 +9,20 @@
         <title>Data & Visualize </title>
         <link rel="stylesheet" href="{% static 'css/style.css' %}">
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script src="https://code.highcharts.com/highcharts.js"></script>
-        <script src="https://code.highcharts.com/modules/exporting.js"></script>
-        <script src="https://code.highcharts.com/modules/accessibility.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Commissioner:wght@100..900&display=swap" rel="stylesheet">
+        <script src="https://code.highcharts.com/highcharts.js"></script> 
+        <script src="https://code.highcharts.com/modules/exporting.js"></script> 
+        <script src="https://code.highcharts.com/modules/accessibility.js"></script> 
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script> 
+        <link rel="preconnect" href="https://fonts.googleapis.com"> 
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> 
+        <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Commissioner:wght@100..900&display=swap" rel="stylesheet"> 
     </head>
     <body>
     <header>
         <nav class="navbar">
-            <div class="logo">Data For Good - Chicago</div>
+            <div class="logo">
+                <a href="{% url 'aboutus' %}">Data For Good - Chicago</a>
+            </div>
             <ul class="nav-links">
                 <li><a href="{% url 'aboutus' %}">About Us</a></li>
                 <li><a href="{% url 'dataandvisualize' %}">Data & Visualize</a></li>

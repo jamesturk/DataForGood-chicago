@@ -27,11 +27,17 @@ h1,h2,h3,h4{
 }
 
 .navbar .logo {
-    font-size: 2.2rem;
+    font-size: 2rem;
     font-weight: bold;
     font-family: "Bebas Neue", sans-serif;
 }
 
+.navbar .logo a {
+    color: #fff !important; 
+    text-decoration: none !important;
+    font-family: 'Bebas Neue', sans-serif !important; 
+    font-size: 2rem !important; 
+}
 .navbar .nav-links {
     list-style: none;
     display: flex;
@@ -111,11 +117,6 @@ section p {
 section ul {
     list-style: none;
     padding: 0;
-}
-
-section ul li {
-    font-size: 1rem;
-    margin-bottom: 0.5rem;
 }
 
 /* Footer styles */
@@ -313,6 +314,7 @@ input[type=submit]{
 .h3_title{
     text-align: left;
 }
+
 p{
     font-family: "Commissioner", sans-serif;
     margin-top: 10px;
@@ -387,4 +389,23 @@ select{
     width: 200px !important;
     display: block;
     margin: auto;
+}
+
+section ul li {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.features ul li {
+    font-family: "Commissioner", sans-serif;
+    font-weight: 300; 
+}
+
+.team ul li {
+    font-family: "Commissioner", sans-serif;
+    font-weight: 300; 
+}
+
+.team ul li strong {
+    font-weight: bold; 
 }

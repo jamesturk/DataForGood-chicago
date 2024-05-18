@@ -9,13 +9,13 @@
         <title>Data & Visualize </title>
         <link rel="stylesheet" href="{% static 'css/style.css' %}">
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script src="https://code.highcharts.com/highcharts.js"></script> 
-        <script src="https://code.highcharts.com/modules/exporting.js"></script> 
-        <script src="https://code.highcharts.com/modules/accessibility.js"></script> 
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script> 
-        <link rel="preconnect" href="https://fonts.googleapis.com"> 
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> 
-        <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Commissioner:wght@100..900&display=swap" rel="stylesheet"> 
+        <script src="https://code.highcharts.com/highcharts.js"></script>
+        <script src="https://code.highcharts.com/modules/exporting.js"></script>
+        <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Commissioner:wght@100..900&display=swap" rel="stylesheet">
     </head>
     <body>
     <header>
@@ -266,81 +266,7 @@
                 </div>
 
                 <div id="subtable-chart-container"></div>
-
-                <script>
-                    document.addEventListener('DOMContentLoaded', function () {
-                        var chartData = {{ chart_data | safe }};
-                        var currentView = 'category'; // Initialize the current view to 'category'
-                        var chart; // Declare the chart variable
-
-                        function updateMainChart() {
-                            var categories = chartData.categories;
-                            var series = chartData.series;
-                            var seriesData;
-
-                            if (currentView === 'category') {
-                                seriesData = series;
-                            } else {
-                                seriesData = categories.map(function(category, index) {
-                                    var categoryData = series.map(function(serie) {
-                                        return serie.data[index];
-                                    });
-
-                                    return {
-                                        name: category,
-                                        data: categoryData
-                                    };
-                                });
-                            }
-
-                            var chartOptions = {
-                                chart: {
-                                    type: 'bar'
-                                },
-                                title: {
-                                    text: '{{ table_title }}',
-                                    style: {
-                                        fontFamily: 'Arial, sans-serif', // Change the font family
-                                        fontSize: '25px' // Change the font size
-                                    }
-                                },
-                                xAxis: {
-                                    categories: currentView === 'category' ? categories : series.map(function(serie) {
-                                        return serie.name;
-                                    })
-                                },
-                                yAxis: {
-                                    min: 0,
-                                    title: {
-                                        text: 'Value'
-                                    }
-                                },
-                                legend: {
-                                    reversed: true
-                                },
-                                plotOptions: {
-                                    series: {
-                                        stacking: 'normal'
-                                    }
-                                },
-                                series: seriesData
-                            };
-
-                            if (chart) {
-                                chart.destroy();
-                            }
-                            chart = Highcharts.chart('chart-container', chartOptions);
-                        }
-
-                        updateMainChart();
-
-                        document.getElementById('toggle-main-view').addEventListener('click', function() {
-                            currentView = currentView === 'category' ? 'series' : 'category';
-                            updateMainChart();
-                        });
-
-                    });
-                </script>
+                <script src = "{% static 'js/subtable.js' %}"></script>
                 <script src = "{% static 'js/download_subtable.js' %}"></script>
 
                 <div style="text-align: center">
@@ -349,31 +275,33 @@
 
                 <div id="subtable-chart-container"></div>
                 <script>
-                    $(document).ready(function() {
-                        var multiYearSubtableField = {{ multi_year_subtable_field | safe }};
-                        var subgroupChartData = {{ subgroup_chart_data | safe }};
+                    document.addEventListener('DOMContentLoaded', function() {
+                        var multiYearSubtableField = {{ multi_year_subtable_field|safe }};
+                        var subgroupChartData = {{ subgroup_chart_data|safe }};
                         var currentView = 'tract';
 
                         function updateSubgroupTable(year) {
                             var subtableData = multiYearSubtableField[year];
-                            $('#subtable-year').text(year);
-                            $('#subtable-headers').empty();
-                            $('#subtable-rows').empty();
+                            document.getElementById('subtable-year').textContent = year;
+                            document.getElementById('subtable-headers').innerHTML = '';
+                            document.getElementById('subtable-rows').innerHTML = '';
 
                             subtableData.headers.forEach(function(header) {
-                                $('#subtable-headers').append('<th>' + header + '</th>');
+                                var th = document.createElement('th');
+                                th.textContent = header;
+                                document.getElementById('subtable-headers').appendChild(th);
                             });
 
                             subtableData.rows.forEach(function(row) {
-                                var rowHtml = '<tr>';
+                                var tr = document.createElement('tr');
                                 row.forEach(function(value) {
-                                    rowHtml += '<td>' + value + '</td>';
+                                    var th = document.createElement('th');
+                                    th.textContent = value;
+                                    tr.appendChild(th);
                                 });
-                                rowHtml += '</tr>';
-                                $('#subtable-rows').append(rowHtml);
+                                document.getElementById('subtable-rows').appendChild(tr);
                             });
 
-                            // Update the subtable chart based on the current view
                             updateChart(year, subtableData);
                         }
 
@@ -424,24 +352,14 @@
                                         text: 'Value'
                                     },
                                     stackLabels: {
-                                        enabled: true,
-                                        style: {
-                                            fontWeight: 'bold',
-                                            color: ( // theme
-                                                Highcharts.defaultOptions.title.style &&
-                                                Highcharts.defaultOptions.title.style.color
-                                            ) || 'gray'
-                                        }
+                                        enabled: true
                                     }
                                 },
                                 legend: {
                                     align: 'right',
-                                    x: -30,
                                     verticalAlign: 'top',
-                                    y: 25,
                                     floating: true,
-                                    backgroundColor:
-                                        Highcharts.defaultOptions.legend.backgroundColor || 'white',
+                                    backgroundColor: 'white',
                                     borderColor: '#CCC',
                                     borderWidth: 1,
                                     shadow: false
@@ -464,20 +382,21 @@
                             Highcharts.chart('subtable-chart-container', chartOptions);
                         }
 
-                        $('#subgroup-form').submit(function(event) {
+                        document.getElementById('subgroup-form').addEventListener('submit', function(event) {
                             event.preventDefault();
-                            var selectedYear = $('#id_subgroup_year').val();
+                            var selectedYear = document.getElementById('id_subgroup_year').value;
                             updateSubgroupTable(selectedYear);
                         });
 
-                        $('#toggle-view').click(function() {
+                        document.getElementById('toggle-view').addEventListener('click', function() {
                             currentView = currentView === 'tract' ? 'raceGroup' : 'tract';
-                            var selectedYear = $('#id_subgroup_year').val();
+                            var selectedYear = document.getElementById('id_subgroup_year').value;
                             var subtableData = multiYearSubtableField[selectedYear];
                             updateChart(selectedYear, subtableData);
                         });
                     });
                 </script>
+
                 <div>
                     <h2>Generated Memo:</h2>
                     <p><strong>This memo was generated using OpenAI's GPT 3.5-Turbo model. While efforts have been made to ensure accuracy, please review and verify the content carefully.</strong></p>

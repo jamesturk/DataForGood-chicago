@@ -213,8 +213,8 @@ class WriteMemo:
         selected years) and will be explaining the output of
         the analysis.
 
-        Read the four pieces of information provided and explain any key 
-        findings you identify. Base your analysis solely on the details 
+        Read the four pieces of information provided and explain any key
+        findings you identify. Base your analysis solely on the details
         given in this prompt. Do not make assumptions; provide a
         clear and truthful analysis based on the provided information.
         -----
@@ -274,6 +274,7 @@ class MainTable:
     """
     Class object to represent a main data table on the webapp.
     """
+
     def __init__(self, geographic_level, geographic_units, indicator, periods):
         """
         Inputs:
@@ -283,7 +284,7 @@ class MainTable:
                 to the geographic level selected by the user in the form
             indicator (str): name of indicator selected by the user in the form
             preiods (list of str): periods(s) selected by the user
-        
+
         Returns: None
         """
         # Query Variables
@@ -340,7 +341,7 @@ class MainTable:
         years = []
         for p in self.periods:
             years.append(int(p[5:]))
-        
+
         years = self.convert_list_to_tuple(years)
 
         return years
@@ -391,9 +392,9 @@ class MainTable:
                 .annotate(agg_val=Sum("value"))
                 .order_by("year")
             )
-        
+
         return results
-    
+
     def conduct_query_zipcode_level(self, one_zipcode):
         """
         Conducts a Django model query to obtain the zipcode-level average or sum
@@ -406,10 +407,10 @@ class MainTable:
             results (Django Queryset): list of query result instances
         """
         tracts_in_zipcode = list(
-                    TractZipCode.objects.filter(zip_code=one_zipcode)
-                    .values_list("tract_id")
-                    .distinct()
-                )
+            TractZipCode.objects.filter(zip_code=one_zipcode)
+            .values_list("tract_id")
+            .distinct()
+        )
 
         if self.aggregate_operation == "Average":
             results = (
@@ -430,12 +431,12 @@ class MainTable:
                 .annotate(agg_val=Sum("value"))
                 .order_by("year")
             )
-        
+
         return results
 
     def conduct_query_tract_level(self, one_tract):
         """
-        Conducts a Django model query to obtain the tract-level value for a 
+        Conducts a Django model query to obtain the tract-level value for a
         given indicator for one or more periods.
 
         Inputs:
@@ -444,14 +445,15 @@ class MainTable:
         Returns:
             results (Django Queryset): list of query result instances
         """
-        results = self.model.objects.filter(census_tract_id=one_tract, 
-                                            year__in=self.years)
-        
+        results = self.model.objects.filter(
+            census_tract_id=one_tract, year__in=self.years
+        )
+
         return results
-    
+
     def conduct_query_community_level(self, one_community):
         """
-        Conducts a Django model query to obtain the community-level value for a 
+        Conducts a Django model query to obtain the community-level value for a
         given indicator for one or more periods.
 
         Inputs:
@@ -463,7 +465,10 @@ class MainTable:
         if self.aggregate_operation == "Average":
             results = (
                 self.model.objects.values("census_tract_id__community", "year")
-                .filter(census_tract_id__community=one_community, year__in=self.years)
+                .filter(
+                    census_tract_id__community=one_community,
+                    year__in=self.years,
+                )
                 .annotate(agg_val=Avg("value"))
                 .order_by("year")
             )
@@ -471,13 +476,16 @@ class MainTable:
         elif self.aggregate_operation == "Total":
             results = (
                 self.model.objects.values("census_tract_id__community", "year")
-                .filter(census_tract_id__community=one_community, year__in=self.years)
+                .filter(
+                    census_tract_id__community=one_community,
+                    year__in=self.years,
+                )
                 .annotate(agg_val=Sum("value"))
                 .order_by("year")
             )
-        
+
         return results
-    
+
     def create_one_row(self, results, unit):
         """
         Creates one row of the table for a given geographic unit.
@@ -485,7 +493,7 @@ class MainTable:
         Inputs:
             results (Django Queryset): list of query result instances
             unit (str ot int): a single geographic unit
-        
+
         Returns
             row (list): query result for one geographic unit across multiple
                 periods
@@ -496,22 +504,22 @@ class MainTable:
 
         if self.geographic_level == "Tract":
             for idx, r in enumerate(results):
-                    if r.value is None:
-                        continue
-                    else:
-                        row[idx] = round(r.value, 2)
+                if r.value is None:
+                    continue
+                else:
+                    row[idx] = round(r.value, 2)
 
         else:
             for idx, r in enumerate(results):
                 if r["agg_val"] is None:
-                        continue
+                    continue
                 else:
                     row[idx] = round(r["agg_val"], 2)
-            
+
         row = [unit] + row
-        
-        return row    
-    
+
+        return row
+
     def create_rows(self):
         """
         Generates a dictionary to be used a context variables in the html file to
@@ -527,8 +535,10 @@ class MainTable:
 
         if self.geographic_level == "City of Chicago":
             results = self.conduct_query_city_level()
-            row = self.create_one_row(results, "City " + self.aggregate_operation)
-            
+            row = self.create_one_row(
+                results, "City " + self.aggregate_operation
+            )
+
             rows.append(row)
 
         for unit in self.geographic_units:
@@ -549,11 +559,11 @@ class MainTable:
         return rows
 
 
-
 class SubgroupTable:
     """
     Class object to represent a series of subgroup data tables on the webapp.
     """
+
     def __init__(self, geographic_level, geographic_units, indicator, periods):
         """
         Inputs:
@@ -563,7 +573,7 @@ class SubgroupTable:
                 to the geographic level selected by the user in the form
             indicator (str): name of indicator selected by the user in the form
             preiods (list of str): periods(s) selected by the user
-        
+
         Returns: None
         """
         # Query Variables
@@ -579,7 +589,7 @@ class SubgroupTable:
         # Subgroup Table Output Variables
         self.subtable_headers = self.create_subtable_headers()
         self.many_subtables = self.create_all_years_tables()
-    
+
     def create_subtable_headers(self):
         """
         Creates the header row of the table.
@@ -594,8 +604,8 @@ class SubgroupTable:
             if self.aggregate_operation == "Average":
                 headers = ["City of Chicago", "City Average"]
             elif self.aggregate_operation == "Total":
-                headers = ["City of Chicago", "City Total"]            
-        
+                headers = ["City of Chicago", "City Total"]
+
         else:
             headers.append(self.geographic_level)
             headers.extend(self.geographic_units)
@@ -623,7 +633,6 @@ class SubgroupTable:
 
         return query_tup
 
-
     def convert_periods_to_years(self):
         """
         Takes in the 5-year estimate period(s) selected by the user and retains
@@ -645,7 +654,6 @@ class SubgroupTable:
 
         return self.convert_list_to_tuple(years)
 
-
     def get_model_subgroups(self):
         """
         Generates a list of unique subgroups for selected geographic units
@@ -659,13 +667,13 @@ class SubgroupTable:
         subgroups = self.model.objects.values_list(
             "sub_group_indicator_name"
         ).distinct()
-        
+
         subgroups_lst = []
         for subgroup in subgroups:
             subgroups_lst.append(subgroup[0])
-        
+
         return subgroups_lst
-    
+
     def conduct_query_city_level(self, one_year):
         """
         Conducts a Django model query to obtain the city-level average or sum
@@ -692,9 +700,9 @@ class SubgroupTable:
                 .annotate(agg_val=Sum("value"))
                 .order_by("sub_group_indicator_name")
             )
-        
+
         return results
-    
+
     def conduct_query_zipcode_level(self, zipcode, one_year):
         """
         Conducts a Django model query to obtain the zipcode-level average or sum
@@ -731,9 +739,9 @@ class SubgroupTable:
                 .annotate(agg_val=Sum("value"))
                 .order_by("sub_group_indicator_name")
             )
-        
+
         return results
-    
+
     def conduct_query_community_level(self, one_year):
         """
         Conducts a Django model query to obtain the community-level average or sum
@@ -774,9 +782,9 @@ class SubgroupTable:
                     "sub_group_indicator_name", "census_tract_id__community"
                 )
             )
-        
+
         return results
-    
+
     def conduct_query_tract_level(self, one_year):
         """
         Conducts a Django model query to obtain the tract-level average or sum
@@ -789,14 +797,14 @@ class SubgroupTable:
             results (Django Queryset): list of query result instances
         """
         results = (
-                self.model.objects.filter(
-                    census_tract_id__in=self.geographic_units, year=one_year
-                )
-                .values("census_tract_id", "sub_group_indicator_name")
-                .annotate(agg_val=Avg("value"))
-                .order_by("sub_group_indicator_name", "census_tract_id")
+            self.model.objects.filter(
+                census_tract_id__in=self.geographic_units, year=one_year
             )
-        
+            .values("census_tract_id", "sub_group_indicator_name")
+            .annotate(agg_val=Avg("value"))
+            .order_by("sub_group_indicator_name", "census_tract_id")
+        )
+
         return results
 
     def create_rows(self, results, rows):
@@ -809,7 +817,7 @@ class SubgroupTable:
             results (Django queryset): list of query result instances
 
         Returns:
-            rows (list of lists): a single list with each subgroup stored as a 
+            rows (list of lists): a single list with each subgroup stored as a
                 list
         """
         for subgroup in self.model_subgroups:
@@ -817,17 +825,19 @@ class SubgroupTable:
                 row = ["NA"]
             else:
                 row = ["NA"] * len(self.geographic_units)
-            
-            for idx, r in enumerate(results.filter(sub_group_indicator_name=subgroup)):
+
+            for idx, r in enumerate(
+                results.filter(sub_group_indicator_name=subgroup)
+            ):
                 if r["agg_val"] is None:
-                        continue
+                    continue
                 else:
                     row[idx] = round(r["agg_val"], 2)
             row = [SUBGROUP_NAMES[subgroup]] + row
             rows.append(row)
 
         return rows
-    
+
     def create_all_years_tables(self):
         """
         Creates multiple subgroup tables, one table for each year.
@@ -844,7 +854,7 @@ class SubgroupTable:
         for period_str, one_year in zip(self.periods, self.years):
             one_year_table = self.create_one_year_table(one_year)
             all_years_tables[period_str] = one_year_table
-        
+
         return all_years_tables
 
     def create_one_year_table(self, one_year):
@@ -871,8 +881,10 @@ class SubgroupTable:
 
         if self.geographic_level == "Zipcode":
             # Create a dictionary to save values for each subgroup
-            subgroup_dct = {subgroup: ["NA"] * len(self.geographic_units) 
-                            for subgroup in self.model_subgroups}
+            subgroup_dct = {
+                subgroup: ["NA"] * len(self.geographic_units)
+                for subgroup in self.model_subgroups
+            }
 
             # Conduct querying for each zipcode
             for idx, zipcode in enumerate(self.geographic_units):
@@ -882,8 +894,10 @@ class SubgroupTable:
                         continue
                     else:
                         subgroup_indicator_name = r["sub_group_indicator_name"]
-                        subgroup_dct[subgroup_indicator_name][idx] = round(r["agg_val"], 2)
-            
+                        subgroup_dct[subgroup_indicator_name][idx] = round(
+                            r["agg_val"], 2
+                        )
+
             # Convert dictionary values to list of lists for table
             rows = [
                 [SUBGROUP_NAMES[subgroup]] + row
@@ -894,7 +908,7 @@ class SubgroupTable:
             results = self.conduct_query_community_level(one_year)
             rows = self.create_rows(results, rows)
 
-        return {"headers":self.subtable_headers, "rows":sorted(rows)}
+        return {"headers": self.subtable_headers, "rows": sorted(rows)}
 
 
 # HELPER FUNCTIONS FOR FORMS.PY #

@@ -33,10 +33,10 @@ h1,h2,h3,h4{
 }
 
 .navbar .logo a {
-    color: #fff !important; 
+    color: #fff !important;
     text-decoration: none !important;
-    font-family: 'Bebas Neue', sans-serif !important; 
-    font-size: 2rem !important; 
+    font-family: 'Bebas Neue', sans-serif !important;
+    font-size: 2rem !important;
 }
 .navbar .nav-links {
     list-style: none;
@@ -398,14 +398,14 @@ section ul li {
 
 .features ul li {
     font-family: "Commissioner", sans-serif;
-    font-weight: 300; 
+    font-weight: 300;
 }
 
 .team ul li {
     font-family: "Commissioner", sans-serif;
-    font-weight: 300; 
+    font-weight: 300;
 }
 
 .team ul li strong {
-    font-weight: bold; 
+    font-weight: bold;
 }

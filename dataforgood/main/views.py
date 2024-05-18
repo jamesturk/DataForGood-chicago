@@ -6,19 +6,19 @@ import folium
 import geopandas as gpd
 import numpy as np
 import pandas as pd
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.template.defaulttags import register
 from django.views.decorators.csrf import csrf_protect
-from django.http import HttpResponse
 
 from dataforgood.settings import BASE_DIR
 
 from .forms import SearchForm, SubgroupForm
 from .utils import (
     INDICATOR_UNIT_MAPPING,
-    WriteMemo,
     MainTable,
     SubgroupTable,
+    WriteMemo,
     save_memo,
 )
 
@@ -167,24 +167,18 @@ def dataandvisualize(request):
         )
         # Create main table context variables
         maintable = MainTable(
-                    geograpahic_level,
-                    geographic_unit,
-                    indicator,
-                    year
-                )
+            geograpahic_level, geographic_unit, indicator, year
+        )
         field = maintable.table
         table_title = maintable.table_title
 
         # Create subtable context variables
         subgroup_tables = SubgroupTable(
-            geograpahic_level,
-            geographic_unit,
-            indicator,
-            year
+            geograpahic_level, geographic_unit, indicator, year
         )
 
         multi_year_subtable_field = subgroup_tables.many_subtables
-    
+
         # Prepare data for the main chart
         chart_data = {
             "categories": field["headers"][1:],  # Years
@@ -386,13 +380,18 @@ def resources(request):
     """
     return render(request, "resources.html")
 
+
 def download_memo(request):
-    if 'memo_path' in request.GET:
-        memo_path = request.GET['memo_path']
+    if "memo_path" in request.GET:
+        memo_path = request.GET["memo_path"]
         if os.path.exists(memo_path):
-            with open(memo_path, 'rb') as docx_file:
-                response = HttpResponse(docx_file.read(), content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-                response['Content-Disposition'] = f'attachment; filename="memo.docx"'
+            with open(memo_path, "rb") as docx_file:
+                response = HttpResponse(
+                    docx_file.read(),
+                    content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                )
+                response[
+                    "Content-Disposition"
+                ] = 'attachment; filename="memo.docx"'
                 return response
     return HttpResponse("Memo not found", status=404)
-

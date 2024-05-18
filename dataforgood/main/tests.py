@@ -1,10 +1,7 @@
 from django.test import TestCase
 
 from .models import CensusTracts, TractZipCode
-from .utils import (
-    MAIN_MODEL_MAPPING,
-    create_table,
-)
+from .utils import MAIN_MODEL_MAPPING, create_table
 
 
 INDICATORS_LIST = list(MAIN_MODEL_MAPPING.keys())

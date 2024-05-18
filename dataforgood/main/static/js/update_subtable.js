@@ -1,29 +1,32 @@
-$(document).ready(function() {
+document.addEventListener('DOMContentLoaded', function() {
     var multiYearSubtableField = {{ multi_year_subtable_field|safe }};
     var subgroupChartData = {{ subgroup_chart_data|safe }};
-    console.log(subgroupChartData,'subgroupChartData')
+    console.log(subgroupChartData, 'subgroupChartData');
     var currentView = 'tract';
-    $('.con3').hide();  //maybe deletion needed
+    document.querySelector('.con3').classList.add('hidden');
+
     function updateSubgroupTable(year) {
         var subtableData = multiYearSubtableField[year];
-        $('#subtable-year').text(year);
-        $('#subtable-headers').empty();
-        $('#subtable-rows').empty();
+        document.getElementById('subtable-year').textContent = year;
+        document.getElementById('subtable-headers').innerHTML = '';
+        document.getElementById('subtable-rows').innerHTML = '';
 
         subtableData.headers.forEach(function(header) {
-            $('#subtable-headers').append('<th>' + header + '</th>');
+            var th = document.createElement('th');
+            th.textContent = header;
+            document.getElementById('subtable-headers').appendChild(th);
         });
 
         subtableData.rows.forEach(function(row) {
-            var rowHtml = '<tr>';
+            var tr = document.createElement('tr');
             row.forEach(function(value) {
-                rowHtml += '<th>' + value + '</th>';
+                var th = document.createElement('th');
+                th.textContent = value;
+                tr.appendChild(th);
             });
-            rowHtml += '</tr>';
-            $('#subtable-rows').append(rowHtml);
+            document.getElementById('subtable-rows').appendChild(tr);
         });
 
-        // Update the subtable chart based on the current view
         updateChart(year, subtableData);
     }
 
@@ -74,24 +77,14 @@ $(document).ready(function() {
                     text: 'Value'
                 },
                 stackLabels: {
-                    enabled: true,
-                    style: {
-                        fontWeight: 'bold',
-                        color: ( // theme
-                            Highcharts.defaultOptions.title.style &&
-                            Highcharts.defaultOptions.title.style.color
-                        ) || 'gray'
-                    }
+                    enabled: true
                 }
             },
             legend: {
                 align: 'right',
-                x: -30,
                 verticalAlign: 'top',
-                y: 25,
                 floating: true,
-                backgroundColor:
-                    Highcharts.defaultOptions.legend.backgroundColor || 'white',
+                backgroundColor: 'white',
                 borderColor: '#CCC',
                 borderWidth: 1,
                 shadow: false
@@ -114,15 +107,15 @@ $(document).ready(function() {
         Highcharts.chart('subtable-chart-container', chartOptions);
     }
 
-    $('#subgroup-form').submit(function(event) {
+    document.getElementById('subgroup-form').addEventListener('submit', function(event) {
         event.preventDefault();
-        var selectedYear = $('#id_subgroup_year').val();
+        var selectedYear = document.getElementById('id_subgroup_year').value;
         updateSubgroupTable(selectedYear);
     });
 
-    $('#toggle-view').click(function() {
+    document.getElementById('toggle-view').addEventListener('click', function() {
         currentView = currentView === 'tract' ? 'raceGroup' : 'tract';
-        var selectedYear = $('#id_subgroup_year').val();
+        var selectedYear = document.getElementById('id_subgroup_year').value;
         var subtableData = multiYearSubtableField[selectedYear];
         updateChart(selectedYear, subtableData);
     });

@@ -12,5 +12,5 @@ urlpatterns = [
     path("aboutus/", views.aboutus, name="aboutus"),
     # ex: /main/resources
     path("resources/", views.resources, name="resources"),
-    path('download-memo/', views.download_memo, name='download_memo')
+    path("download-memo/", views.download_memo, name="download_memo"),
 ]

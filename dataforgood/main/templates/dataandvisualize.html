@@ -476,13 +476,13 @@
                     });
                 </script>
                 <div>
-                    <h3>Generated Memo:</h3>
+                    <h2>Generated Memo:</h2>
                     <p><strong>This memo was generated using OpenAI's GPT 3.5-Turbo model. While efforts have been made to ensure accuracy, please review and verify the content carefully.</strong></p>
                     <p style="white-space: pre-line;">{{ memo }}</p>
                 </div>
 
                 {% if memo_path %}
-                <a href="{{ memo_path }}" download="memo.docx">
+                <a href="{% url 'download_memo' %}?memo_path={{ memo_path }}">
                     <button>Download Memo</button>
                 </a>
                 {% endif %}

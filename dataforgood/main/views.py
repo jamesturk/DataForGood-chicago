@@ -9,6 +9,7 @@ import pandas as pd
 from django.shortcuts import render
 from django.template.defaulttags import register
 from django.views.decorators.csrf import csrf_protect
+from django.http import HttpResponse
 
 from dataforgood.settings import BASE_DIR
 
@@ -383,3 +384,14 @@ def resources(request):
         HttpResponse: The rendered "resources.html" template as an HTTP response.
     """
     return render(request, "resources.html")
+
+def download_memo(request):
+    if 'memo_path' in request.GET:
+        memo_path = request.GET['memo_path']
+        if os.path.exists(memo_path):
+            with open(memo_path, 'rb') as docx_file:
+                response = HttpResponse(docx_file.read(), content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+                response['Content-Disposition'] = f'attachment; filename="memo.docx"'
+                return response
+    return HttpResponse("Memo not found", status=404)
+

@@ -1,12 +1,19 @@
 /* General styles */
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
 body, html {
-    font-family: 'Arial', sans-serif;
-    line-height: 1.6;
+    font-family: 'Bebas Neue', sans-serif;
+    line-height: 1.8;
     color: #333;
     margin: 0;
     padding: 0;
-    height: 100%;
-    width: 100%;
+}
+
+h1,h2,h3,h4{
+    font-family: "Bebas Neue", sans-serif;
 }
 
 /* Navbar styles */
@@ -15,13 +22,14 @@ body, html {
     justify-content: space-between;
     align-items: center;
     padding: 1rem 2rem;
-    background-color: #0056b3;
+    background-color: #0C4180;
     color: #fff;
 }
 
 .navbar .logo {
-    font-size: 1.5rem;
+    font-size: 2.2rem;
     font-weight: bold;
+    font-family: "Bebas Neue", sans-serif;
 }
 
 .navbar .nav-links {
@@ -37,24 +45,26 @@ body, html {
 .navbar .nav-links a {
     color: #fff;
     text-decoration: none;
-    font-size: 1rem;
+    font-size: 1.2rem;
+    font-family: "Bebas Neue", sans-serif;
+    transition: all 0.3s;
 }
 
 .navbar .nav-links a:hover {
-    text-decoration: underline;
+    /*text-decoration: underline;*/
+    color: #333333;
 }
 
 /* Hero section styles */
 
 .hero {
-    background: url('{% static 'images/bg.jpg' %}') no-repeat center center/cover;
     color: #fff;
     text-align: center;
     padding: 5rem 2rem;
 }
 
 .hero-content {
-    color: #0056b3;
+    color: #0C4180;
     max-width: 600px;
     margin: auto;
 }
@@ -70,7 +80,7 @@ body, html {
 }
 
 .explore-button {
-    background-color: #0056b3;
+    background-color: #0C4180;
     color: #fff;
     padding: 0.75rem 1.5rem;
     text-decoration: none;
@@ -127,7 +137,16 @@ footer p {
     max-height: 150px; /* Set the desired maximum height */
     overflow-y: auto;  /* Enable vertical scrolling */
     border: 1px solid #ccc; /* Optional: Add a border for better visibility */
-    padding: 5px; /* Optional: Add padding for better spacing */
+    padding: 20px 5px; /* Optional: Add padding for better spacing */
+    margin-bottom: 20px;
+    background: white;
+    border-radius: 10px;
+    transition: all 0.3s;
+    font-family: "Commissioner", sans-serif;
+}
+.scrollable-checkbox-list:hover{
+    background: #0C4180;
+    color: white;
 }
 
 .scrollable-checkbox-list input[type="checkbox"] {
@@ -137,9 +156,9 @@ footer p {
 .query-form {
     font-size: 15px;
     flex: 1; /* Takes 1/3 of the screen */
-    max-width: 100%;
+    width: 100%;
     margin: 0 auto;
-    width: 1000px; /* Ensure the container only takes up as much space as needed */
+     /* Ensure the container only takes up as much space as needed */
     text-align: center;/* Optional: Add a border for separation */
 }
 
@@ -154,7 +173,7 @@ footer p {
 
 .maintable {
     margin: 0 auto;
-    width: 1500px; /* Ensure the container only takes up as much space as needed */
+    width: 100%; /* Ensure the container only takes up as much space as needed */
     padding: 20px;
     text-align: center;
 }
@@ -174,38 +193,43 @@ footer p {
 }
 
 .table1 {
-    margin: 20px;
-    width: 1500px; /* Ensure the container only takes up as much space as needed */
+    margin: 20px 0;
+    width:100%; /* Ensure the container only takes up as much space as needed */
     padding: 0;
     text-align: center;
 }
-
+.table1 th{
+    padding: 15px 0;
+}
+.table1 td{
+    padding: 15px 0;
+}
 .map-container {
     font-size: 2rem;
-    margin: 10px;
-    width: 2000px; /* Ensure the container only takes up as much space as needed */
+    margin: 10px 0;
+    width: 100%; /* Ensure the container only takes up as much space as needed */
     padding: 0;
     text-align: center;
 }
 
 .iframe-wrapper {
     margin: 0 auto;
-    width: 1000px;
-    height: 370px; /* Ensure the container only takes up as much space as needed */
+    width: 100%;
+    height: 450px; /* Ensure the container only takes up as much space as needed */
     padding: 0;
     text-align: center;
 }
 
 .subtable {
     margin: 0 auto;
-    width: 1500px; /* Ensure the container only takes up as much space as needed */
+    width: 100%; /* Ensure the container only takes up as much space as needed */
     padding: 0;
     text-align: center;
 }
 
 .table2 {
-    margin: 20px;
-    width: 1500px; /* Ensure the container only takes up as much space as needed */
+    margin: 20px 0;
+    width: 100%; /* Ensure the container only takes up as much space as needed */
     padding: 0;
     text-align: center;
 }
@@ -213,7 +237,7 @@ footer p {
 .subtable-chart-container {
     font-size: 20rem;
     margin: 20px;
-    width: 1500px; /* Ensure the container only takes up as much space as needed */
+    width: 100%; /* Ensure the container only takes up as much space as needed */
     padding: 0;
     text-align: center;
 }
@@ -222,9 +246,133 @@ footer p {
     display: none;
 } */
 
+.arcgis-app-container {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    padding-top: 56.25%; /* 16:9 aspect ratio (height / width * 100) */
+}
+
+.arcgis-app-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+h1.city-title {
+    text-align: center;
+    margin: 20px 0; /* Adjust margin as necessary */
+}
+
 .div {
     margin: 20px;
-    width: 1500px; /* Ensure the container only takes up as much space as needed */
+    width: 100%; /* Ensure the container only takes up as much space as needed */
     padding: 0;
     text-align: center;
+}
+.content_con{
+    width: 100%;
+    margin: auto;
+    background: #eee;
+}
+
+table{
+
+}
+button{
+    background: #F7F7F7;
+    padding: 15px 40px;
+    color: #0C4180;
+    border: 2px solid #003d80;
+    transition: all 0.3s;
+    border-radius: 100px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+button:hover{
+    background-color: #0C4180;
+    color:#F7F7F7
+}
+input[type=submit]{
+    background: #003d80;
+    padding: 15px 40px;
+    color: white;
+    border: none;
+    transition: all 0.3s;
+    border-radius: 100px;
+    cursor: pointer;
+    display: block;
+    margin: 20px auto 0 auto;
+}
+.h3_title{
+    text-align: left;
+}
+p{
+    font-family: "Commissioner", sans-serif;
+    margin-top: 10px;
+}
+.con1{
+    background: white;
+}
+.con1>div{
+    width: 1280px;
+    margin: auto;
+    padding: 3vw 0;
+}
+.con2{
+    padding: 3vw 0;
+    background: #F8F8F8;
+}
+.con2>div{
+    width: 1280px;
+    margin: auto;
+}
+.con3{
+    padding: 3vw 0;
+    background: white;
+}
+.con3>div{
+    width: 1280px;
+    margin: auto;
+}
+footer{
+    width: 100%;
+    text-align: left;
+    color: white;
+    background: #0C4180;
+    font-family: "Commissioner", sans-serif;
+}
+
+h2{
+    text-align: left;
+}
+
+select{
+    height: 40px;
+    width: 200px;
+    border: 2px solid #0C4180;
+    padding: 0 10px;
+    outline: none;
+    border-radius: 5px;
+    background: white;
+    font-family: "Commissioner", sans-serif;
+}
+#search-input{
+    height: 40px;
+    width: 200px;
+    border: 2px solid #0C4180;
+    padding: 0 10px;
+    outline: none;
+    border-radius: 5px;
+    background: white;
+    font-family: "Commissioner", sans-serif;
+}
+#search-container{
+    margin: 15px auto;
+}
+.sm_title{
+    font-family: "Bebas Neue", sans-serif;
 }

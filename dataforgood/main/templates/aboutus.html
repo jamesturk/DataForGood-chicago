@@ -1,24 +1,25 @@
 {% load static %}
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Us: Data For Good - Chicago</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
-
-<body>
-
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Data & Visualize </title>
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Commissioner:wght@100..900&display=swap" rel="stylesheet">
+    </head>
+    <body>
     <header>
         <nav class="navbar">
             <div class="logo">Data For Good - Chicago</div>
             <ul class="nav-links">
                 <li><a href="{% url 'aboutus' %}">About Us</a></li>
                 <li><a href="{% url 'dataandvisualize' %}">Data & Visualize</a></li>
-                <li><a href="{% url 'resources' %}">Resources</a></li>
+                <li><a href="{% url 'resources' %}">Resource</a></li>
             </ul>
         </nav>
     </header>

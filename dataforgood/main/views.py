@@ -17,6 +17,8 @@ from .forms import SearchForm, SubgroupForm
 from .utils import (
     MainTable,
     SubgroupTable,
+    MAIN_MODEL_MAPPING,
+    SUB_MODEL_MAPPING,
     WriteMemo,
     save_memo,
     generate_heatmaps
@@ -145,6 +147,8 @@ def dataandvisualize(request):
 
         geographic_unit = geographic_level_dct[geograpahic_level]
         indicator = indicator_dct[category]
+        model = MAIN_MODEL_MAPPING[indicator]
+        subgroup_model = SUB_MODEL_MAPPING[indicator]
 
         print("### USER SELECTION ###")
         print("Geographic Level Selected:", geograpahic_level)
@@ -161,14 +165,14 @@ def dataandvisualize(request):
         )
         # Create main table context variables
         maintable = MainTable(
-            geograpahic_level, geographic_unit, indicator, year
+            geograpahic_level, geographic_unit, indicator, model, year
         )
         field = maintable.table
         table_title = maintable.table_title
 
         # Create subtable context variables
         subgroup_tables = SubgroupTable(
-            geograpahic_level, geographic_unit, indicator, year
+            geograpahic_level, geographic_unit, indicator, subgroup_model, year
         )
 
         multi_year_subtable_field = subgroup_tables.many_subtables

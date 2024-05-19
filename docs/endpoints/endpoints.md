@@ -33,7 +33,7 @@ Parameters
   - `indicator_category`: Economic
   - `indicator_variable`: Median Income in the Past 12 Months
   - `years`: 2013-2017, 2014-2018 (*multiple five-year estimates*)
-  - 'generate_memo': No
+  - `generate_memo`: No
 - Example 2:
   `/main/data&visualize/?csrfmiddlewaretoken=<token_number>&geographic_level=Community&tract=<default_tract>&zipcode=<default_tract>&community=HYDE+PARK&category=Education&economic_indicators=<default_economic_indicator>&education_indicators=Population+3+years+and+over+enrolled+in+school&health_indicators=<default_health_indicator>&housing_indicators=<default_housing_indicator>&population_indicators=<default_population_indicator>&year=2018-2022&generate_memo=No`
   - `geographic_level`: Community
@@ -97,17 +97,17 @@ Parameters: None
 Template variables:
 - `href`: HTML link of the exported tables.xlsx file
 
-Reponse: HTML page that exports that datatable (from a .json or pandas dataframe) as a .xlsx file.
+Reponse: HTML page that exports that datatable as an .xlsx file.
 
-#### Endpoint B2:  /main/data&visualize/{parameters from query}/tables.pdf
+#### Endpoint B2:  /main/data&visualize/{parameters from query}/tables.csv
 Purpose: Enable the user to download the datatables as a .pdf file, with each datatable as a page in the PDF document.
 
 Parameters: None
 
 Template variables:
-- `href`: HTML link of the exported tables.pdf file
+- `href`: HTML link of the exported tables.csv file
 
-Reponse: HTML page that exports that datatable (from a .json or pandas dataframe) as a .pdf file.
+Reponse: HTML page that exports that datatable as a .csv file.
 
 #### Endpoint B3:  /main/data&visualize/{parameters from query}/chart_1.jpg
 Purpose: There will be one unique link for each chart in the HTML page. This enables the user to select the specific charts to download as a .jpg image, with each image being one chart.

@@ -1,9 +1,9 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import EconomicMain, EconomicSub, Georeference
+from .models import CensusTracts, ContractRent_Main, ContractRent_Sub
 
 
-admin.site.register(Georeference)
-admin.site.register(EconomicMain)
-admin.site.register(EconomicSub)
+admin.site.register(CensusTracts)
+admin.site.register(ContractRent_Main)
+admin.site.register(ContractRent_Sub)

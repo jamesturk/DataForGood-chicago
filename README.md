@@ -5,20 +5,153 @@ The main objective of our web application is to help small and medium-sized nonp
 
 Key components include:
 - Data and Dashboard: Select variables and indicators for analysis, generate interactive visualizations, and customizable dashboards for comprehensive insights.
-- Automated Insights and Memo Generation: Summarize key insights from data and visuals, generate ready-to-use memos or paragraphs.
+- Automated Memo Generation: Summarize key insights from data and visuals, generate ready-to-use memos or paragraphs.
 - Maps and City Resources: Explore and navigate city resources using integrated ArcGIS Online functionality.
 
 Overall, the application aims to bridge the gap between data availability, accessibility, and its effective utilization by nonprofit organizations. It seeks to empower nonprofits to make informed decisions, optimize resource navigation and allocation, and enhance their impact on the communities they serve.
 
 ### **Team Member and Team Roles**
-- Bryan Foo Suon Chuang: Lead Frontend Engineer, Supporting QA Engineer, Supporting GIS Engineer
-- Yujie Jiang: Lead Backend Engineer/Data Engineer, Supporting UI/UX Designer
-- Ruoyi Wu: Lead QA Engineer, Supporting Backend Engineer/Data Engineer
-- Yueyue Wang: Lead GIS Engineer, Chief Architect, Supporting Frontend Engineer
-- Maxine Xu: Project Manager, Lead UI/UX Designer, Supporting Backend Engineer/Data Engineer
+- Bryan Foo Suon Chuang: Lead Frontend Engineer, Supporting QA Engineer
+- Yujie Jiang: Supporting Backend Engineer/Data Engineer, Lead UI/UX Designer
+- Ruoyi Wu: Lead QA Engineer, Lead Backend Engineer
+- Yueyue Wang: Chief Architect, Supporting Frontend Engineer, Supporting GIS Engineer,
+- Maxine Xu: Project Manager, Lead GIS Engineer, Supporting Backend Engineer/Data Engineer
 
 ### **Repository Layout**
-![image](https://github.com/uchicago-capp-30320/DataForGood-chicago/assets/111541644/188e7962-27e7-4355-97fd-5578f09373fb)
+```
+DataForGood-chicago
+├── LICENSE
+├── README.md
+├── dataforgood: contains code for the web app, including settings, URLs, views, models, templates, and static files.
+│   ├── admin_login_info.text
+│   ├── dataforgood
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-311.pyc
+│   │   │   ├── settings.cpython-311.pyc
+│   │   │   ├── urls.cpython-311.pyc
+│   │   │   └── wsgi.cpython-311.pyc
+│   │   ├── asgi.py
+│   │   ├── settings.py
+│   │   ├── urls.py
+│   │   └── wsgi.py
+│   ├── db.sqlite3
+│   ├── main: Django app for the main functionality of the web app
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-311.pyc
+│   │   │   ├── admin.cpython-311.pyc
+│   │   │   ├── apps.cpython-311.pyc
+│   │   │   ├── forms.cpython-311.pyc
+│   │   │   ├── models.cpython-311.pyc
+│   │   │   ├── urls.cpython-311.pyc
+│   │   │   ├── utils.cpython-311.pyc
+│   │   │   └── views.cpython-311.pyc
+│   │   ├── admin.py
+│   │   ├── apps.py
+│   │   ├── censustracts: shape files for Chicago's census tracts from City of Chicago's Data Portal
+│   │   ├── communityarea: shape files for Chicago's community areas from City of Chicago's Data Portal
+│   │   ├── forms.py
+│   │   ├── management:
+│   │   │   └── commands
+│   │   │       ├── __init__.py
+│   │   │       └── load_data.py
+│   │   ├── models.py
+│   │   ├── static: Directory for static files (e.g., CSS, images, JavaScript).
+│   │   │   ├── css
+│   │   │   │   └── style.css
+│   │   │   ├── images
+│   │   │   │   ├── banner.webp
+│   │   │   │   └── bg.jpg
+│   │   │   └── js
+│   │   │       └── script.js
+│   │   ├── templates: Directory for HTML templates used by Django.
+│   │   │   ├── aboutus.html
+│   │   │   ├── dataandvisualize.html
+│   │   │   ├── index.html
+│   │   │   ├── maps
+│   │   │   ├── memos
+│   │   │   ├── resources.html
+│   │   │   └── style.css
+│   │   ├── tests.py
+│   │   ├── urls.py
+│   │   ├── utils.py
+│   │   ├── views.py
+│   │   └── zipcode
+│   └── manage.py
+├── dfg_chi
+│   ├── __init__.py
+│   ├── backend
+│   │   ├── data_downloaded
+│   │   │   ├── Economics
+│   │   │   │   ├── MeanIncome
+│   │   │   │   │   ├── main
+│   │   │   │   │   └── sub
+│   │   │   │   ├── MedianIncome
+│   │   │   │   │   ├── main
+│   │   │   │   │   └── sub
+│   │   │   │   └── README
+│   │   │   ├── Education
+│   │   │   │   ├── Enrollment
+│   │   │   │   │   ├── main
+│   │   │   │   │   └── sub
+│   │   │   │   └── MedianEarning
+│   │   │   │       ├── main
+│   │   │   │       └── sub
+│   │   │   ├── Health
+│   │   │   │   ├── Disability
+│   │   │   │   │   ├── main
+│   │   │   │   │   └── sub
+│   │   │   │   └── Insurance
+│   │   │   │       ├── main
+│   │   │   │       └── sub
+│   │   │   ├── Housing
+│   │   │   │   ├── ContractRent
+│   │   │   │   │   ├── README
+│   │   │   │   │   ├── main
+│   │   │   │   │   └── sub
+│   │   │   │   ├── HouseholdType
+│   │   │   │   │   ├── README
+│   │   │   │   │   ├── main
+│   │   │   │   │   └── sub
+│   │   │   │   └── README
+│   │   │   ├── Population
+│   │   │   │   ├── MedianAge
+│   │   │   │   │   ├── main
+│   │   │   │   │   └── sub
+│   │   │   │   └── Races
+│   │   │   │       ├── main
+│   │   │   │       └── sub
+│   │   │   ├── census_tracts.csv
+│   │   │   └── data_5yr
+│   │   └── variables.json
+│   ├── gis
+│   │   └── README.md
+│   ├── main.py
+│   ├── static
+│   │   ├── README.md
+│   │   ├── bootstrap
+│   │   │   └── README.md
+│   │   ├── css
+│   │   │   └── README.md
+│   │   └── js
+│   │       └── README.md
+│   └── templates
+│       └── README.md
+├── docs: Documentation for our project.
+│   ├── architecture.md
+│   ├── changelog.md
+│   ├── decisions
+│   │   └── README.md
+│   ├── endpoints
+│   │   └── endpoints.md
+│   ├── index.md
+│   ├── models.md
+│   └── test
+├── homebrew
+├── poetry.lock
+└── pyproject.toml
+```
 __________________
 #### Issue Tracker: Using GitHub Issue Tracker
 
@@ -32,11 +165,28 @@ Steps:
 __________________
 
 #### **Packages used**
-Check our pyproject.toml file for all the packages used. Some include:
+Check our pyproject.toml file for all the packages used and their relative version. Some include:
 - census
 - django
 - pandas
-
+- python
+- pre-commit
+- pytest
+- requests
+- census
+- pandas
+- psycopg2-binary
+- django-extensions
+- django-environ
+- geopandas
+- matplotlib
+- numpy
+- folium
+- python-dotenv
+- langchain-openai
+- python-docx
+- langchain
+- docx
 
 #### **Data Source**
 
@@ -46,15 +196,41 @@ Way of Collection: API Key
 
 (2) ChatGPT API:\
 
+(2) OpenAI API:\
+Source: OpenAI\
+Way of Collection: API Key
+
+(3) City of Chicago:\
+Source: City of Chicago's Data Portal\
+Way of Collection: Downloaded shapefiles
+
+#### **Credentials**
 ##### Getting Census API key
 - Request an API key with this link: https://api.census.gov/data/key_signup.html
-- Once you have a key, create a new file called `.env` in the root directory of this project by running `touch .env`.
+- Once you have the keys, please create a new file called `.env` in the root directory of this project by running `touch .env`.
 - In this .env file, assign the key to the variable `CENSUS_API_KEY` without spaces or quotations (i.e. CENSUS_API_KEY=123456789)
 
 - An example of requesting census data and shapefile to map the results are in [this notebook](census_test.ipynb)
+
+##### Getting OpenAI API key
+- Create an OpenAI account or sign into your existing account here: https://openai.com/blog/openai-api/
+- Once you have a key, assign the key to the variable `open_ai_key` without spaces or quotations (i.e. open_ai_key=123456789)
+
+#### **.env Setup**
+- The path of `.env` should look like: DataForGood-chicago/dataforgood/.env
+- The format in `.env` should look like the following:
+SECRET_KEY=
+DB_NAME=
+DB_USER=
+DB_PASSWORD=
+DB_HOST=
+DB_PORT=
+open_ai_key=
+CENSUS_API_KEY=
 __________________
 
-#### **Launching our web application**
+#### **Launching the Web Application**
+
 
 1. Clone the repository.
 ```

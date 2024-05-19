@@ -1,54 +1,45 @@
 {% load static %}
-<!DOCTYPE html>
+
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data For Good - Chicago</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <style>
-        .arcgis-app-container {
-            position: relative;
-            width: 100%;
-            overflow: hidden;
-            padding-top: 56.25%; /* 16:9 aspect ratio (height / width * 100) */
-        }
 
-        .arcgis-app-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        h1.city-title {
-            text-align: center;
-            margin: 20px 0; /* Adjust margin as necessary */
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <nav>
-            <div class="logo">Data For Good - Chicago</div>
-            <ul class="nav-links">
-                <li><a href="{% url 'aboutus' %}">About Us</a></li>
-                <li><a href="{% url 'dataandvisualize' %}">Data & Visualize</a></li>
-                <li><a href="{% url 'resources' %}">Resource</a></li>
-            </ul>
-        </nav>
-    </header>
-
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Data & Visualize </title>
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Commissioner:wght@100..900&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        <header>
+            <nav class="navbar">
+                <div class="logo">
+                    <a href="{% url 'aboutus' %}">Data For Good - Chicago</a>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="{% url 'aboutus' %}">About Us</a></li>
+                    <li><a href="{% url 'dataandvisualize' %}">Data & Visualize</a></li>
+                    <li><a href="{% url 'resources' %}">Resource</a></li>
+                </ul>
+            </nav>
+        </header>
     <main>
-        <h1 class="city-title">City Resources</h1>
+        <div class="instructions">
+            <h1 class="city-title">City Resources</h1>
+            <h2>Transportation, Schools, Businesses, Affordable Housing etc.</h2>
+            <p>
+                Click the layer icon on the top right to have a filtered view of resources and shape files
+            </p>
+        </div>
         <div class="arcgis-app-container">
             <iframe src="https://uchicago.maps.arcgis.com/apps/webappviewer/index.html?id=1b49abffbacc4dc0809d15471148a0d7" frameborder="0"></iframe>
         </div>
     </main>
 
     <footer>
-        <p>Copyright © 2024 Data For Good - Chicago. All rights reserved.</p>
+        <p>&copy; 2024 Data For Good - Chicago. All rights reserved.</p>
     </footer>
 </body>
 </html>

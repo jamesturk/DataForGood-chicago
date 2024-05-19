@@ -18,82 +18,76 @@ Template Context Variables:
 Purpose: This endpoint serves as the main page for the "Data & Visualize" tab, allowing users to select parameters and view visualizations of the data. Users have to go through url B1, B2, B3, B4, and B5 in consecutive order to successfully initiate a query to generate the relevant data tables and charts to be displayed on the HTML page.
 
 Parameters
-- `geographic_level`: The geographic level to display data for. Valid values are "City of Chicago" or  “Community Areas” or "Zip Code" or “Census Tract”. Defaults to "City of Chicago" if not provided.
-- `indicator_category`: The category of data to display. Valid values are "population characteristics", "education characteristics", "economics characteristics", "housing characteristics", etc.
-- `indicator_variable`: List of available indicator variables to select and display. One selection at a time.
-- `years`: a list of years to include in the data tables and visualizations. Valid values are "2020", "2021", "2022", "2018-22 5-year estimate", and so on. For indicators that are 5-year estimates, users can only select one 5-year period; for indicators with yearly estimates, users can select multiple years.
+- `geographic_level`: The geographic level to display data for. Valid values are "City of Chicago" or  “Community” or "Zipcode" or “Tract”. One selection at a time. Defaults to "City of Chicago" if not provided.
+- `geographic_unit`: Depending on the geographic level selected, the options change to display geographic unit variables available in the database for the corresponding geographic level. Multi-checkbox selection for “Community” or "Zipcode" or “Tract” levels, no selections available for "City of Chicago" level. Defaults to "Albany Park" for "Community" level; defaults to "60601" for "Zipcode" level; defaults to "10100" for "Tract" level.
+- `indicator_category`: The category of indicators available to select. Valid values are  "Economic", "Education", "Health", "Housing", "Population".
+- `indicator_variable`: Depending on the indicator category selected, the options change to display the indicators available for the selected category. One selection at a time. Defaults to "Median Income in the Past 12 Months" for "Economic" category; defaults to "Median Earnings in the Past 12 Months" for "Education" category; defaults to "Total Population With Disability" for "Health" category; defaults to "Aggregate Contract Rent" for Housing category; defaults to "Total Population and Race Group" for "Housing" category.
+- `year`: a list of five-year periods to include in the data tables and visualizations. Valid values are "2013-2017", "2014-2018", "2015-2019", "2016-2020", "2017-2021", "2018-2022". Multi-checkbox selection. Defaults to "2013-2017".
+- `generate_memo`: Determines if a ChatGPT analytical memo will be generated on the webapp along with the data tables and visualizations. Valid values are "Yes: and "No". Defaults to "No".
 
 ##### Example HTML Links
 - Example 1:
-  `/main/data&visualize/community_area-hyde_park&economic&median_income&2018-2019-2020`
-  - `geographic_level`: Community Area - Hyde Park
-  - `indicator_category`: Economic Characteristics
+  `/main/data&visualize/?csrfmiddlewaretoken=<token_number>&geographic_level=Community&tract=<default_tract>&zipcode=<default_tract>&community=HYDE+PARK&category=Economic&economic_indicators=Median+Income+in+the+Past+12+Months+inflation-adjusted&education_indicators=Median+Earnings+in+the+Past+12+Months&health_indicators=<default_health_indicator>&housing_indicators=<default_housing_indicator>&population_indicators=<default_population_indicator>&year=2013-2017&year=2014-2018&generate_memo=No`
+  - `geographic_level`: Community
+  - `geographic_unit`: Hyde Park
+  - `indicator_category`: Economic
   - `indicator_variable`: Median Income in the Past 12 Months
-  - `years`: 2018, 2019, 2020 (*multi single-year estimates*)
+  - `years`: 2013-2017, 2014-2018 (*multiple five-year estimates*)
+  - `generate_memo`: No
 - Example 2:
-  `/main/data&visualize/community_area-hyde_park&education&pop_3yo_educ&2018-22`
-  - `geographic_level`: Community Area - Hyde Park
-  - `indicator_category`: Education Characteristics
+  `/main/data&visualize/?csrfmiddlewaretoken=<token_number>&geographic_level=Community&tract=<default_tract>&zipcode=<default_tract>&community=HYDE+PARK&category=Education&economic_indicators=<default_economic_indicator>&education_indicators=Population+3+years+and+over+enrolled+in+school&health_indicators=<default_health_indicator>&housing_indicators=<default_housing_indicator>&population_indicators=<default_population_indicator>&year=2018-2022&generate_memo=No`
+  - `geographic_level`: Community
+  - `geographic_unit`: Hyde Park
+  - `indicator_category`: Education
   - `indicator_variable`: Population 3 years and over enrolled in school
-  - `years`: 2018-22 (*one five-year estimate*)
+  - `years`: 2018-2022 (*single five-year estimate*)
+  - `generate_memo`: No
 - Example 3:
-  `/main/data&visualize/community_area-hyde_park-lincoln_park&education&pop_3yo_educ&2018-22`
-  - `geographic_level`: Community Area - Hyde Park, Lincoln Park (multiple neighborhood areas)
-  - `indicator_category`: Education Characteristics
+  `/main/data&visualize/?csrfmiddlewaretoken=<token_number>&geographic_level=Community&tract=<default_tract>&zipcode=<default_tract>&community=HYDE+PARK&community=LINCOLN+PARK&category=Education&economic_indicators=<default_economic_indicator>&education_indicators=Population+3+years+and+over+enrolled+in+school&health_indicators=<default_health_indicator>&housing_indicators=<default_housing_indicator>&population_indicators=<default_population_indicator>&year=2018-2022&generate_memo=Yes`
+  - `geographic_level`: Community
+  - `geographic_unit`: Hyde Park, Lincoln Park (*multiple community areas*)
+  - `indicator_category`: Education
   - `indicator_variable`: Population 3 years and over enrolled in school
-  - `years`: 2018-22 (*one five-year estimate*)
+  - `years`: 2018-22 (*single five-year estimate*)
+  - `generate_memo`: Yes
 - Example 4:
-  `/main/data&visualize/zip_code-60610-60611-60612&education&pop_3yo_educ&2018-22`
-  - `geographic_level`: Zipcode - 60610, 60611, 60612 (multiple zipcodes)
-  - `indicator_category`: Education Characteristics
+  `/main/data&visualize/?csrfmiddlewaretoken=<token_number>&geographic_level=Zipcode&tract=<default_tract>&zipcode=60610&zipcode=60611&zipcode=60612&community=<default_community>&category=Education&economic_indicators=<default_economic_indicator>&education_indicators=Population+3+years+and+over+enrolled+in+school&health_indicators=<default_health_indicator>&housing_indicators=<default_housing_indicator>&population_indicators=<default_population_indicator>&year=2018-2022&generate_memo=Yes`
+  - `geographic_level`: Zipcode
+  - `geographic_unit`: 60610, 60611, 60612 (*multiple zipcodes*)
+  - `indicator_category`: Education
   - `indicator_variable`: Population 3 years and over enrolled in school
   - `years`: 2018-22 (*one five-year estimate*)
-- Example 5:
-  `/main/data&visualize/census_tract-10112-10113-10117&economic&median_income&2018-2019-2020`
-  - `geographic_level`: Census Tract - 10112, 10113, 10117
-  - `indicator_category`: Economic Characteristics
-  - `indicator_variable`: Median Income in the Past 12 Months
-  - `years`: 2018, 2019, 2020 (*multi single-year estimates*)
-
+  - `generate_memo`: Yes
+    
  ##### Response: HTML page with the following components
-- Dropdown menus for selecting `geographic_level`, `indicator_category`, `years`, and `indicator_variables`.
-- Checkboxes for selecting specific zip codes (if `geographic_level` is "Zip Code").
-- Checkboxes for selecting specific community areas (if `geographic_level` is "Community Areas").
-- Data tables for the selected data (presumably two data tables), and one for the yearly indicator and another for the subgroup
+- Dependent dropdown menus for selecting `geographic_level`, `geographic_units`, `indicator_category`, `indicator_variable`, and `years`.
+- Data tables for the selected indicator variable, one main data table, and another for the subgroup data table for each period selected
 - 2~ 4 visualizations of the selected data, for example:
   - Bar or line chart of *total population* (indicator) per selected geographic level for the selected years
   - Bar chart of *race group* (sub-indicator) per selected geographic level for the select years
-  - More types of visuals may be added
+  - Choropleth map using selected data
 - Buttons to export the dataset in Excel and PDF formats.
 - Button to download each of the visualizations we generated based on selected data
 - Button to generate memo based on the current view of data tables and data visualizations
 - *(optional) Button to make edits on each of the visualizations we generated (mainly for change theme colors or font and text editing)*
 
  ##### Template Context Variables
-- `geographic_level`: The selected geographic level ("City of Chicago" / "Zip Code" / “Community Areas”)
-- `indicator_category`: The selected indicator category
-- `years`: List of selected years (5-yearly estimates OR yearly estimates depending on indicator selected)
-  - *E.g. for **Economic and Housing** indicators (yearly estimates are possible, so the user can select **multiple** years as a checkbox)*
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-  - *E.g. for the **other categories’** indicators (only 5-year estimates are possible, so the user is only able to select **one** given period)*
-    - 2014-2018
-    - 2015-2019
-    - 2016-2020
-    - 2017-2021
-    - 2018-2022
-- `community_areas`: List of selected community areas (if `geographic_level` is "Community Areas")
-- `zip_codes`: List of selected zip codes (if `geographic_level` is "Zip Code")
-- `census_tracts`: List of census tracts (if `geographic_level` is Census Tract")
-- `indicator_variable` List of available indicator variables. Select one at a time.
-- `data_table_indicator_general`: Data table for selected indicator
-- `data_table_indicator_sub`: Data table for all sub-indicators
-- `data_visualization_general`: Visualization for the selected indicator, geographic level, and years (if multiple years selected)
-- `data_visualization_sub_indicator`: Visualization for all sub-indicators of the selected indicator, geographic level, and year
-- `year_dropdown_sub_indicator`: a dropdown menu that allows users to select one year at a time for the sub-indicator visualization. The year dictionary here will be a list of user selected years. The default year used is the latest year available or the latest 5-year estimate
+- `SearchForm`: Django form used to take in user input to condjuct query. Below are the form fields:
+    - `geographic_level`: The selected geographic level ("City of Chicago" / "Zipcode" / “Community” / "Tract")
+    - `geographic_unit`: The selected geographic unit(s), within the geographic level
+    - `indicator_category`: The selected indicator category
+    - `indicator_variable`: The selected indicator, within the indicator category
+    - `years`: List of five-year period(s)
+    - `generate_memo`: The selected option on whether to generate an AI memo
+- `field`: Main data table for selected indicator
+- `table_title`: Title for the data table (name of indicator + period(s) selected)
+- `multi_year_subtable_field`: Subgroup data tables, one table for each period selected, stored as a Python diciontary
+- `chart_data`: Visualization of the main data table
+- `SubgroupForm`: Django form used to take in user input to show data visualizations for the subgroup data tables, corresponding to each period selected. Below are the form fields:
+    - `subgroup_year`: Corresponding options to select one of the multiple five-year period(s) as submitted in the SearchForm
+- `paths_titles`: Filepath of the generated heatmap to retrieve to display
+- `memo`: Memo text generated
+- `memo_path`: Filepath to store the memo text
 
 #### Endpoint B1:  /main/data&visualize/{parameters from query}/tables.xlsx
 Purpose: Enable the user to download the datatables as one .xlsx file, with each datatable as an excel worksheet tab.
@@ -103,17 +97,17 @@ Parameters: None
 Template variables:
 - `href`: HTML link of the exported tables.xlsx file
 
-Reponse: HTML page that exports that datatable (from a .json or pandas dataframe) as a .xlsx file.
+Reponse: HTML page that exports that datatable as an .xlsx file.
 
-#### Endpoint B2:  /main/data&visualize/{parameters from query}/tables.pdf
+#### Endpoint B2:  /main/data&visualize/{parameters from query}/tables.csv
 Purpose: Enable the user to download the datatables as a .pdf file, with each datatable as a page in the PDF document.
 
 Parameters: None
 
 Template variables:
-- `href`: HTML link of the exported tables.pdf file
+- `href`: HTML link of the exported tables.csv file
 
-Reponse: HTML page that exports that datatable (from a .json or pandas dataframe) as a .pdf file.
+Reponse: HTML page that exports that datatable as a .csv file.
 
 #### Endpoint B3:  /main/data&visualize/{parameters from query}/chart_1.jpg
 Purpose: There will be one unique link for each chart in the HTML page. This enables the user to select the specific charts to download as a .jpg image, with each image being one chart.
@@ -131,3 +125,16 @@ Purpose: This endpoint provides a view of an embedded ArcGIS web app.
 Parameters: None/NA
 
 Response: HTML page with the embedded ArcGIS web app which contains a lot of feature layers to interact with.
+
+### Endpoint D: /main/download-memo/
+
+Purpose: Allows users to download the generated memo from our web app.
+
+Parameters: None/NA
+
+Parameters:
+- `request` (HttpRequest): The HTTP request object containing information about the request.
+
+Response:
+- `HttpResponse`: The response is either the downloadable memo or an error message if the memo was not found.
+

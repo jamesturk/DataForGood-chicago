@@ -1,43 +1,53 @@
 ## Database Models:
-`geo_reference`: This model contains geographic information such as census tract ID, community name, zip code, latitude, longitude, and geometry (GIS polygon).
+`main_tractzipcode`: This model maps each of Chicago's census tracts to their corresponding zip code.
 
-`economic_characteristics`: This model stores economic indicators like median income of households for each census tract and year.
+`main_censustracts`: This model maps each of Chicago's census tracts to their corresponding community areas.
 
-`economic_sub_indicator`: This model holds sub-indicators related to economic characteristics, such as median income by race, for each census tract and year.
+`main_meanincome_main`: This model stores the mean income of households for each census tract and year.
 
-(Note: The provided examples focus on economic indicators, but similar models exist for other indicator categories like housing, education, etc.)
+`main_meanincome_sub`: This model stores the mean income of households by race for each census tract and year. The racial categories include: White, Black or African American, Indian and Alaska Native, Asian, Native Hawaiian and other Pacific Islander, and Other.
 
-`census_tracts`:
+(Note: The provided examples focus on one example of an economic indicator, but similar models exist for other indicator categories like housing, education, etc.)
+
+`main_tractzipcode`:
 | Name           | Type           | Description                                                   |
 |----------------|----------------|---------------------------------------------------------------|
-| id             | PrimaryKey, int| Census Tract ID                                               |
-| community_name | str            | Name of the Community                                         |
+| id             | PrimaryKey, int| Unique ID number for each tract-zip code mapping              |
 | zip_code       | int            | Zip code                                                      |
-| latitude       | float          | Latitude of Census Tract                                      |
-| longitude      | float          | Longitude of Census Tract                                     |
-| geometry       | str            | GIS polygon: Each pair of numbers represents a point in the polygon, with the first number being the x-coordinate and the second number being the y-coordinate. |
+| tract_id       | ForeignKey (main_censustracts), int            | Census Tract ID                                               |
 
-`economic_characteristics` (for example Median Income of Households):
+`main_censustracts`
+| Name           | Type           | Description                                                   |
+|----------------|----------------|---------------------------------------------------------------|
+| tract_id       | PrimaryKey, int| Census Tract ID                                               |
+| community      | str            | Community Area Name                                           |
+
+(For example Mean Income of Households): `main_meanincome_main`
 | Name           | Type              | Description                                                      |
 |----------------|-------------------|------------------------------------------------------------------|
-| id             | int               | Unique ID for each tract and year                                |
-| indicator_id   | PrimaryKey, int   | ID for each broader indicator category (Economics, Housing, etc) |
-| census_tract_id| ForeignKey(georeference), int | Census Tract ID                                            |
+| id             | PrimaryKey, int   | Unique ID for each tract and year                                |
+| indicator_id   | int               | ID for each broader indicator category (Economics, Housing, etc) |
+| census_tract_id| ForeignKey (main_censustracts), int | Census Tract ID                                 |
 | indicator_name | str               | Name of indicator variable (e.g., mean_income)                   |
 | year           | int               | Year (value ranges from 2017-2022)                               |
 | value          | int               | Median income in US dollars                                      |
 
-`economic_sub_indicator` (for example Median Income of Households by Race):
-| Name                   | Type                               | Description                                                            |
-|------------------------|------------------------------------|------------------------------------------------------------------------|
-| id                     | PrimaryKey, int                   | Unique ID for each tract and year                                      |
-| indicator_id           | ForeignKey(economic_characteristics), int | ID for each broader indicator category (Economics, Housing, etc) |
-| census_tract_id        | ForeignKey(economic_characteristics), int | Census Tract ID                                                  |
-| sub_group_indicator_name | str                               | Name of subcategory (e.g., median_black, median_white, etc.)            |
-| year                   | int                                | Year (value ranges from 2017-2022)                                     |
-| value                  | int                                | Median income in US dollars                                            |
+(For example Mean Income of Households by Racial Category): `main_meanincome_sub`
+| Name           | Type              | Description                                                      |
+|----------------|-------------------|------------------------------------------------------------------|
+| id             | PrimaryKey, int   | Unique ID for each tract and year                                |
+| indicator_id   | int               | ID for each broader indicator category (Economics, Housing, etc) |
+| census_tract_id| ForeignKey(main_censustracts), int | Census Tract ID                                 |
+| sub_group_indicator_name | str               | Name of indicator variable (e.g., mean_income)                   |
+| year           | int               | Year (value ranges from 2017-2022)                               |
+| value          | int               | Median income in US dollars                                      |
 
 ### Entity-Relationship Diagram:
-![image](https://github.com/uchicago-capp-30320/DataForGood-chicago/assets/111541644/ff9047c1-6f6c-45e3-86dc-53a6cedeb29b)
+
+Simplified Diagram:
+![image](https://github.com/uchicago-capp-30320/DataForGood-chicago/assets/111541644/58ddd87d-fd93-429e-a484-9f523d7a323c)
+
+Actual Diagram:
+![image](https://github.com/uchicago-capp-30320/DataForGood-chicago/assets/111541644/ee389a26-00f5-43e8-a3f0-fc0088c49cbc)
 
 **For more information on the data flow and backend processes please read the `architecture.md` file.**

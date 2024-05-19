@@ -1,120 +1,229 @@
+import os
+import uuid
+
+import environ
+import folium
+import geopandas as gpd
+import numpy as np
+import pandas as pd
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.template.defaulttags import register
+from django.views.decorators.csrf import csrf_protect
+
+from dataforgood.settings import BASE_DIR
 
 from .forms import SearchForm, SubgroupForm
 from .utils import create_subgroup_tables, create_table, create_table_title
 
-from io import BytesIO
-
-import base64
-import geopandas as gpd
-import pandas as pd
-import matplotlib.pyplot as plt
-
-communityshape_path = './static/css/communityarea'
-zipcodeshape_path = './static/css/zipcode'
-censusshape_path = './static/css/censustracts'
 
 @register.filter
 def get_item(dictionary, key):
+    """
+    Retrieves the value associated with the specified key from the given dictionary.
+
+    Args:
+        dictionary (dict): The dictionary to retrieve the value from.
+        key: The key to lookup in the dictionary.
+
+    Returns:
+        The value associated with the key in the dictionary, or None if the key is not found.
+    """
     return dictionary.get(key)
 
 
-# Main Page - /main/
+# Main Page - /main/ ?do we still need it?
 def index(request):
     return render(request, "index.html")
 
 
 # About Us Page - /main/about_us/
 def aboutus(request):
+    """
+    Renders the About Us page of the application.
+
+    This function handles the request for the About Us page URL (/main/about_us/) and renders the "aboutus.html" template.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The rendered "aboutus.html" template as an HTTP response.
+    """
     return render(request, "aboutus.html")
 
 
+# MODIFIED LINE 44 and 50
 # Data and Visualize with FORMS - /main/data&visualize/
+@csrf_protect
 def dataandvisualize(request):
-    if request.method == "GET":
+    """
+    Renders the data and visualization page of the application.
+
+    This function handles the request for the data and visualization page URL (/main/dataandvisualize/).
+    It processes the user's selections from the search form, retrieves the corresponding data, and generates
+    visualizations based on the selected parameters.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The rendered "dataandvisualize.html" template with the processed data and visualizations.
+
+    Functionality:
+        1. Initializes the search form and subgroup form.
+        2. Handles the GET request and validates the form data.
+        3. Extracts the selected variables from the search form.
+        4. Creates the main table and subgroup tables based on the selected parameters.
+        5. Prepares data for the main chart and subgroup charts.
+        6. Generates heat maps for Community Area, Zip Code, and Tract levels.
+        7. If selected, generates a memo about the data using the WriteMemo class and saves it.
+        8. Renders the "dataandvisualize.html" template with the processed data, visualizations, and memo (if generated).
+
+    Template:
+        - dataandvisualize.html: The template file for displaying the data and visualizations.
+
+    Form Classes:
+        - SearchForm: The form class for handling user selections.
+        - SubgroupForm: The form class for handling subgroup selections.
+
+    Helper Functions:
+        - create_table_title: Creates the title for the main table.
+        - create_table: Creates the main table based on the selected parameters.
+        - create_subgroup_tables: Creates the subgroup tables based on the selected parameters.
+        - generate_heatmaps: Generates heatmaps based on the selected parameters.
+        - save_memo: Saves the generated memo to a file.
+
+    Note:
+        - The function uses various helper functions and classes to process the data and generate visualizations.
+        - It assumes the existence of certain file paths and mappings (e.g., communityshape_path, INDICATOR_UNIT_MAPPING).
+        - The WriteMemo class is used to generate a memo about the data using an external API (open_ai_key).
+    """
+
+    form = SearchForm(request.GET or None)
+    subgroup_form = SubgroupForm(year_choices=[])
+
+    if request.method == "GET" and form.is_valid():
         form = SearchForm(request.GET)
         subgroup_form = SubgroupForm(year_choices=[])
 
-        if form.is_valid():
-            # Extract variables from SearchForm
-            geograpahic_level = form.cleaned_data["geographic_level"]
-            geographic_unit = form.cleaned_data["tract"]
-            category = form.cleaned_data["category"]
-            indicator = form.cleaned_data["indicator"]
-            year = form.cleaned_data["year"]
-            subgroup_form = SubgroupForm(
-                year_choices=[
-                    (str(year), str(year)) for year in form.cleaned_data["year"]
-                ]
-            )
-            # Create main table context variables
-            table_title = create_table_title(indicator, year)
-            field = create_table(
-                category, geograpahic_level, geographic_unit, indicator, year
+    if form.is_valid():
+        # Extract variables from SearchForm
+        geograpahic_level = form.cleaned_data["geographic_level"]
+        category = form.cleaned_data["category"]
+        year = form.cleaned_data["year"]
+        generate_memo = form.cleaned_data["generate_memo"]
+
+        geographic_level_dct = {
+            "City of Chicago": [],
+            "Community": form.cleaned_data["community"],
+            "Zipcode": form.cleaned_data["zipcode"],
+            "Tract": form.cleaned_data["tract"],
+        }
+
+        indicator_dct = {
+            "Economic": form.cleaned_data["economic_indicators"],
+            "Education": form.cleaned_data["education_indicators"],
+            "Health": form.cleaned_data["health_indicators"],
+            "Housing": form.cleaned_data["housing_indicators"],
+            "Population": form.cleaned_data["population_indicators"],
+        }
+
+        geographic_unit = geographic_level_dct[geograpahic_level]
+        indicator = indicator_dct[category]
+
+        print("### USER SELECTION ###")
+        print("Geographic Level Selected:", geograpahic_level)
+        print(geograpahic_level, "Selected:", geographic_unit)
+        print("Category Selected:", category)
+        print("Indicator Selected:", indicator)
+        print("Periods(s) Selected:", year)
+        print("Generate Memo:", generate_memo)
+
+        subgroup_form = SubgroupForm(
+            year_choices=[
+                (str(year), str(year)) for year in form.cleaned_data["year"]
+            ]
+        )
+        # Create main table context variables
+        maintable = MainTable(
+            geograpahic_level, geographic_unit, indicator, year
+        )
+        field = maintable.table
+        table_title = maintable.table_title
+
+        # Create subtable context variables
+        subgroup_tables = SubgroupTable(
+            geograpahic_level, geographic_unit, indicator, year
+        )
+
+        multi_year_subtable_field = subgroup_tables.many_subtables
+
+        # Prepare data for the main chart
+        chart_data = {
+            "categories": field["headers"][1:],  # Years
+            "series": [],
+        }
+        for row in field["rows"]:
+            chart_data["series"].append(
+                {
+                    "name": row[0],  # Geographic unit
+                    "data": row[1:],  # Values for each year
+                }
             )
 
-            # Create subtable context variables
-            multi_year_subtable_field = create_subgroup_tables(
-                category, geograpahic_level, geographic_unit, indicator, year
-            )
-            print(multi_year_subtable_field)
-
-            # Hardcoding subtable title for testing
-            str(year[0])
-
-            # Prepare data for the chart
-            chart_data = {
-                "categories": field["headers"][1:],  # Years
-                "series": [],
-            }
-            for row in field["rows"]:
-                chart_data["series"].append(
+        # Prepare data for the subgroup chart
+        subgroup_chart_data = {}
+        for year_value, subtable_data in multi_year_subtable_field.items():
+            subgroup_chart_data[year_value] = {
+                "categories": subtable_data["headers"][
+                    1:
+                ],  # Subgroup categories
+                "series": [
                     {
-                        "name": row[0],  # Geographic unit
-                        "data": row[1:],  # Values for each year
+                        "name": subtable_data["headers"][0],
+                        "data": [
+                            row[1:] for row in subtable_data["rows"]
+                        ],  # Subgroup values
                     }
-                )
+                ],
+            }
 
-            heatmap = None
-            
-            if geograpahic_level != 'City of Chicago':
-                heatmap_data = pd.DataFrame(field["rows"], columns=field["headers"])
-                heatmap_data['value'] = heatmap_data.iloc[:, 1:].sum(axis=1)
-                heatmap_data = heatmap_data.iloc[:, [0, -1]]
+        # Creating heat map for Community Area, Zip Code, and Tract Level
+        heatmap_data, heatmap_info = generate_heatmaps(geograpahic_level, indicator, field, year)
 
-                if geograpahic_level == "Community Area":
-                    geo = gpd.read_file(communityshape_path)
-                    data = pd.merge(geo, heatmap_data, left_on='community', 
-                                    right_on='Community Area')
-                    
-                if geograpahic_level == "Zipcode":
-                    geo = gpd.read_file(zipcodeshape_path)
-                    geo['zip'] = geo['zip'].astype(int)
-                    data = pd.merge(geo, heatmap_data, left_on='zip', 
-                                    right_on='Zipcode')
-                    
-                if geograpahic_level == "Tract":
-                    geo = gpd.read_file(censusshape_path)
-                    data = pd.merge(geo, heatmap_data, left_on='tractce10', 
-                                    right_on='Tract')
-
-                fig, ax = plt.subplots(1, 1, figsize=(15, 9))
-                geo.plot(ax=ax, color='lightgray', edgecolor='black', linewidth=0.1)
-                data.plot(column='value', ax=ax, cmap='OrRd', legend=True,
-                            edgecolor='black', linewidth=0.1)
-                buffer = BytesIO()
-                plt.savefig(buffer, format='png')
-                buffer.seek(0)
-                heatmap = base64.b64encode(buffer.read()).decode('utf-8')
+        if generate_memo == "Yes":
+            # Writing and saving memo about the data
+            chart_descr = heatmap_data.describe()
+            analysis = WriteMemo(
+                indicator, geograpahic_level, field, chart_descr, open_ai_key
+            )
+            memo = analysis.invoke()
+            memo_path = save_memo(indicator, geograpahic_level, memo)
 
             context = {
+                "form": form,
                 "field": field,
                 "table_title": table_title,
                 "multi_year_subtable_field": multi_year_subtable_field,
                 "chart_data": chart_data,
-                'heatmap_message': 'A heatmap will generate for the Community Area, Zipcode, and Tract geographic levels.',
-                "heatmap": heatmap,
+                "subgroup_chart_data": subgroup_chart_data,
+                "paths_titles": heatmap_info,
+                "subgroup_form": subgroup_form,
+                "memo": memo,
+                "memo_path": memo_path,
+            }
+            return render(request, "dataandvisualize.html", context)
+
+        else:
+            context = {
+                "form": form,
+                "field": field,
+                "table_title": table_title,
+                "multi_year_subtable_field": multi_year_subtable_field,
+                "chart_data": chart_data,
+                "subgroup_chart_data": subgroup_chart_data,
+                "paths_titles": heatmap_info,
                 "subgroup_form": subgroup_form,
             }
             return render(request, "dataandvisualize.html", context)
@@ -128,4 +237,44 @@ def dataandvisualize(request):
 
 # Resources Page - /main/resources/
 def resources(request):
+    """
+    Renders the resources page of the application.
+
+    This function handles the request for the resources page URL (/main/resources/) and renders the "resources.html" template.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The rendered "resources.html" template as an HTTP response.
+    """
     return render(request, "resources.html")
+
+
+def download_memo(request):
+    """
+    Allows users to download the generated memo.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The downloadable memo or an error if the memo was 
+        not found.
+    """
+    if "memo_path" in request.GET:
+        memo_path = request.GET["memo_path"]
+
+        if os.path.exists(memo_path):
+
+            with open(memo_path, "rb") as docx_file:
+                response = HttpResponse(
+                    docx_file.read(),
+                    content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                )
+                response[
+                    "Content-Disposition"
+                ] = 'attachment; filename="memo.docx"'
+                return response
+
+    return HttpResponse("Memo not found", status=404)

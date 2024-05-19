@@ -1,522 +1,442 @@
-<html>
+{% load static %}
+
+<!doctype html>
+<html lang="en">
+
     <head>
-        <title> Data & Visualize </title>
-        <style>
-            body{
-                background:white;
-                font-family:arial;
-            }
-
-            h1{
-                font-size:40px;
-                text-align: center;
-                padding: 10px;
-            }
-            h3{
-                margin: 20px 20px 30px;
-                font-size:25px;
-            }
-            h4{
-                font-size:18px;
-            }
-            caption{
-                font-size:18px;
-                margin: 0px 5px 10px;
-                font-weight: bold;
-            }
-
-            .table1{
-                max-width:2000px;
-                margin: 20px 20px 20px;
-                border-collapse: collapse;
-                border-radius:0px;
-                border-spacing:5px;
-                background: white;
-                padding:10px;
-                font-size:1em;
-            }
-            td, th {
-            padding: 1rem;
-            }
-            .table2{
-                max-width:500px;
-                margin: 0px 20px 20px;
-                border-collapse: collapse;
-                border-radius:0px;
-                border-spacing:5px;
-                background: white;
-                padding:10px;
-                font-size:1em;
-                align-items: center;
-                float: left;
-            }
-            .maintable{
-                max-width:700px;
-                background: rgb(255, 205, 163);
-                margin: 20px 20px 50px;
-                padding:10px;
-            }
-            .subtable{
-                background: rgb(248, 213, 153);
-                max-width:1250px;
-                margin: 20px 20px 50px;
-                padding:10px;
-                height: 600;
-            }
-
-            .query-form{
-                display: inline-block;
-                max-width:300px;
-                margin: 10px 20px 30px;
-                border-radius:5px;
-                background: lightgrey;
-                padding:10px;
-                font-size:1em;
-            }
-            input[type=text], select{
-                width:100%;
-                padding:12px 20px;
-                margin:8px 0;
-                border:1px solid #ccc;
-                border-radius:4px;
-                box-sizing:border-box;
-                font-size:1em;
-            }
-            input[type=submit]{
-                width:100%;
-                background:black;
-                color: white;
-                padding:5px 10px;
-                margin: 10px 0;
-                border: none;
-                border-radius:4px;
-                cursor:pointer;
-                font-size:0.9em;
-            }
-            input[type=submit]:hover{
-                background:darkgreen;
-                font-size:0.9em;
-            }
-
-            details {
-            border: 1px solid #767676;
-            background: lightgrey;
-            border-radius: 3px;
-            display: inline-flex;
-            flex-direction: column;
-            padding: 10px 10px;
-            }
-
-            details summary::marker {
-            display: none;
-            font-size: 0;
-            }
-
-            details summary::-webkit-details-marker {
-            display: none;
-            font-size: 0;
-            }
-
-            details summary::after {
-            content: "\25BC";
-            display: inline-block;
-            font-size: 0.6rem;
-            height: 1rem;
-            line-height: 1rem;
-            margin-left: 0.5rem;
-            position: relative;
-            transition: transform 0.25s;
-            }
-
-            details[open] summary {
-            margin-bottom: 1rem;
-            }
-
-            details[open] summary::after {
-            top: -0.15rem;
-            transform: rotate(180deg);
-            }
-
-            fieldset {
-            border: 0;
-            padding: 0;
-            }
-
-            fieldset legend {
-            position: absolute !important;
-            width: 1px !important;
-            height: 1px !important;
-            padding: 0 !important;
-            margin: -1px !important;
-            overflow: hidden !important;
-            clip: rect(0, 0, 0, 0) !important;
-            white-space: nowrap !important;
-            border: 0 !important;
-            }
-
-            ul {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-            }
-
-            ul li {
-            border-radius: 3px;
-            margin: 0;
-            padding: 4px 2px;
-            }
-
-            ul li:hover {
-            background: #eee;
-            }
-
-            ul li label {
-            display: inline-block;
-            width: 8rem;
-            }
-
-
-        </style>
-    </head>
-    <h1> Data & Visualize </h1>
-    <body>
-
-        <header>
-            <nav>
-                <div class="logo">Data For Good - Chicago</div>
-                <ul class="nav-links">
-                    <li><a href="{% url 'aboutus' %}">About Us</a></li>
-                    <li><a href="{% url 'dataandvisualize' %}">Data & Visualize</a></li>
-                    <li><a href="{% url 'resources' %}">Resource</a></li>
-                </ul>
-            </nav>
-        </header>
-
-        <div class="query-form">
-            <h4> Search Database </h4>
-            <form class="SearchForm" method="GET", enctype="multipart/form-data">
-                {% csrf_token %}
-                {{form.as_p}}
-            <button type="submit"> Submit </button>
-            </form>
-        </div>
-
-        <div class="maintable" id="table"">
-            <h3> {{table_title}} </h3>
-            <table class="table1" border="1">
-                <tr>
-                    {% for header in field.headers %}
-                        <th> {{ header }} </th>
-                    {% endfor %}
-                    {% for row in field.rows %}
-                    <tr>
-                        {% for value in row %}
-                            <td>{{value}}</td>
-                        {% endfor %}
-                    </tr>
-                {% endfor %}
-            </table>
-        </div>
-        <div id="chart-container"></div>
-
-        <script src="https://code.highcharts.com/highcharts.js"></script>
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                var chartData = {{ chart_data|safe }};
-
-                Highcharts.chart('chart-container', {
-                    chart: {
-                        type: 'column'
-                    },
-                    title: {
-                        text: '{{ table_title }}'
-                    },
-                    xAxis: {
-                        categories: chartData.categories
-                    },
-                    yAxis: {
-                        title: {
-                            text: 'Value'
-                        }
-                    },
-                    series: chartData.series
-                });
-            });
-        </script>
-
-        <div id="chart-container"></div>
-        {% if heatmap %}
-            <img src="data:image/png;base64,{{ heatmap }}" alt="Heatmap">
-        {% else %}
-            <p>{{ heatmap_message }}</p>
-        {% endif %}
-        </div>
-
-        <div class="subtable" id="table">
-            <h3>By Subgroups</h3>
-
-            <form id="subgroup-form">
-                {{ subgroup_form.as_p }}
-                <input type="submit" value="Submit">
-            </form>
-
-            <table class="table2" border="1">
-                <caption id="subtable-year"></caption>
-                <thead>
-                    <tr id="subtable-headers"></tr>
-                </thead>
-                <tbody id="subtable-rows"></tbody>
-            </table>
-        </div>
-
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Data & Visualize </title>
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script>
-            $(document).ready(function() {
-                var multiYearSubtableField = {{ multi_year_subtable_field|safe }};
+        <script src="https://code.highcharts.com/highcharts.js"></script>
+        <script src="https://code.highcharts.com/modules/exporting.js"></script>
+        <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Commissioner:wght@100..900&display=swap" rel="stylesheet">
+    </head>
+    <body>
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <a href="{% url 'aboutus' %}">Data For Good - Chicago</a>
+            </div>
+            <ul class="nav-links">
+                <li><a href="{% url 'aboutus' %}">About Us</a></li>
+                <li><a href="{% url 'dataandvisualize' %}">Data & Visualize</a></li>
+                <li><a href="{% url 'resources' %}">Resource</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="content_con">
+        <div class="con1">
+            <div class="instructions">
+                <h2>Socio-economic Indicators Data Portal and Dashboard</h2>
+                <h2>Explore the Indicators</h2>
+                <p>The Socio-economic Indicators Data and Visualizations Portal and Dashboard offers a comprehensive platform for users to interact with various data from Census. It enables querying of different indicators based on geography (City of Chicago, Neighborhood, Zip Code, and Tract), along with the ability to visualize comparisons for each region, create maps to show spatial patterns, and track how these patterns evolve over time. Additionally, the portal provides detailed visualizations for selected indicators and their relevant subgroups, allowing users to gain a deeper understanding of socio-economic trends at both macro and micro levels.</p>
+                <p>
+                    SELECT geographic level, category, and year through dropdowns to pick the data you'd like to retrieve, and choose whether you want to generate a memo based on your selected criterias then click Submit.
+                </p>
+                <h3>Portal Features</h3>
+                <ul class="feature">
+                    <li>Interactive querying of socio-economic indicators by geography, category, and year.</li>
+                    <li>Visualization of comparing the conditions of neighborhoods yearly.</li>
+                    <li>Mapping functionality to view spatial patterns and their evolution.</li>
+                    <li>Detailed memo based on selected criterias to aid in decision-making.</li>
+                </ul>
+            </div>
+        </div>
+        <div class="con2">
+            <div class="query-form">
 
-                // Function to update the subgroup table based on the selected year
-                function updateSubgroupTable(year) {
-                    var subtableData = multiYearSubtableField[year];
-                    $('#subtable-year').text(year);
-                    $('#subtable-headers').empty();
-                    $('#subtable-rows').empty();
+                <form class="SearchForm" method="GET" enctype="multipart/form-data">
+                    <div class="sm_title">{% csrf_token %}</div>
+                    <p>{{ form.geographic_level.label_tag }}{{ form.geographic_level }}</p>
+                    <div id="search-container">
+                        <input type="text" id="search-input" placeholder="Search area of interest">
+                    </div>
+                    <div class="scrollable-checkbox-list" id="tract_field">
+                        <input type="checkbox" id="select_all_tract" onclick="toggleTractSelection(this)">
+                        <label for="select_all_tract">Select All/Remove All</label>
+                        <div id="tract-list">
+                            {% for checkbox in form.tract %}
+                            <div class="checkbox">
+                                {{ checkbox.tag }}
+                                <label for="{{ checkbox.id_for_label }}">{{ checkbox.choice_label }}</label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
 
-                    subtableData.headers.forEach(function(header) {
-                        $('#subtable-headers').append('<th>' + header + '</th>');
-                    });
+                    <div class="scrollable-checkbox-list" id="zipcode_field">
+                        <input type="checkbox" id="select_all_zipcode" onclick="toggleZipcodeSelection(this)">
+                        <label for="select_all_zipcode">Select All/Remove All</label>
+                        <div id="zipcode-list">
+                            {% for checkbox in form.zipcode %}
+                            <div class="checkbox">
+                                {{ checkbox.tag }}
+                                <label for="{{ checkbox.id_for_label }}">{{ checkbox.choice_label }}</label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
 
-                    subtableData.rows.forEach(function(row) {
-                        var rowHtml = '<tr>';
-                        row.forEach(function(value) {
-                            rowHtml += '<td>' + value + '</td>';
+                    <div class="scrollable-checkbox-list" id="community_field">
+                        <div id="community-list">
+                            {% for checkbox in form.community %}
+                            <div class="checkbox">
+                                {{ checkbox.tag }}
+                                <label for="{{ checkbox.id_for_label }}">{{ checkbox.choice_label }}</label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <p>{{ form.category.label_tag }}{{ form.category }}</p>
+                    <p>{{ form.indicator.label_tag }}</p>
+                    <div  id="economic_field" style="display:none;">{{ form.economic_indicators }}</div>
+                    <div id="education_field" style="display:none;">{{ form.education_indicators }}</div>
+                    <div id="health_field" style="display:none;">{{ form.health_indicators }}</div>
+                    <div  id="housing_field" style="display:none;">{{ form.housing_indicators }}</div>
+                    <div  id="population_field" style="display:none;">{{ form.population_indicators }}</div>
+                    <div>
+                        <p>{{ form.year.label_tag }}
+                            <input type="checkbox" id="select_all_years" onclick="toggleYearSelection(this)">
+                            <label for="select_all_years">Select All/Remove All</label>
+                        </p>
+                        <p><em>Note: Please do not choose overlapping years for the ACS 5-year estimates. Compare non-overlapping datasets (example: compare 2013-2017 ACS 5-year estimates to 2018-2022 ACS 5-year estimates). For more information, see <a href="https://www.census.gov/newsroom/blogs/random-samplings/2022/03/period-estimates-american-community-survey.html">Period Estimates in the American Community Survey</a>.</em></p>
+                    </div>
+                    <div class="year-select">
+                        {% for checkbox in form.year %}
+                        <label>{{ checkbox.tag }} {{ checkbox.choice_label }}</label><br>
+                        {% endfor %}
+                    </div>
+                    <div class="generate-memo">
+                        <label for="generate">Generate Memo</label>
+                        {{ form.generate_memo }}
+                    </div>
+                    <button type="submit" class="btn_submit"> Submit </button>
+                    <button type="reset">Clear Form</button>
+                </form>
+            </div>
+        </div>
+
+        <script src = "{% static 'js/form_selection_part1.js' %}"> </script>
+        <script src = "{% static 'js/form_selection_part2.js' %}"> </script>
+
+        <div class="con3">
+            <div class="2" id="content">
+                <div class="maintable" id="table">
+                    <h3 class="h3_title">{{ table_title }}</h3>
+                    <table class="table1" border="1" id="main-table">
+                        <tr>
+                            {% for header in field.headers %}
+                            <th>{{ header }}</th>
+                            {% endfor %}
+                        </tr>
+                        {% for row in field.rows %}
+                        <tr>
+                            {% for value in row %}
+                            <td>{{ value }}</td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </table>
+                    <div>
+                        <button onclick="downloadTableAsExcel()">Download as Excel</button>
+                        <button onclick="downloadTableAsCSV()">Download as CSV</button>
+                    </div>
+                </div>
+
+                <script src = "{% static 'js/download_main_table.js' %}"> </script>
+
+                <div style="text-align: center">
+                    <button id="toggle-main-view">Switch Axes</button>
+                </div>
+
+                <div id="chart-container"></div>
+
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        var chartData = {{ chart_data | safe }};
+                        var currentView = 'category'; // Initialize the current view to 'category'
+
+                        function updateMainChart() {
+                            var categories = chartData.categories;
+                            var series = chartData.series;
+
+                            var seriesData;
+
+                            if (currentView === 'category') {
+                                seriesData = series;
+                            } else {
+                                seriesData = categories.map(function(category, index) {
+                                    var categoryData = series.map(function(serie) {
+                                        return serie.data[index];
+                                    });
+
+                                    return {
+                                        name: category,
+                                        data: categoryData
+                                    };
+                                });
+                            }
+
+                            var chartOptions = {
+                                chart: {
+                                    type: 'bar'
+                                },
+                                title: {
+                                    text: '{{ table_title }}'
+                                },
+                                xAxis: {
+                                    categories: currentView === 'category' ? categories : series.map(function(serie) {
+                                        return serie.name;
+                                    })
+                                },
+                                yAxis: {
+                                    min: 0,
+                                    title: {
+                                        text: 'Value'
+                                    }
+                                },
+                                legend: {
+                                    reversed: true
+                                },
+                                plotOptions: {
+                                    series: {
+                                        stacking: 'normal'
+                                    }
+                                },
+                                series: seriesData
+                            };
+
+                            Highcharts.chart('chart-container', chartOptions);
+                        }
+
+                        updateMainChart();
+
+                        document.getElementById('toggle-main-view').addEventListener('click', function() {
+                            currentView = currentView === 'category' ? 'series' : 'category';
+                            updateMainChart();
                         });
-                        rowHtml += '</tr>';
-                        $('#subtable-rows').append(rowHtml);
                     });
-                }
+                </script>
 
-                $('#subgroup-form').submit(function(event) {
-                    event.preventDefault();
-                    var selectedYear = $('#id_subgroup_year').val();
-                    updateSubgroupTable(selectedYear);
-                });
+                <!-- <div class="map-container">
+                    <h2>Condition of Selected Geographies</h2>
+                    <select id="map-select">
+                        <option value="">Select a year of heatmap</option>
+                        {% for item in paths_titles %}
+                        <option value="{{ item.path }}">{{ item.title }}</option>
+                        {% endfor %}
+                    </select>
 
-                var initialYear = '{{ subgroup_form.subgroup_year.value }}';
-                updateSubgroupTable(initialYear);
+                    <div id="map-display">
+                        {% for item in paths_titles %}
+                        <div style="margin-bottom: 20px; display: none;" id="{{ item.path }}">
+                            <div class="iframe-wrapper">
+                                {% include item.path %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div> -->
+
+                <!-- <script src = "{% static 'js/update_heatmap.js' %}"> </script> -->
+
+                <div class="map-container">
+                    {% for item in paths_titles %}
+                        <div style="margin-bottom: 20px;">
+                            <h3>{{ item.title }}</h3>
+                            <div class="iframe-wrapper">
+                                {% include item.path %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div class="subtable" id="table">
+                    <h2>Table and Visualization for Subgroups By Year</h2>
+                    <text>* Please select a specific year and press submit to view the data table and visualization *</text>
+                    <form id="subgroup-form">
+                        {{ subgroup_form.as_p }}
+                        <input type="submit" value="Get Data and Visualization">
+                    </form>
+                    <table class="table2" border="1" id="subtable">
+                        <caption id="subtable-year"></caption>
+                        <thead>
+                        <tr id="subtable-headers"></tr>
+                        </thead>
+                        <tbody id="subtable-rows"></tbody>
+                    </table>
+                    <div>
+                        <button onclick="downloadSubtableAsExcel()">Download as Excel</button>
+                        <button onclick="downloadSubtableAsCSV()">Download as CSV</button>
+                    </div>
+                </div>
+
+                <div id="subtable-chart-container"></div>
+                <script src = "{% static 'js/subtable.js' %}"></script>
+                <script src = "{% static 'js/download_subtable.js' %}"></script>
+
+                <div style="text-align: center">
+                    <button id="toggle-view">Switch Axes</button>
+                </div>
+
+                <div id="subtable-chart-container"></div>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        var multiYearSubtableField = {{ multi_year_subtable_field|safe }};
+                        var subgroupChartData = {{ subgroup_chart_data|safe }};
+                        var currentView = 'tract';
+
+                        function updateSubgroupTable(year) {
+                            var subtableData = multiYearSubtableField[year];
+                            document.getElementById('subtable-year').textContent = year;
+                            document.getElementById('subtable-headers').innerHTML = '';
+                            document.getElementById('subtable-rows').innerHTML = '';
+
+                            subtableData.headers.forEach(function(header) {
+                                var th = document.createElement('th');
+                                th.textContent = header;
+                                document.getElementById('subtable-headers').appendChild(th);
+                            });
+
+                            subtableData.rows.forEach(function(row) {
+                                var tr = document.createElement('tr');
+                                row.forEach(function(value) {
+                                    var th = document.createElement('th');
+                                    th.textContent = value;
+                                    tr.appendChild(th);
+                                });
+                                document.getElementById('subtable-rows').appendChild(tr);
+                            });
+
+                            updateChart(year, subtableData);
+                        }
+
+                        function updateChart(year, subtableData) {
+                            var tractCategories = subtableData.rows.map(function(row) {
+                                return row[0];
+                            });
+
+                            var raceGroups = subtableData.headers.slice(1);
+
+                            var seriesData;
+
+                            if (currentView === 'tract') {
+                                seriesData = raceGroups.map(function(raceGroup, index) {
+                                    return {
+                                        name: raceGroup,
+                                        data: subtableData.rows.map(function(row) {
+                                            return parseFloat(row[index + 1]) || null;
+                                        })
+                                    };
+                                });
+                            } else {
+                                seriesData = tractCategories.map(function(tract, index) {
+                                    var tractData = subtableData.rows[index].slice(1).map(function(value) {
+                                        return parseFloat(value) || null;
+                                    });
+
+                                    return {
+                                        name: tract,
+                                        data: tractData
+                                    };
+                                });
+                            }
+
+                            var chartOptions = {
+                                chart: {
+                                    type: 'column'
+                                },
+                                title: {
+                                    text: 'Subgroup Data for ' + year
+                                },
+                                xAxis: {
+                                    categories: currentView === 'tract' ? tractCategories : raceGroups
+                                },
+                                yAxis: {
+                                    min: 0,
+                                    title: {
+                                        text: 'Value'
+                                    },
+                                    stackLabels: {
+                                        enabled: true
+                                    }
+                                },
+                                legend: {
+                                    align: 'right',
+                                    verticalAlign: 'top',
+                                    floating: true,
+                                    backgroundColor: 'white',
+                                    borderColor: '#CCC',
+                                    borderWidth: 1,
+                                    shadow: false
+                                },
+                                tooltip: {
+                                    headerFormat: '<b>{point.x}</b><br/>',
+                                    pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'
+                                },
+                                plotOptions: {
+                                    column: {
+                                        stacking: 'normal',
+                                        dataLabels: {
+                                            enabled: true
+                                        }
+                                    }
+                                },
+                                series: seriesData
+                            };
+
+                            Highcharts.chart('subtable-chart-container', chartOptions);
+                        }
+
+                        document.getElementById('subgroup-form').addEventListener('submit', function(event) {
+                            event.preventDefault();
+                            var selectedYear = document.getElementById('id_subgroup_year').value;
+                            updateSubgroupTable(selectedYear);
+                        });
+
+                        document.getElementById('toggle-view').addEventListener('click', function() {
+                            currentView = currentView === 'tract' ? 'raceGroup' : 'tract';
+                            var selectedYear = document.getElementById('id_subgroup_year').value;
+                            var subtableData = multiYearSubtableField[selectedYear];
+                            updateChart(selectedYear, subtableData);
+                        });
+                    });
+                </script>
+
+                <div>
+                    <h3>Generated Memo:</h3>
+                    <p><strong>This memo was generated using OpenAI's GPT 3.5-Turbo model. While efforts have been made to ensure accuracy, please review and verify the content carefully.</strong></p>
+                    <p style="white-space: pre-line;">{{ memo }}</p>
+                </div>
+
+                {% if memo_path %}
+                <a href="{% url 'download_memo' %}?memo_path={{ memo_path }}">
+                    <button>Download Memo</button>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            let src=location.search
+            if(src==""){
+                $('.con3').hide()
+            }else{
+                $('.con3').show()
+            }
             });
-        </script>
-
-        <div class="maintable">
-            <h3> Total Population </h3>
-            <table class="table1" border="1">
-                <tr>
-                    <th>Zipcode</th>
-                    <th>2016</th>
-                    <th>2017</th>
-                    <th>2018</th>
-                    <th>2019</th>
-                    <th>2020</th>
-                    <th>2021</th>
-                </tr>
-                <tr>
-                    <th>60601</th>
-                        <td>210,000</td>
-                        <td>220,000</td>
-                        <td>230,000</td>
-                        <td>240,000</td>
-                        <td>250,000</td>
-                        <td>260,000</td>
-                </tr>
-                <tr>
-                    <th>60602</th>
-                        <td>210,000</td>
-                        <td>220,000</td>
-                        <td>230,000</td>
-                        <td>240,000</td>
-                        <td>250,000</td>
-                        <td>260,000</td>
-                </tr>
-                <tr>
-                    <th>60603</th>
-                        <td>210,000</td>
-                        <td>220,000</td>
-                        <td>230,000</td>
-                        <td>240,000</td>
-                        <td>250,000</td>
-                        <td>260,000</td>
-                </tr>
-            </table>
-        </div>
-        <div class="subtable">
-            <h3> By Race Groups </h3>
-            <table class="table2" border="1">
-                <caption> 2016 </caption>
-                <tr>
-                    <th>Zipcode</th>
-                    <th>60601</th>
-                    <th>60602</th>
-                    <th>6063</th>
-                </tr>
-                <tr>
-                    <th>Black</th>
-                        <td>300,000</td>
-                        <td>310,000</td>
-                        <td>320,000</td>
-                </tr>
-                <tr>
-                    <th>White</th>
-                        <td>100,000</td>
-                        <td>150,000</td>
-                        <td>160,000</td>
-                </tr>
-                <tr>
-                    <th>Asian</th>
-                        <td>30,000</td>
-                        <td>32,000</td>
-                        <td>35,000</td>
-                </tr>
-            </table>
-
-            <table class="table2" border="1">
-                <caption> 2017 </caption>
-                <tr>
-                    <th>Zipcode</th>
-                    <th>60601</th>
-                    <th>60602</th>
-                    <th>6063</th>
-                </tr>
-                <tr>
-                    <th>Black</th>
-                        <td>300,000</td>
-                        <td>310,000</td>
-                        <td>320,000</td>
-                </tr>
-                <tr>
-                    <th>White</th>
-                        <td>100,000</td>
-                        <td>150,000</td>
-                        <td>160,000</td>
-                </tr>
-                <tr>
-                    <th>Asian</th>
-                        <td>30,000</td>
-                        <td>32,000</td>
-                        <td>35,000</td>
-                </tr>
-            </table>
-
-            <table class="table2" border="1">
-                <caption> 2018 </caption>
-                <tr>
-                    <th>Zipcode</th>
-                    <th>60601</th>
-                    <th>60602</th>
-                    <th>6063</th>
-                </tr>
-                <tr>
-                    <th>Black</th>
-                        <td>300,000</td>
-                        <td>310,000</td>
-                        <td>320,000</td>
-                </tr>
-                <tr>
-                    <th>White</th>
-                        <td>100,000</td>
-                        <td>150,000</td>
-                        <td>160,000</td>
-                </tr>
-                <tr>
-                    <th>Asian</th>
-                        <td>30,000</td>
-                        <td>32,000</td>
-                        <td>35,000</td>
-                </tr>
-            </table>
-
-            <table class="table2" border="1">
-                <caption> 2019 </caption>
-                <tr>
-                    <th>Zipcode</th>
-                    <th>60601</th>
-                    <th>60602</th>
-                    <th>6063</th>
-                </tr>
-                <tr>
-                    <th>Black</th>
-                        <td>300,000</td>
-                        <td>310,000</td>
-                        <td>320,000</td>
-                </tr>
-                <tr>
-                    <th>White</th>
-                        <td>100,000</td>
-                        <td>150,000</td>
-                        <td>160,000</td>
-                </tr>
-                <tr>
-                    <th>Asian</th>
-                        <td>30,000</td>
-                        <td>32,000</td>
-                        <td>35,000</td>
-                </tr>
-            </table>
-
-            <table class="table2" border="1">
-                <caption> 2020 </caption>
-                <tr>
-                    <th>Zipcode</th>
-                    <th>60601</th>
-                    <th>60602</th>
-                    <th>6063</th>
-                </tr>
-                <tr>
-                    <th>Black</th>
-                        <td>300,000</td>
-                        <td>310,000</td>
-                        <td>320,000</td>
-                </tr>
-                <tr>
-                    <th>White</th>
-                        <td>100,000</td>
-                        <td>150,000</td>
-                        <td>160,000</td>
-                </tr>
-                <tr>
-                    <th>Asian</th>
-                        <td>30,000</td>
-                        <td>32,000</td>
-                        <td>35,000</td>
-                </tr>
-            </table>
-
-            <table class="table2" border="1">
-                <caption> 2021 </caption>
-                <tr>
-                    <th>Zipcode</th>
-                    <th>60601</th>
-                    <th>60602</th>
-                    <th>6063</th>
-                </tr>
-                <tr>
-                    <th>Black</th>
-                        <td>300,000</td>
-                        <td>310,000</td>
-                        <td>320,000</td>
-                </tr>
-                <tr>
-                    <th>White</th>
-                        <td>100,000</td>
-                        <td>150,000</td>
-                        <td>160,000</td>
-                </tr>
-                <tr>
-                    <th>Asian</th>
-                        <td>30,000</td>
-                        <td>32,000</td>
-                        <td>35,000</td>
-                </tr>
-            </table>
-        </div>
-
+    </script>
+    <footer>
+        <p>&copy; 2024 Data For Good - Chicago. All rights reserved.</p>
+    </footer>
     </body>
 </html>

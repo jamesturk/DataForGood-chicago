@@ -60,40 +60,55 @@ Welcome to the DataForGood Chicago project! This document will provide you with 
 | Population | Total Population and Race Group | Black or African American alone | # of people | DP05_0038E 
 | Population | Total Population and Race Group | American Indian and Alaska Native alone | # of people | DP05_0039E 
 | Population | Total Population and Race Group | Asian | # of people | DP05_0044E | 5-year estimate: 2017-2022 |
-| Population | Total Population and Race Group | Native Hawaiian and Other Pacific Islander alone | # of people | DP05_0052E 
-| Population | Total Population and Race Group | Some Other Race alone | # of people | DP05_0057E 
-| Population | Total Population and Race Group | Two or more races | # of people | DP05_0058E 
-| Population | Median Age | Median Age | # of people | B01002_001E 
-| Population | Median Age | Female | # of people | B01002_003E 
-| Population | Median Age | Male | # of people | B01002_002E 
+| Population | Total Population and Race Group | Native Hawaiian and Other Pacific Islander alone | # of people | DP05_0052E | 5-year estimate: 2017-2022 |
+| Population | Total Population and Race Group | Some Other Race alone | # of people | DP05_0057E | 5-year estimate: 2017-2022 |
+| Population | Total Population and Race Group | Two or more races | # of people | DP05_0058E | 5-year estimate: 2017-2022 |
+| Population | Median Age | Median Age | # of people | B01002_001E | 5-year estimate: 2017-2022 |
+| Population | Median Age | Female | # of people | B01002_003E | 5-year estimate: 2017-2022 |
+| Population | Median Age | Male | # of people | B01002_002E | 5-year estimate: 2017-2022 |
 
 
-- Database Models and ERD, please see models.md
-https://github.com/uchicago-capp-30320/DataForGood-chicago/blob/main/docs/models.md
+- Database Models:
+    - `main_tractzipcode`: This model maps each of Chicago's census tracts to their corresponding zip code.
 
-- Data Flow: When a user interacts with the application and selects specific parameters (geographic level, indicator category, and years), the backend retrieves the relevant data from the database models and sends it to the frontend for data tables and visualizations. We would like to note that our application allows the user to select indicators within one broader category - i.e. only selecting economic indicator variables - so that users can get a deeper view of one category at a time.
+    - `main_censustracts`: This model maps each of Chicago's census tracts to their corresponding community areas.
 
-- Dependency Graph
-<>
-The graph shows the relationships between the different entities in the ERD:
+    - `main_meanincome_main`: This model stores the mean income of households for each census tract and year.
 
-<>
+    - `main_meanincome_sub`: This model stores the mean income of households by race for each census tract and year. The racial categories include: White, Black or African American, Indian and Alaska Native, Asian, Native Hawaiian and other Pacific Islander, and Other.
 
+    - (Note: The provided examples focus on one example of an economic indicator, but similar models exist for other indicator categories like housing, education, etc.)
+
+- Simplified Version of the Entity-Relationship Diagram:
+![image](https://github.com/uchicago-capp-30320/DataForGood-chicago/assets/111541644/e86d0b43-2b6a-40bb-b246-8ba29f9368be)
+
+**Please see `models.md` file for a more comprehensive diagram**
+
+- Data Flow: When a user interacts with the application and selects specific parameters (geographic level, indicator category, indicator, and years), the backend retrieves the relevant data from the database models and sends it to the frontend for visualization. We would like to note that our application allows the user to select indicators within one broader category (ie only selecting economic indicator variables) so that users can get a deeper view of one category at a time.
 
 ### Frontend and User Interface:
 <final design images here>
 
 ### Key Concepts:
 
-1. Data Table and Data Visualization: After the user selects the desired parameters, the frontend receives the data from the backend and generates data tables and visualizations. Users can select a specifc year for sub-indicators and heatmap to view the condition on yearly basis. The following is a list of filters that are available for users to customize:
-    - Geographic Levels: Users can explore data at different geographic granularities, such as citywide, by zip codes, by community areas, and by census tracts.
-    - Indicator Categories: The application provides data across various categories, including population, education, economics, housing, and health characteristics.
-    - Years: Users can select a set of 5-year estimates (e.g., 2017-2021 and 2018-2022 ACS 5-year estimates) to view the data for these time periods.
+1. Data Table and Data Visualization: After the user selects the desired parameters, the frontend receives the data from the backend and generates data tables and visualizations. The following is a list of filters that are available for users to customize:
+    - Geographic Levels: Users can explore data at different geographic granularities, such as citywide, by zip code, by community area, and by census tracts.
+    - Indicator Categories: The application provides data across various categories, including population characteristics, education, economics, and housing.
+    - Years: Users can select a specific 5-year estimate or a range of individual years (e.g., 2018-2022 5-year estimate or 2021-2022 yearly) to view the data for those time periods.
+    - Indicators: Each indicator category may have indicators that provide more detailed information of the general groups (e.g., *Total Population* within the `population_characteristics`).
+    - Sub-indicators: Each indicator category may have indicators that provide more detailed information of the general groups (e.g., breakdown of race groups for the indicator *Total Population*). We will present the data tables and visuals for all sub-indicators, and users can decide to display certain visuals using the dropdowns and download them.
 
-2. Memo generation: The application allows users to press a button to generate memo based on the selected view of data tables and data visualizations
-3. Data Export: The application allows users to export the data tables and visualizations in various formats, including Excel (.xlsx), .csv, and .JPEG.
-4. Resource: The application allows users to interact with the embedded ArcGIS Instant App to view city resources.
-5. Endpoints:
+2. Memo generation: The application allows users to select whether they would like to generate memo when they are choosing their desired parameters. Users are also able to download their memo to an editable Word document.
+
+3. Data Export: The application allows users to export the data tables and visualizations in various formats, including Excel (.xlsx), CSV, JPEG, PNG, etc.
+
+5. Resource: The application allows users to interact with the embedded ArcGIS Instant App to view city resources.
+6. Endpoints:
     - /main/aboutus: Displays information about the project, including a description and objectives.
     - /main/data&visualize: The main page for data visualization, where users can select parameters and view data tables and charts.
     - /main/resources: Provides an embedded ArcGIS web app with interactive feature layers.
+    - /main/data&visualize/{parameters from query}/tables.xlsx: Enables the user to download the datatables as one .xlsx file, with each datatable as an excel worksheet tab.
+    - /main/data&visualize/{parameters from query}/tables.pdf: Enables the user to download the datatables as a .pdf file, with each datatable as a page in the PDF document.
+    - /main/data&visualize/{parameters from query}/chart_1.jpg: There will be one unique link for each chart in the HTML page. This enables the user to select the specific charts to download as a .jpg image, with each image being one chart.
+    - /main/resources: Provides a view of an embedded ArcGIS web app.
+    - /main/resources/download-memo/: The view used to handle the downloading of the generated memo.

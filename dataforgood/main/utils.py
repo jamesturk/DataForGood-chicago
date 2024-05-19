@@ -290,7 +290,8 @@ class MainTable:
     Class object to represent a main data table on the webapp.
     """
 
-    def __init__(self, geographic_level, geographic_units, indicator, periods):
+    def __init__(self, geographic_level, geographic_units, indicator, 
+                 model, periods):
         """
         Inputs:
             geographic_level (str): geographic level selected by the user
@@ -298,6 +299,7 @@ class MainTable:
             geographic_units (list of str or int): geographic unit(s) corresponding
                 to the geographic level selected by the user in the form
             indicator (str): name of indicator selected by the user in the form
+            model (Django model object): corresponding model for the indicator
             preiods (list of str): periods(s) selected by the user
 
         Returns: None
@@ -306,8 +308,8 @@ class MainTable:
         self.geographic_level = geographic_level
         self.geographic_units = self.convert_list_to_tuple(geographic_units)
         self.indicator = indicator
+        self.model = model
         self.periods = periods
-        self.model = MAIN_MODEL_MAPPING[self.indicator]
         self.aggregate_operation = AGGERGATE_OPERATORS[self.indicator]
         self.years = self.convert_periods_to_years()
 
@@ -582,7 +584,8 @@ class SubgroupTable:
     Class object to represent a series of subgroup data tables on the webapp.
     """
 
-    def __init__(self, geographic_level, geographic_units, indicator, periods):
+    def __init__(self, geographic_level, geographic_units, indicator, 
+                 model, periods):
         """
         Inputs:
             geographic_level (str): geographic level selected by the user
@@ -590,6 +593,7 @@ class SubgroupTable:
             geographic_units (list of str or int): geographic unit(s) corresponding
                 to the geographic level selected by the user in the form
             indicator (str): name of indicator selected by the user in the form
+            model (Django model object): corresponding model for the indicator
             preiods (list of str): periods(s) selected by the user
 
         Returns: None
@@ -598,8 +602,8 @@ class SubgroupTable:
         self.geographic_level = geographic_level
         self.geographic_units = self.convert_list_to_tuple(geographic_units)
         self.indicator = indicator
+        self.model = model
         self.periods = periods
-        self.model = SUB_MODEL_MAPPING[self.indicator]
         self.aggregate_operation = AGGERGATE_OPERATORS[self.indicator]
         self.years = self.convert_periods_to_years()
         self.model_subgroups = self.get_model_subgroups()

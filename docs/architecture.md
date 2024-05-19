@@ -1,7 +1,7 @@
 ## Architecture Documentation
 Welcome to the DataForGood Chicago project! This document will provide you with an overview of our application's architecture and key concepts to help you get started.
 
-### Data Flow and Backend:
+### Backend:
 - Data Source: The data for our application comes mainly from the American Community Survey conducted by the Census Bureau. We have a backend database using PostgreSQL, which stores this data in a structured format. The following is a table view of the indicators we have for each category:
 - Time Unit:
 * 2013-2017 ACS 5-year estimate

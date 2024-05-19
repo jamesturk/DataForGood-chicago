@@ -20,6 +20,7 @@ from .utils import (
     SubgroupTable,
     WriteMemo,
     save_memo,
+    generate_heatmaps
 )
 
 
@@ -34,8 +35,8 @@ environ.Env.read_env()
 open_ai_key = env("open_ai_key")
 
 # Centroid of Chicago for heat map
-y_center = 41.434732
-x_center = -87.333050
+y_center = 41.8781
+x_center = -87.6298
 
 
 @register.filter
@@ -210,117 +211,7 @@ def dataandvisualize(request):
             }
 
         # Creating heat map for Community Area, Zip Code, and Tract Level
-        heatmap_data = pd.DataFrame(field["rows"], columns=field["headers"])
-        heatmap_info = []
-
-        years = heatmap_data.columns[1:]
-        for year in years:
-            year_dic = {}
-            for column in heatmap_data.columns[1:]:
-                heatmap_data[column] = heatmap_data[column].apply(
-                    lambda x: float(x) if x != "NA" else np.nan
-                )
-
-            if geograpahic_level != "City of Chicago":
-                if geograpahic_level == "Community":
-                    heatmap_data.iloc[:, 0] = heatmap_data.iloc[
-                        :, 0
-                    ].str.upper()
-                    geo = gpd.read_file(communityshape_path)
-                    data = pd.merge(
-                        geo,
-                        heatmap_data,
-                        left_on="community",
-                        right_on="Community",
-                    )
-
-                if geograpahic_level == "Zipcode":
-                    geo = gpd.read_file(zipcodeshape_path)
-                    data = pd.merge(
-                        geo, heatmap_data, left_on="zip", right_on="Zipcode"
-                    )
-
-                if geograpahic_level == "Tract":
-                    geo = gpd.read_file(censusshape_path)
-                    data = pd.merge(
-                        geo, heatmap_data, left_on="tractce10", right_on="Tract"
-                    )
-
-                # Adding base layer
-                mymap = folium.Map(
-                    location=[y_center, x_center], zoom_start=10, tiles=None
-                )
-                folium.TileLayer(
-                    "CartoDB positron", name="Light Map", control=False
-                ).add_to(mymap)
-
-                # Creating heatmap layer
-                units = INDICATOR_UNIT_MAPPING[indicator]
-                folium.Choropleth(
-                    geo_data=data,
-                    name="Choropleth",
-                    data=data,
-                    columns=[geograpahic_level, year],
-                    key_on="feature.properties.{}".format(geograpahic_level),
-                    fill_color="YlGnBu",
-                    fill_opacity=1,
-                    line_opacity=0.2,
-                    bins=3,
-                    legend_name=units,
-                    smooth_factor=0,
-                    nan_fill_color="grey",
-                    nan_fill_opacity=0.4,
-                ).add_to(mymap)
-
-                def style_function(x):
-                    return {
-                        "fillColor": "#ffffff",
-                        "color": "#000000",
-                        "fillOpacity": 0.1,
-                        "weight": 0.1,
-                    }
-
-                def highlight_function(x):
-                    return {
-                        "fillColor": "#000000",
-                        "color": "#000000",
-                        "fillOpacity": 0.5,
-                        "weight": 0.1,
-                    }
-
-                # Adding tooltips to map
-                feat = folium.features.GeoJson(
-                    data,
-                    style_function=style_function,
-                    control=False,
-                    highlight_function=highlight_function,
-                    tooltip=folium.features.GeoJsonTooltip(
-                        fields=[geograpahic_level, year],
-                        aliases=[geograpahic_level, units],
-                        style=(
-                            "background-color: white; color: #333333; font-family: arial; font-size: 12px; padding: 10px;"
-                        ),
-                    ),
-                )
-                mymap.add_child(feat)
-                mymap.keep_in_front(feat)
-                folium.LayerControl().add_to(mymap)
-                if geograpahic_level[-1:] == "y":
-                    title = "Heat Map of {} by Selected {}ies in {}".format(
-                        indicator, geograpahic_level[:-1], year
-                    )
-                else:
-                    title = "Heat Map of {} by Selected {}s in {}".format(
-                        indicator, geograpahic_level, year
-                    )
-
-                name = "heatmap_{}".format(uuid.uuid4())
-                map_file_path = "{}/{}.html".format(html_path, name)
-                mymap.save(map_file_path)
-                year_dic["title"] = title
-                year_dic["path"] = "maps/{}.html".format(name)
-                year_dic["year"] = year
-                heatmap_info.append(year_dic)
+        heatmap_data, heatmap_info = generate_heatmaps(geograpahic_level, indicator, field, year)
 
         if generate_memo == "Yes":
             # Writing and saving memo about the data

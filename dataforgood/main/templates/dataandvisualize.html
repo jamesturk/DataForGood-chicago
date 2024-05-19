@@ -223,7 +223,7 @@
                     });
                 </script>
 
-                <div class="map-container">
+                <!-- <div class="map-container">
                     <h2>Condition of Selected Geographies</h2>
                     <select id="map-select">
                         <option value="">Select a year of heatmap</option>
@@ -241,9 +241,20 @@
                         </div>
                         {% endfor %}
                     </div>
-                </div>
+                </div> -->
 
-                <script src = "{% static 'js/update_heatmap.js' %}"> </script>
+                <!-- <script src = "{% static 'js/update_heatmap.js' %}"> </script> -->
+
+                <div class="map-container">
+                    {% for item in paths_titles %}
+                        <div style="margin-bottom: 20px;">
+                            <h2>{{ item.title }}</h2>
+                            <div class="iframe-wrapper">
+                                {% include item.path %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
 
                 <div class="subtable" id="table">
                     <h2>Table and Visualization for Subgroups By Year</h2>

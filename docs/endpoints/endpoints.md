@@ -131,3 +131,16 @@ Purpose: This endpoint provides a view of an embedded ArcGIS web app.
 Parameters: None/NA
 
 Response: HTML page with the embedded ArcGIS web app which contains a lot of feature layers to interact with.
+
+### Endpoint D: /main/download-memo/
+
+Purpose: Allows users to download the generated memo from our web app.
+
+Parameters: None/NA
+
+Parameters:
+- `request` (HttpRequest): The HTTP request object containing information about the request.
+
+Response:
+- `HttpResponse`: The response is either the downloadable memo or an error message if the memo was not found.
+

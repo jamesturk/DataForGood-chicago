@@ -38,10 +38,12 @@ from .models import (
     TractZipCode,
 )
 
+
 communityshape_path = os.path.join(BASE_DIR, "main/communityarea")
 zipcodeshape_path = os.path.join(BASE_DIR, "main/zipcode")
 censusshape_path = os.path.join(BASE_DIR, "main/censustracts")
 html_path = os.path.join(BASE_DIR, "main/templates/maps")
+docs_path = os.path.join(BASE_DIR, "main/templates/memos")
 
 # HELPER FUNCTIONS FOR VIEWS.PY #
 
@@ -251,7 +253,7 @@ class WriteMemo:
         )
 
 
-def save_memo(indicator, geo_level, memo, docs_path):
+def save_memo(indicator, geo_level, memo):
     """
     This function saves the memo outputted by ChatGPT to a word file.
 
@@ -274,6 +276,8 @@ def save_memo(indicator, geo_level, memo, docs_path):
         "Analysis of {} in Selected Chicago {}".format(indicator, geo_level), 0
     )
     document.add_paragraph(memo)
+
+    os.makedirs(docs_path, exist_ok=True)
     path = docs_path + "/memo_{}.docx".format(uuid.uuid4())
 
     document.save(path)
@@ -945,6 +949,7 @@ def generate_heatmaps(geograpahic_level, indicator, field, years):
     """
     heatmap_data = pd.DataFrame(field["rows"], columns=field["headers"])
     heatmap_info = []
+    os.makedirs(html_path, exist_ok=True)
 
     for column in heatmap_data.columns[1:]:
         heatmap_data[column] = heatmap_data[column].apply(
@@ -1034,7 +1039,7 @@ def create_heatmap(data, geograpahic_level, indicator, year):
         data=data,
         columns=[geograpahic_level, year],
         key_on="feature.properties.{}".format(geograpahic_level),
-        fill_color="YlGnBu",
+        fill_color="Blues",
         fill_opacity=1,
         line_opacity=0.2,
         bins=3,

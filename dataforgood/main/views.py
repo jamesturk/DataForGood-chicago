@@ -15,20 +15,12 @@ from dataforgood.settings import BASE_DIR
 
 from .forms import SearchForm, SubgroupForm
 from .utils import (
-    INDICATOR_UNIT_MAPPING,
     MainTable,
     SubgroupTable,
     WriteMemo,
     save_memo,
     generate_heatmaps
 )
-
-
-communityshape_path = os.path.join(BASE_DIR, "main/communityarea")
-zipcodeshape_path = os.path.join(BASE_DIR, "main/zipcode")
-censusshape_path = os.path.join(BASE_DIR, "main/censustracts")
-html_path = os.path.join(BASE_DIR, "main/templates/maps")
-docs_path = os.path.join(BASE_DIR, "main/templates/memos")
 
 env = environ.Env()
 environ.Env.read_env()
@@ -113,6 +105,7 @@ def dataandvisualize(request):
         - create_table_title: Creates the title for the main table.
         - create_table: Creates the main table based on the selected parameters.
         - create_subgroup_tables: Creates the subgroup tables based on the selected parameters.
+        - generate_heatmaps: Generates heatmaps based on the selected parameters.
         - save_memo: Saves the generated memo to a file.
 
     Note:
@@ -220,7 +213,7 @@ def dataandvisualize(request):
                 indicator, geograpahic_level, field, chart_descr, open_ai_key
             )
             memo = analysis.invoke()
-            memo_path = save_memo(indicator, geograpahic_level, memo, docs_path)
+            memo_path = save_memo(indicator, geograpahic_level, memo)
 
             context = {
                 "form": form,
@@ -273,9 +266,21 @@ def resources(request):
 
 
 def download_memo(request):
+    """
+    Allows users to download the generated memo.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The downloadable memo or an error if the memo was 
+        not found.
+    """
     if "memo_path" in request.GET:
         memo_path = request.GET["memo_path"]
+
         if os.path.exists(memo_path):
+
             with open(memo_path, "rb") as docx_file:
                 response = HttpResponse(
                     docx_file.read(),
@@ -285,4 +290,5 @@ def download_memo(request):
                     "Content-Disposition"
                 ] = 'attachment; filename="memo.docx"'
                 return response
+
     return HttpResponse("Memo not found", status=404)

@@ -35,7 +35,6 @@ DataForGood-chicago
 │   │   ├── settings.py
 │   │   ├── urls.py
 │   │   └── wsgi.py
-│   ├── db.sqlite3
 │   ├── main: Django app for the main functionality of the web app
 │   │   ├── __init__.py
 │   │   ├── __pycache__
@@ -147,6 +146,7 @@ Way of Collection: Downloaded shapefiles
 
 #### **Credentials**
 ##### Getting Census API key
+- Census API documentation: https://www.census.gov/data/developers/guidance/api-user-guide.html
 - Request an API key with this link: https://api.census.gov/data/key_signup.html
 - Once you have the keys, please create a new file called `.env` in the root directory of this project by running `touch .env`.
 - In this .env file, assign the key to the variable `CENSUS_API_KEY` without spaces or quotations (i.e. CENSUS_API_KEY=123456789)
@@ -154,20 +154,21 @@ Way of Collection: Downloaded shapefiles
 - An example of requesting census data and shapefile to map the results are in [this notebook](census_test.ipynb)
 
 ##### Getting OpenAI API key
-- Create an OpenAI account or sign into your existing account here: https://openai.com/blog/openai-api/
+- OpenAI API documentation: https://openai.com/blog/openai-api/
+- Create an OpenAI account or sign into your existing account here: https://platform.openai.com/signup
 - Once you have a key, assign the key to the variable `open_ai_key` without spaces or quotations (i.e. open_ai_key=123456789)
 
 #### **.env Setup**
 - The path of `.env` should look like: DataForGood-chicago/dataforgood/.env
-- The format in `.env` should look like the following:
-SECRET_KEY=
-DB_NAME=
-DB_USER=
-DB_PASSWORD=
-DB_HOST=
-DB_PORT=
-open_ai_key=
-CENSUS_API_KEY=
+- The format in `.env` should look like the following:\
+`SECRET_KEY`=\
+`DB_NAME`=\
+`DB_USER`=\
+`DB_PASSWORD`=\
+`DB_HOST`=\
+`DB_PORT`=\
+`open_ai_key`=\
+`CENSUS_API_KEY`=
 __________________
 
 #### **Launching the Web Application**

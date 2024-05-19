@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
-    var chartData = {{ chart_data|safe }};
+    var chartData = {{ chart_data|safe}};
     var currentView = 'category'; // Initialize the current view to 'category'
 
     function updateMainChart() {

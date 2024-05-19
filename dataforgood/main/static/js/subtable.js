@@ -28,11 +28,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 type: 'bar'
             },
             title: {
-                text: '{{ table_title }}',
-                style: {
-                    fontFamily: 'Arial, sans-serif', // Change the font family
-                    fontSize: '25px' // Change the font size
-                }
+                text: '{{ table_title }}'
             },
             xAxis: {
                 categories: currentView === 'category' ? categories : series.map(function(serie) {

@@ -14,7 +14,21 @@ from django.views.decorators.csrf import csrf_protect
 from dataforgood.settings import BASE_DIR
 
 from .forms import SearchForm, SubgroupForm
-from .utils import create_subgroup_tables, create_table, create_table_title
+from .utils import (
+    MainTable,
+    SubgroupTable,
+    WriteMemo,
+    save_memo,
+    generate_heatmaps
+)
+
+env = environ.Env()
+environ.Env.read_env()
+open_ai_key = env("open_ai_key")
+
+# Centroid of Chicago for heat map
+y_center = 41.8781
+x_center = -87.6298
 
 
 @register.filter

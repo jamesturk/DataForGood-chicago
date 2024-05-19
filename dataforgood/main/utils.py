@@ -515,8 +515,11 @@ class MainTable:
                     continue
                 else:
                     row[idx] = round(r["agg_val"], 2)
-
-        row = [unit] + row
+        
+        if self.geographic_level == "Community":
+            row = [unit.title()] + row
+        else:
+            row = [unit] + row
 
         return row
 
@@ -605,6 +608,11 @@ class SubgroupTable:
                 headers = ["City of Chicago", "City Average"]
             elif self.aggregate_operation == "Total":
                 headers = ["City of Chicago", "City Total"]
+        
+        elif self.geographic_level == "Community":
+            headers.append(self.geographic_level)
+            for community in self.geographic_units:
+                headers.append(community.title())
 
         else:
             headers.append(self.geographic_level)

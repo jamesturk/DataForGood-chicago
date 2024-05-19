@@ -14,7 +14,7 @@ from django.views.decorators.csrf import csrf_protect
 from dataforgood.settings import BASE_DIR
 
 from .forms import SearchForm, SubgroupForm
-from .utils import create_subgroup_tables, create_table, create_table_title
+from .utils import *
 
 
 @register.filter

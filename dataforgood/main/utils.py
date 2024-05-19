@@ -4,6 +4,7 @@ import folium
 import geopandas as gpd
 import numpy as np
 import pandas as pd
+import branca.colormap as cm
 
 from django import forms
 from dataforgood.settings import BASE_DIR
@@ -945,29 +946,32 @@ def generate_heatmaps(geograpahic_level, indicator, field, years):
     heatmap_data = pd.DataFrame(field["rows"], columns=field["headers"])
     heatmap_info = []
 
-    for year in years:
-        year_dic = {}
-        for column in heatmap_data.columns[1:]:
-            heatmap_data[column] = heatmap_data[column].apply(
-                lambda x: float(x) if x != "NA" else np.nan
-            )
+    for column in heatmap_data.columns[1:]:
+        heatmap_data[column] = heatmap_data[column].apply(
+            lambda x: float(x) if x != "NA" else np.nan
+        )
 
-        if geograpahic_level != "City of Chicago":
-            if geograpahic_level == "Community":
-                heatmap_data.iloc[:, 0] = heatmap_data.iloc[:, 0].str.upper()
-                geo = gpd.read_file(communityshape_path)
-                data = pd.merge(geo, heatmap_data, left_on="community", right_on="Community")
+    if geograpahic_level != "City of Chicago":
+        if geograpahic_level == "Community":
+            heatmap_data.iloc[:, 0] = heatmap_data.iloc[:, 0].str.upper()
+            geo = gpd.read_file(communityshape_path)
+            data = pd.merge(geo, heatmap_data, left_on="community", 
+                            right_on="Community")
 
-            elif geograpahic_level == "Zipcode":
-                geo = gpd.read_file(zipcodeshape_path)
-                data = pd.merge(geo, heatmap_data, left_on="zip", right_on="Zipcode")
+        elif geograpahic_level == "Zipcode":
+            geo = gpd.read_file(zipcodeshape_path)
+            data = pd.merge(geo, heatmap_data, left_on="zip", 
+                            right_on="Zipcode")
 
-            elif geograpahic_level == "Tract":
-                geo = gpd.read_file(censusshape_path)
-                data = pd.merge(geo, heatmap_data, left_on="tractce10", right_on="Tract")
+        elif geograpahic_level == "Tract":
+            geo = gpd.read_file(censusshape_path)
+            data = pd.merge(geo, heatmap_data, left_on="tractce10", 
+                            right_on="Tract")
 
-            # Create the heatmap
-            mymap, title = create_heatmap(data, geograpahic_level, indicator, year)
+        for year in years:
+            year_dic = {}
+            mymap, title = create_heatmap(data, geograpahic_level, indicator, 
+                                          year)
             
             name = "heatmap_{}".format(uuid.uuid4())
             map_file_path = "{}/{}.html".format(html_path, name)
@@ -976,10 +980,11 @@ def generate_heatmaps(geograpahic_level, indicator, field, years):
             year_dic["path"] = f"maps/{name}.html"
             year_dic["year"] = year
             heatmap_info.append(year_dic)
+            del mymap
 
     return heatmap_data, heatmap_info
 
-def folium_del_legend(Choropleth: folium.Choropleth):
+def delete_legend(Choropleth: folium.Choropleth):
   """A hack to remove choropleth legends.
   
   This function removes the legend from the choropleth. This function is based
@@ -1023,7 +1028,7 @@ def create_heatmap(data, geograpahic_level, indicator, year):
     # Creating heatmap layer
     units = INDICATOR_UNIT_MAPPING[indicator]
 
-    folium_del_legend(folium.Choropleth(
+    delete_legend(folium.Choropleth(
         geo_data=data,
         name="Choropleth",
         data=data,

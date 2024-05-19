@@ -248,7 +248,7 @@
                 <div class="map-container">
                     {% for item in paths_titles %}
                         <div style="margin-bottom: 20px;">
-                            <h2>{{ item.title }}</h2>
+                            <h3>{{ item.title }}</h3>
                             <div class="iframe-wrapper">
                                 {% include item.path %}
                             </div>
@@ -409,7 +409,7 @@
                 </script>
 
                 <div>
-                    <h2>Generated Memo:</h2>
+                    <h3>Generated Memo:</h3>
                     <p><strong>This memo was generated using OpenAI's GPT 3.5-Turbo model. While efforts have been made to ensure accuracy, please review and verify the content carefully.</strong></p>
                     <p style="white-space: pre-line;">{{ memo }}</p>
                 </div>

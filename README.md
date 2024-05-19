@@ -79,65 +79,6 @@ DataForGood-chicago
 │   │   ├── views.py
 │   │   └── zipcode
 │   └── manage.py
-├── dfg_chi
-│   ├── __init__.py
-│   ├── backend
-│   │   ├── data_downloaded
-│   │   │   ├── Economics
-│   │   │   │   ├── MeanIncome
-│   │   │   │   │   ├── main
-│   │   │   │   │   └── sub
-│   │   │   │   ├── MedianIncome
-│   │   │   │   │   ├── main
-│   │   │   │   │   └── sub
-│   │   │   │   └── README
-│   │   │   ├── Education
-│   │   │   │   ├── Enrollment
-│   │   │   │   │   ├── main
-│   │   │   │   │   └── sub
-│   │   │   │   └── MedianEarning
-│   │   │   │       ├── main
-│   │   │   │       └── sub
-│   │   │   ├── Health
-│   │   │   │   ├── Disability
-│   │   │   │   │   ├── main
-│   │   │   │   │   └── sub
-│   │   │   │   └── Insurance
-│   │   │   │       ├── main
-│   │   │   │       └── sub
-│   │   │   ├── Housing
-│   │   │   │   ├── ContractRent
-│   │   │   │   │   ├── README
-│   │   │   │   │   ├── main
-│   │   │   │   │   └── sub
-│   │   │   │   ├── HouseholdType
-│   │   │   │   │   ├── README
-│   │   │   │   │   ├── main
-│   │   │   │   │   └── sub
-│   │   │   │   └── README
-│   │   │   ├── Population
-│   │   │   │   ├── MedianAge
-│   │   │   │   │   ├── main
-│   │   │   │   │   └── sub
-│   │   │   │   └── Races
-│   │   │   │       ├── main
-│   │   │   │       └── sub
-│   │   │   ├── census_tracts.csv
-│   │   │   └── data_5yr
-│   │   └── variables.json
-│   ├── gis
-│   │   └── README.md
-│   ├── main.py
-│   ├── static
-│   │   ├── README.md
-│   │   ├── bootstrap
-│   │   │   └── README.md
-│   │   ├── css
-│   │   │   └── README.md
-│   │   └── js
-│   │       └── README.md
-│   └── templates
-│       └── README.md
 ├── docs: Documentation for our project.
 │   ├── architecture.md
 │   ├── changelog.md

@@ -936,7 +936,7 @@ def get_choices(model, col):
 
 
 def create_multiple_choice_geo(
-    model, field_name, widget_id, class_name="form-option"
+    model, field_name, widget_id, initial_val, class_name="form-option"
 ):
     """
     Create a dynamically configured MultipleChoiceField based on the specified model and field.
@@ -944,12 +944,14 @@ def create_multiple_choice_geo(
     :param model: Django model class from which to fetch choices.
     :param field_name: Name of the model field for which to create a choice field.
     :param widget_id: HTML ID to use for the field's widget.
+    :param initial_val: initial or default value of the field
     :param class_name: CSS class name for the widget.
     :return: forms.MultipleChoiceField instance.
     """
     return forms.MultipleChoiceField(
+        initial=initial_val,
         widget=forms.CheckboxSelectMultiple(
-            attrs={"class": class_name, "id": widget_id}
+            attrs={"class": class_name, "id": widget_id},
         ),
         choices=get_choices(model, field_name),
     )

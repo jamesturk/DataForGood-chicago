@@ -409,3 +409,7 @@ section ul li {
 .team ul li strong {
     font-weight: bold;
 }
+
+.community-list {
+    text-transform: capitalize;
+}

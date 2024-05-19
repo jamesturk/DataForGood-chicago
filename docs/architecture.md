@@ -108,3 +108,4 @@ Welcome to the DataForGood Chicago project! This document will provide you with 
     - /main/data&visualize/{parameters from query}/tables.pdf: Enables the user to download the datatables as a .pdf file, with each datatable as a page in the PDF document.
     - /main/data&visualize/{parameters from query}/chart_1.jpg: There will be one unique link for each chart in the HTML page. This enables the user to select the specific charts to download as a .jpg image, with each image being one chart.
     - /main/resources: Provides a view of an embedded ArcGIS web app.
+    - /main/resources/download-memo/: The view used to handle the downloading of the generated memo.

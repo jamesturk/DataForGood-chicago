@@ -128,15 +128,10 @@ class SearchForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super(SearchForm, self).__init__(*args, **kwargs)
-        self.fields["tract"].required = False
-        self.fields["zipcode"].required = False
-        self.fields["community"].required = False
-        self.fields["category"].required = False
         self.fields["economic_indicators"].required = False
         self.fields["health_indicators"].required = False
         self.fields["housing_indicators"].required = False
         self.fields["population_indicators"].required = False
-        self.fields["generate_memo"].required = False
 
     geographic_level = forms.ChoiceField(
         choices=GEOGRAPHIC_LEVEL_CHOICES,
@@ -145,10 +140,10 @@ class SearchForm(forms.Form):
         ),
     )
 
-    tract = create_multiple_choice_geo(CensusTracts, "tract_id", "id_tract")
-    zipcode = create_multiple_choice_geo(TractZipCode, "zip_code", "id_zipcode")
+    tract = create_multiple_choice_geo(CensusTracts, "tract_id", "id_tract", 10100)
+    zipcode = create_multiple_choice_geo(TractZipCode, "zip_code", "id_zipcode", 60601)
     community = create_multiple_choice_geo(
-        CensusTracts, "community", "id_community"
+        CensusTracts, "community", "id_community", "ALBANY PARK"
     )
 
     category = forms.ChoiceField(
@@ -175,11 +170,13 @@ class SearchForm(forms.Form):
     )
 
     year = forms.MultipleChoiceField(
+        initial="2013-2017",
         widget=forms.CheckboxSelectMultiple,
         choices=PERIOD_CHOICES,
     )
 
     generate_memo = forms.ChoiceField(
+        initial="No",
         widget=forms.Select,
         choices=YES_NO_CHOICE,
     )

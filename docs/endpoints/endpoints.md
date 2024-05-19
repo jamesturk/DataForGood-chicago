@@ -18,43 +18,43 @@ Template Context Variables:
 Purpose: This endpoint serves as the main page for the "Data & Visualize" tab, allowing users to select parameters and view visualizations of the data. Users have to go through url B1, B2, B3, B4, and B5 in consecutive order to successfully initiate a query to generate the relevant data tables and charts to be displayed on the HTML page.
 
 Parameters
-- `geographic_level`: The geographic level to display data for. Valid values are "City of Chicago" or  “Community Areas” or "Zip Code" or “Census Tract”. Defaults to "City of Chicago" if not provided.
-- `indicator_category`: The category of data to display. Valid values are "population characteristics", "education characteristics", "economics characteristics", "housing characteristics", etc.
-- `indicator_variable`: List of available indicator variables to select and display. One selection at a time.
-- `years`: a list of years to include in the data tables and visualizations. Valid values are "2020", "2021", "2022", "2018-22 5-year estimate", and so on. For indicators that are 5-year estimates, users can only select one 5-year period; for indicators with yearly estimates, users can select multiple years.
+- `geographic_level`: The geographic level to display data for. Valid values are "City of Chicago" or  “Community” or "Zipcode" or “Tract”. One selection at a time. Defaults to "City of Chicago" if not provided.
+- `geographic_unit`: Depending on the geographic level selected, the options change to display geographic unit variables available in the database for the corresponding geographic level. Multi-checkbox selection for “Community” or "Zipcode" or “Tract” levels, no selections available for "City of Chicago" level. Defaults to "Albany Park" for "Community" level; defaults to "60601" for "Zipcode" level; defaults to "10100" for "Tract" level.
+- `indicator_category`: The category of indicators available to select. Valid values are  "Economic", "Education", "Health", "Housing", "Population".
+- `indicator_variable`: Depending on the indicator category selected, the options change to display the indicators available for the selected category. One selection at a time. Defaults to "Median Income in the Past 12 Months" for "Economic" category; defaults to "Median Earnings in the Past 12 Months" for "Education" category; defaults to "Total Population With Disability" for "Health" category; defaults to "Aggregate Contract Rent" for Housing category; defaults to "Total Population and Race Group" for "Housing" category.
+- `year`: a list of five-year periods to include in the data tables and visualizations. Valid values are "2013-2017", "2014-2018", "2015-2019", "2016-2020", "2017-2021", "2018-2022". Multi-checkbox selection. Defaults to "2013-2017".
+- `generate_memo`: Determines if a ChatGPT analytical memo will be generated on the webapp along with the data tables and visualizations. Valid values are "Yes: and "No". Defaults to "No".
 
 ##### Example HTML Links
 - Example 1:
-  `/main/data&visualize/community_area-hyde_park&economic&median_income&2018-2019-2020`
-  - `geographic_level`: Community Area - Hyde Park
-  - `indicator_category`: Economic Characteristics
+  `/main/data&visualize/?csrfmiddlewaretoken=<token_number>&geographic_level=Community&tract=<default_tract>&zipcode=<default_tract>&community=HYDE+PARK&category=Economic&economic_indicators=Median+Income+in+the+Past+12+Months+inflation-adjusted&education_indicators=Median+Earnings+in+the+Past+12+Months&health_indicators=<default_health_indicator>&housing_indicators=<default_housing_indicator>&population_indicators=<default_population_indicator>&year=2013-2017&year=2014-2018&generate_memo=No`
+  - `geographic_level`: Community - Hyde Park
+  - `indicator_category`: Economic
   - `indicator_variable`: Median Income in the Past 12 Months
-  - `years`: 2018, 2019, 2020 (*multi single-year estimates*)
+  - `years`: 2013-2017, 2014-2018 (*multiple five-year estimates*)
+  - 'generate_memo': No
 - Example 2:
-  `/main/data&visualize/community_area-hyde_park&education&pop_3yo_educ&2018-22`
-  - `geographic_level`: Community Area - Hyde Park
-  - `indicator_category`: Education Characteristics
+  `/main/data&visualize/?csrfmiddlewaretoken=<token_number>&geographic_level=Community&tract=<default_tract>&zipcode=<default_tract>&community=HYDE+PARK&category=Education&economic_indicators=<default_economic_indicator>&education_indicators=Population+3+years+and+over+enrolled+in+school&health_indicators=<default_health_indicator>&housing_indicators=<default_housing_indicator>&population_indicators=<default_population_indicator>&year=2018-2022&generate_memo=No`
+  - `geographic_level`: Community - Hyde Park
+  - `indicator_category`: Education
   - `indicator_variable`: Population 3 years and over enrolled in school
-  - `years`: 2018-22 (*one five-year estimate*)
+  - `years`: 2018-2022 (*single five-year estimate*)
+  - `generate_memo`: No
 - Example 3:
-  `/main/data&visualize/community_area-hyde_park-lincoln_park&education&pop_3yo_educ&2018-22`
-  - `geographic_level`: Community Area - Hyde Park, Lincoln Park (multiple neighborhood areas)
-  - `indicator_category`: Education Characteristics
+  `/main/data&visualize/?csrfmiddlewaretoken=<token_number>&geographic_level=Community&tract=<default_tract>&zipcode=<default_tract>&community=HYDE+PARK&community=LINCOLN+PARK&category=Education&economic_indicators=<default_economic_indicator>&education_indicators=Population+3+years+and+over+enrolled+in+school&health_indicators=<default_health_indicator>&housing_indicators=<default_housing_indicator>&population_indicators=<default_population_indicator>&year=2018-2022&generate_memo=Yes`
+  - `geographic_level`: Community - Hyde Park, Lincoln Park (multiple community areas)
+  - `indicator_category`: Education
   - `indicator_variable`: Population 3 years and over enrolled in school
-  - `years`: 2018-22 (*one five-year estimate*)
+  - `years`: 2018-22 (*single five-year estimate*)
+  - `generate_memo`: Yes
 - Example 4:
-  `/main/data&visualize/zip_code-60610-60611-60612&education&pop_3yo_educ&2018-22`
+  `/main/data&visualize/?csrfmiddlewaretoken=<token_number>&geographic_level=Zipcode&tract=<default_tract>&zipcode=60610&zipcode=60611&zipcode=60612&community=<default_community>&category=Education&economic_indicators=<default_economic_indicator>&education_indicators=Population+3+years+and+over+enrolled+in+school&health_indicators=<default_health_indicator>&housing_indicators=<default_housing_indicator>&population_indicators=<default_population_indicator>&year=2018-2022&generate_memo=Yes`
   - `geographic_level`: Zipcode - 60610, 60611, 60612 (multiple zipcodes)
-  - `indicator_category`: Education Characteristics
+  - `indicator_category`: Education
   - `indicator_variable`: Population 3 years and over enrolled in school
   - `years`: 2018-22 (*one five-year estimate*)
-- Example 5:
-  `/main/data&visualize/census_tract-10112-10113-10117&economic&median_income&2018-2019-2020`
-  - `geographic_level`: Census Tract - 10112, 10113, 10117
-  - `indicator_category`: Economic Characteristics
-  - `indicator_variable`: Median Income in the Past 12 Months
-  - `years`: 2018, 2019, 2020 (*multi single-year estimates*)
-
+  - `generate_memo`: Yes
+    
  ##### Response: HTML page with the following components
 - Dropdown menus for selecting `geographic_level`, `indicator_category`, `years`, and `indicator_variables`.
 - Checkboxes for selecting specific zip codes (if `geographic_level` is "Zip Code").

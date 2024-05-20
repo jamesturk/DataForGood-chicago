@@ -141,9 +141,7 @@ Check our pyproject.toml file for all the packages used and their relative versi
 Source: U.S. Census Bureau\
 Way of Collection: API Key
 
-(2) ChatGPT API:\
-
-(2) OpenAI API:\
+(2) OpenAI (ChatGPT) API:\
 Source: OpenAI\
 Way of Collection: API Key
 

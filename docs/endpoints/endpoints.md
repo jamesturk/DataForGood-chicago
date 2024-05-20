@@ -90,7 +90,7 @@ Parameters
 - `memo_path`: Filepath to store the memo text
 
 #### Endpoint B1:  /main/data&visualize/{parameters from query}/tables.xlsx
-Purpose: Enable the user to download the datatables as one .xlsx file, with each datatable as an excel worksheet tab.
+Purpose: Enable the user to download the datatables as one .xlsx file
 
 Parameters: None
 
@@ -100,7 +100,7 @@ Template variables:
 Reponse: HTML page that exports that datatable as an .xlsx file.
 
 #### Endpoint B2:  /main/data&visualize/{parameters from query}/tables.csv
-Purpose: Enable the user to download the datatables as a .pdf file, with each datatable as a page in the PDF document.
+Purpose: Enable the user to download the datatables as a .csv file.
 
 Parameters: None
 
@@ -109,13 +109,13 @@ Template variables:
 
 Reponse: HTML page that exports that datatable as a .csv file.
 
-#### Endpoint B3:  /main/data&visualize/{parameters from query}/chart_1.jpg
+#### Endpoint B3:  /main/data&visualize/{parameters from query}/charts.jpg
 Purpose: There will be one unique link for each chart in the HTML page. This enables the user to select the specific charts to download as a .jpg image, with each image being one chart.
 
 Parameters: None
 
 Template variables:
-- `href`: HTML link of the exported chart_1.jpg file
+- `href`: HTML link of the exported charts.jpg file
 
 Reponse: HTML page that exports the chart as a .jpg file.
 

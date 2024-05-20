@@ -8,7 +8,8 @@ from .models import (CensusTracts,
                      Races_Sub
                      )
 from .utils import MainTable, SubgroupTable, generate_heatmaps, WriteMemo
-
+import unittest
+from django.template import Template, Context
 import pandas as pd
 import environ
 
@@ -782,3 +783,49 @@ class TestWriteMemo(TestCase):
 
         self.assertIsNotNone(memo_text)
         self.assertIsInstance(memo_text, str)
+
+class TestMainChartViz(TestCase):
+    def test_visualization_rendering(self):
+        chart_data = {
+            'categories': ['Category 1', 'Category 2', 'Category 3'],
+            'series': [
+                {'name': 'Series 1', 'data': [1, 2, 3]},
+                {'name': 'Series 2', 'data': [4, 5, 6]},
+                {'name': 'Series 3', 'data': [7, 8, 9]}
+            ]
+        }
+        
+        table_title = 'Main Chart'
+        
+        template_string = '''
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var chartData = {{ chart_data | safe }};
+                var currentView = 'category';
+                
+                function updateMainChart() {
+                    // ... (your existing code for updating the chart)
+                }
+                
+                updateMainChart();
+                
+                document.getElementById('toggle-main-view').addEventListener('click', function() {
+                    currentView = currentView === 'category' ? 'series' : 'category';
+                    updateMainChart();
+                });
+            });
+        </script>
+        '''
+    
+        template = Template(template_string)
+        context = Context({'chart_data': chart_data, 'table_title': table_title})
+        rendered_js = template.render(context)
+        
+        self.assertIn('var chartData = ', rendered_js)
+        self.assertIn('var currentView = \'category\';', rendered_js)
+        self.assertIn('function updateMainChart()', rendered_js)
+        self.assertIn('updateMainChart();', rendered_js)
+        self.assertIn('document.getElementById(\'toggle-main-view\').addEventListener(\'click\', function()', rendered_js)
+
+if __name__ == '__main__':
+    unittest.main(verbosity=2)

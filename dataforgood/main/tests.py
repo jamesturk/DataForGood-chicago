@@ -7,8 +7,14 @@ from .models import (CensusTracts,
                      ContractRent_Sub, 
                      Races_Sub
                      )
-from .utils import MainTable, SubgroupTable
+from .utils import MainTable, SubgroupTable, generate_heatmaps, WriteMemo
 
+import pandas as pd
+import environ
+
+env = environ.Env()
+environ.Env.read_env()
+open_ai_key = env("open_ai_key")
 
 INDICATORS_LIST = ["Aggregate Contract Rent", "Total Population and Race Group"]
 
@@ -378,6 +384,51 @@ class CreateMainTableTests(TestCase):
 
         self.assertEqual(rows, correct_rows)
 
+    def test_heatmaps(self):
+        """
+        Tests heatmap generation function in utils.py
+        """
+
+        geographic_level = "Community"
+        indicator = "Aggregate Contract Rent"
+        field = {
+            "headers": ["Community", "2017", "2018"],
+            "rows": [
+                ["HYDE PARK", 1500, 1850],
+                ["LINCOLN PARK", 3000, 3900],
+                ["KENWOOD", 1150, 1350],
+            ]
+        }
+        years = ["2017", "2018"]
+        heatmap_data, heatmap_info = generate_heatmaps(geographic_level, 
+                                                       indicator, field, years)
+        self.assertIsNotNone(heatmap_data)
+        self.assertEqual(len(heatmap_info), 2)
+
+    def test_write_memo(self):
+        """
+        Tests the WriteMemo class in utils.py.
+        """
+        indicator = "Aggregate Contract Rent"
+        geo_level = "Community"
+        dictionary = {
+            "headers": ["Community", "2017", "2018"],
+            "rows": [
+                ["HYDE PARK", 1500, 1850],
+                ["LINCOLN PARK", 3000, 3900],
+                ["KENWOOD", 1150, 1350],
+            ]
+        }
+        data = pd.DataFrame(dictionary["rows"], columns=dictionary["headers"])
+        describe = data.describe()
+
+        memo_generator = WriteMemo(indicator, geo_level, dictionary, describe, 
+                                   open_ai_key)
+
+        memo_text = memo_generator.invoke()
+
+        self.assertIsNotNone(memo_text)
+        self.assertIsInstance(memo_text, str)
 
 
 class CreateSubgroupTableTests(TestCase):

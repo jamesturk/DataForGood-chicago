@@ -21,7 +21,7 @@ Overall, the application aims to bridge the gap between data availability, acces
 - Bryan Foo Suon Chuang: 
 - Yujie Jiang: 
 - Ruoyi Wu: 
-- Yueyue Wang: 
+- Yueyue Wang: Subgroup table, main and subtable visualizations, embeded ArcGIS Web App, css, and documentation (README, architecture.md, endpoints.md)
 - Maxine Xu: Heat map visualizations, memo generation, defining Django models, and documentation (README, models.md, architecture.md, changelog.md)
 
 ### **Repository Layout**

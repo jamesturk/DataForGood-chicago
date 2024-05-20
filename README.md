@@ -188,7 +188,7 @@ git clone git@github.com:uchicago-capp-30320/DataForGood-chicago.git
 ```
 cd ./DataForGood-chicago/dataforgood
 ```
-3. Ensure that your environment is set up correctly (refer to the above **.env Setup section**)\
+3. Ensure that your environment is set up correctly (refer to the above **.env Setup section**)
 4. If you haven't done it already:
 ```
 pip install poetry

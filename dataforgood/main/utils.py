@@ -949,7 +949,8 @@ def generate_heatmaps(geograpahic_level, indicator, field, years):
         years (list): The list of years selected.
 
     Returns:
-        list: A list of dictionaries containing heatmap information.
+        heatmap_data: Pandas DataFrame that is used to generate the heatmap.
+        heatmap_info: A list of dictionaries containing heatmap information.
     """
     heatmap_data = pd.DataFrame(field["rows"], columns=field["headers"])
     heatmap_info = []
@@ -979,23 +980,21 @@ def generate_heatmaps(geograpahic_level, indicator, field, years):
 
         for year in years:
             year_dic = {}
-            mymap, title = create_heatmap(data, geograpahic_level, indicator, 
+            heatmap, title = create_heatmap(data, geograpahic_level, indicator, 
                                           year)
             
             name = "heatmap_{}".format(uuid.uuid4())
             map_file_path = "{}/{}.html".format(html_path, name)
-            mymap.save(map_file_path)
+            heatmap.save(map_file_path)
             year_dic["title"] = title
             year_dic["path"] = f"maps/{name}.html"
             year_dic["year"] = year
             heatmap_info.append(year_dic)
-            del mymap
 
     return heatmap_data, heatmap_info
 
 def delete_legend(Choropleth: folium.Choropleth):
-  """A hack to remove choropleth legends.
-  
+  """
   This function removes the legend from the choropleth. This function is based
   from https://github.com/python-visualization/folium/issues/1052
   
@@ -1003,7 +1002,7 @@ def delete_legend(Choropleth: folium.Choropleth):
     choropleth: Folium choropleth object
     
   Returns:
-    Chloropeth without legen
+    Chloropeth without legend
   """
   legend_list = []
   for c in Choropleth._children:
@@ -1024,15 +1023,16 @@ def create_heatmap(data, geograpahic_level, indicator, year):
         year (str): The selected year.
 
     Returns:
-        folium.Map: The generated heatmap.
+        heatmap: The generated folium heatmap
+        title: Title of folium heatmap
     """
     # Adding base layer
-    mymap = folium.Map(
+    heatmap = folium.Map(
         location=[41.8781, -87.6298], zoom_start=10, tiles=None
     )
     folium.TileLayer(
         "CartoDB positron", name="Light Map", control=False
-    ).add_to(mymap)
+    ).add_to(heatmap)
 
     # Creating heatmap layer
     units = INDICATOR_UNIT_MAPPING[indicator]
@@ -1051,7 +1051,7 @@ def create_heatmap(data, geograpahic_level, indicator, year):
         smooth_factor=0,
         nan_fill_color="grey",
         nan_fill_opacity=0.4,
-    )).add_to(mymap)
+    )).add_to(heatmap)
 
     def style_function(x):
         return {
@@ -1083,9 +1083,9 @@ def create_heatmap(data, geograpahic_level, indicator, year):
             ),
         ),
     )
-    mymap.add_child(feat)
-    mymap.keep_in_front(feat)
-    folium.LayerControl().add_to(mymap)
+    heatmap.add_child(feat)
+    heatmap.keep_in_front(feat)
+    folium.LayerControl().add_to(heatmap)
     if geograpahic_level[-1:] == "y":
         title = "Heat Map of {} by Selected {}ies in {}".format(
             indicator, geograpahic_level[:-1], year
@@ -1094,7 +1094,7 @@ def create_heatmap(data, geograpahic_level, indicator, year):
         title = "Heat Map of {} by Selected {}s in {}".format(
             indicator, geograpahic_level, year
         )
-    return mymap, title
+    return heatmap, title
 
 
 # HELPER FUNCTIONS FOR FORMS.PY #

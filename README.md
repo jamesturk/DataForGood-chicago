@@ -17,6 +17,13 @@ Overall, the application aims to bridge the gap between data availability, acces
 - Yueyue Wang: Chief Architect, Supporting Frontend Engineer, Supporting GIS Engineer,
 - Maxine Xu: Project Manager, Lead GIS Engineer, Supporting Backend Engineer/Data Engineer
 
+#### **Code Contribution:**
+- Bryan Foo Suon Chuang: 
+- Yujie Jiang: 
+- Ruoyi Wu: 
+- Yueyue Wang: 
+- Maxine Xu: Heat map visualizations, memo generation, defining Django models, and documentation (README, models.md, architecture.md, changelog.md)
+
 ### **Repository Layout**
 ```
 DataForGood-chicago
@@ -173,7 +180,6 @@ __________________
 
 #### **Launching the Web Application**
 
-
 1. Clone the repository.
 ```
 git clone git@github.com:uchicago-capp-30320/DataForGood-chicago.git
@@ -182,23 +188,24 @@ git clone git@github.com:uchicago-capp-30320/DataForGood-chicago.git
 ```
 cd ./DataForGood-chicago/dataforgood
 ```
-3. If you haven't done it already:
+3. Ensure that your environment is set up correctly (refer to the above **.env Setup section**)\
+4. If you haven't done it already:
 ```
 pip install poetry
 ```
-4. Set the path of downloaded poetry
+5. Set the path of downloaded poetry
 ```
 export PATH="$HOME/.local/bin:$PATH"
 ```
-5. Establish Dependencies.
+6. Establish Dependencies.
 ```
 poetry install
 ```
-6. Activate the virtual environment.
+7. Activate the virtual environment.
 ```
 poetry shell
 ```
-5. Launch the App
+8. Launch the App
 ```
 python manage.py runserver
 ```

@@ -282,6 +282,89 @@ class CreateMainTableTests(TestCase):
         ]
 
         self.assertEqual(rows == correct_rows)
-    
 
-\
+    def test_pop_main_city_level(self):
+        """
+        """
+        geographic_level = "City of Chicago"
+        geographic_unit = []
+        indicator = "Aggregate Contract Rent"
+        model = Races_Main
+        periods = PERIOD_LIST
+
+        rows = MainTable(
+            geographic_level, geographic_unit, indicator, model, periods
+            ).table["rows"]
+        
+        correct_rows = [
+            ["City of Chicago", 105000, 115000]
+        ]
+
+        self.assertEqual(rows == correct_rows)
+    
+    def test_pop_main_community_level(self):
+        """
+        """
+        geographic_level = "Community"
+        geographic_unit = COMMUNTIY_LIST
+        indicator = "Aggregate Contract Rent"
+        model = Races_Main
+        periods = PERIOD_LIST
+
+        rows = MainTable(
+            geographic_level, geographic_unit, indicator, model, periods
+            ).table["rows"]
+        
+        correct_rows = [
+            ["HYDE PARK", 30000, 37000]
+            ["LINCOLN PARK", 60000, 78000]
+            ["KENWOOD", 15000, "NA"]
+        ]
+
+        self.assertEqual(rows == correct_rows)
+    
+    def test_pop_main_zipcode_level(self):
+        """
+        """
+        geographic_level = "Zipcode"
+        geographic_unit = ZIPCODE_LIST
+        indicator = "Aggregate Contract Rent"
+        model = Races_Main
+        periods = PERIOD_LIST
+
+        rows = MainTable(
+            geographic_level, geographic_unit, indicator, model, periods
+            ).table["rows"]
+        
+        correct_rows = [
+            [60601, 40000, 43000]
+            [60602, 35000, 22000]
+            [60603, 30000, 50000]
+        ]
+
+        self.assertEqual(rows == correct_rows)
+    
+    def test_pop_main_tract_level(self):
+        """
+        """
+        geographic_level = "Tract"
+        geographic_unit = TRACT_LIST
+        indicator = "Aggregate Contract Rent"
+        model = Races_Main
+        periods = PERIOD_LIST
+
+        rows = MainTable(
+            geographic_level, geographic_unit, indicator, model, periods
+            ).table["rows"]
+        
+        correct_rows = [
+            [80400, 10000, 15000]
+            [80401, 20000, 22000]
+            [80402, 30000, 50000]
+            [80403, 30000, 28000]
+            [80404, 15000, "NA"]
+            [80405, "NA", "NA"]
+        ]
+
+        self.assertEqual(rows == correct_rows)
+    

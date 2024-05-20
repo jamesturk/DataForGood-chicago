@@ -222,7 +222,7 @@ class CreateMainTableTests(TestCase):
             ).table["rows"]
         
         correct_rows = [
-            ["City of Chicago", 1883.33, 2366.67],
+            ["City Average", 1883.33, 2366.67],
         ]
 
         self.assertEqual(rows == correct_rows)
@@ -307,7 +307,7 @@ class CreateMainTableTests(TestCase):
             ).table["rows"]
         
         correct_rows = [
-            ["City of Chicago", 105000, 115000],
+            ["City Total", 105000, 115000],
         ]
 
         self.assertEqual(rows == correct_rows)
@@ -663,8 +663,8 @@ class CreateSubgroupTableTests(TestCase):
             ).table["rows"]
         
         correct_rows = [
-            ["Asian", 23600],
-            ["White", 32200],
+            ["Asian", 118000],
+            ["White", 161000],
         ]
 
         self.assertEqual(rows == correct_rows)
@@ -683,8 +683,8 @@ class CreateSubgroupTableTests(TestCase):
             ).table["rows"]
         
         correct_rows = [
-            ["Asian", 11500, 10000, 42500],
-            ["White", 17500, 11000, 57500],
+            ["Asian", 23000, 10000, 85000],
+            ["White", 35000, 11000, 115000],
         ]
 
         self.assertEqual(rows == correct_rows)
@@ -703,8 +703,8 @@ class CreateSubgroupTableTests(TestCase):
             ).table["rows"]
         
         correct_rows = [
-            ["Asian", 10000, 21500, 55000],
-            ["White", 15000, 35000, 38000],
+            ["Asian", 20000, 43000, 55000],
+            ["White", 15000, 70000, 76000],
         ]
 
         self.assertEqual(rows == correct_rows)

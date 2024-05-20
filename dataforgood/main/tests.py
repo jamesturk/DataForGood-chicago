@@ -225,7 +225,7 @@ class CreateMainTableTests(TestCase):
             ["City Average", 1883.33, 2366.67],
         ]
 
-        self.assertEqual(rows == correct_rows)
+        self.assertEqual(rows, correct_rows)
     
     def test_rent_main_community_level(self):
         """
@@ -246,7 +246,7 @@ class CreateMainTableTests(TestCase):
             ["KENWOOD", 1150, 1350],
         ]
 
-        self.assertEqual(rows == correct_rows)
+        self.assertEqual(rows, correct_rows)
     
     def test_rent_main_zipcode_level(self):
         """
@@ -267,7 +267,7 @@ class CreateMainTableTests(TestCase):
             [60603, 1900, 3000],
         ]
 
-        self.assertEqual(rows == correct_rows)
+        self.assertEqual(rows, correct_rows)
     
     def test_rent_main_tract_level(self):
         """
@@ -291,7 +291,7 @@ class CreateMainTableTests(TestCase):
             [80405, 800, 1000],
         ]
 
-        self.assertEqual(rows == correct_rows)
+        self.assertEqual(rows, correct_rows)
 
     def test_pop_main_city_level(self):
         """
@@ -310,7 +310,7 @@ class CreateMainTableTests(TestCase):
             ["City Total", 105000, 115000],
         ]
 
-        self.assertEqual(rows == correct_rows)
+        self.assertEqual(rows, correct_rows)
     
     def test_pop_main_community_level(self):
         """
@@ -331,7 +331,7 @@ class CreateMainTableTests(TestCase):
             ["KENWOOD", 15000, "NA"],
         ]
 
-        self.assertEqual(rows == correct_rows)
+        self.assertEqual(rows, correct_rows)
     
     def test_pop_main_zipcode_level(self):
         """
@@ -352,7 +352,7 @@ class CreateMainTableTests(TestCase):
             [60603, 30000, 50000],
         ]
 
-        self.assertEqual(rows == correct_rows)
+        self.assertEqual(rows, correct_rows)
     
     def test_pop_main_tract_level(self):
         """
@@ -376,7 +376,7 @@ class CreateMainTableTests(TestCase):
             [80405, "NA", "NA"],
         ]
 
-        self.assertEqual(rows == correct_rows)
+        self.assertEqual(rows, correct_rows)
 
 
 
@@ -587,7 +587,7 @@ class CreateSubgroupTableTests(TestCase):
             ["Upper Contract Rent Quartile", 3016.67],
         ]
 
-        self.assertEqual(rows == correct_rows)
+        self.assertEqual(rows, correct_rows)
     
     def test_rent_sub_community_level(self):
         """
@@ -607,7 +607,7 @@ class CreateSubgroupTableTests(TestCase):
             ["Upper Contract Rent Quartile", 1750, 1550, 5750],
         ]
 
-        self.assertEqual(rows == correct_rows)
+        self.assertEqual(rows, correct_rows)
     
     def test_rent_sub_zipcode_level(self):
         """
@@ -627,7 +627,7 @@ class CreateSubgroupTableTests(TestCase):
             ["Upper Contract Rent Quartile", 1750, 3500, 3800],
         ]
 
-        self.assertEqual(rows == correct_rows)
+        self.assertEqual(rows, correct_rows)
     
     def test_rent_sub_tract_level(self):
         """
@@ -647,7 +647,7 @@ class CreateSubgroupTableTests(TestCase):
             ["Upper Contract Rent Quartile", 1500, 2000, 1100, 2000, 5000, 6500],
         ]
 
-        self.assertEqual(rows == correct_rows)
+        self.assertEqual(rows, correct_rows)
     
     def test_pop_sub_city_level(self):
         """
@@ -667,7 +667,7 @@ class CreateSubgroupTableTests(TestCase):
             ["White", 161000],
         ]
 
-        self.assertEqual(rows == correct_rows)
+        self.assertEqual(rows, correct_rows)
     
     def test_pop_sub_community_level(self):
         """
@@ -687,7 +687,7 @@ class CreateSubgroupTableTests(TestCase):
             ["White", 35000, 11000, 115000],
         ]
 
-        self.assertEqual(rows == correct_rows)
+        self.assertEqual(rows, correct_rows)
     
     def test_pop_sub_zipcode_level(self):
         """
@@ -707,7 +707,7 @@ class CreateSubgroupTableTests(TestCase):
             ["White", 15000, 70000, 76000],
         ]
 
-        self.assertEqual(rows == correct_rows)
+        self.assertEqual(rows, correct_rows)
     
     def test_pop_sub_tract_level(self):
         """
@@ -727,4 +727,4 @@ class CreateSubgroupTableTests(TestCase):
             ["White", 15000, 20000, 11000, "NA", 50000, 65000],
         ]
 
-        self.assertEqual(rows == correct_rows)
+        self.assertEqual(rows, correct_rows)

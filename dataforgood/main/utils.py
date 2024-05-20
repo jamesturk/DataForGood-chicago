@@ -1159,3 +1159,32 @@ def create_multiple_choice_indicator(
         widget=forms.Select(attrs={"class": class_name, "id": widget_id}),
         choices=choices_lst,
     )
+
+def prepare_chart_data(field):
+    chart_data = {
+        "categories": field["headers"][1:],  # Years
+        "series": [],
+    }
+    for row in field["rows"]:
+        chart_data["series"].append(
+            {
+                "name": row[0],  # Geographic unit
+                "data": row[1:],  # Values for each year
+            }
+        )
+    return chart_data
+
+
+def prepare_subgroup_chart_data(multi_year_subtable_field):
+    subgroup_chart_data = {}
+    for year_value, subtable_data in multi_year_subtable_field.items():
+        subgroup_chart_data[year_value] = {
+            "categories": subtable_data["headers"][1:],  # Subgroup categories
+            "series": [
+                {
+                    "name": subtable_data["headers"][0],
+                    "data": [row[1:] for row in subtable_data["rows"]],  # Subgroup values
+                }
+            ],
+        }
+    return subgroup_chart_data

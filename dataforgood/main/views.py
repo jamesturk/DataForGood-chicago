@@ -21,7 +21,9 @@ from .utils import (
     SUB_MODEL_MAPPING,
     WriteMemo,
     save_memo,
-    generate_heatmaps
+    generate_heatmaps,
+    prepare_chart_data,
+    prepare_subgroup_chart_data
 )
 
 env = environ.Env()
@@ -177,35 +179,8 @@ def dataandvisualize(request):
 
         multi_year_subtable_field = subgroup_tables.many_subtables
 
-        # Prepare data for the main chart
-        chart_data = {
-            "categories": field["headers"][1:],  # Years
-            "series": [],
-        }
-        for row in field["rows"]:
-            chart_data["series"].append(
-                {
-                    "name": row[0],  # Geographic unit
-                    "data": row[1:],  # Values for each year
-                }
-            )
-
-        # Prepare data for the subgroup chart
-        subgroup_chart_data = {}
-        for year_value, subtable_data in multi_year_subtable_field.items():
-            subgroup_chart_data[year_value] = {
-                "categories": subtable_data["headers"][
-                    1:
-                ],  # Subgroup categories
-                "series": [
-                    {
-                        "name": subtable_data["headers"][0],
-                        "data": [
-                            row[1:] for row in subtable_data["rows"]
-                        ],  # Subgroup values
-                    }
-                ],
-            }
+        chart_data = prepare_chart_data(field)
+        subgroup_chart_data = prepare_subgroup_chart_data(multi_year_subtable_field)
 
         # Creating heat map for Community Area, Zip Code, and Tract Level
         heatmap_data, heatmap_info = generate_heatmaps(geograpahic_level, indicator, field, year)

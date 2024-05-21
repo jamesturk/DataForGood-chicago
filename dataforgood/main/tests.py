@@ -11,6 +11,7 @@ from .utils import MainTable, SubgroupTable, generate_heatmaps, WriteMemo
 import unittest
 from django.template import Template, Context
 import pandas as pd
+import geopandas as gpd
 import environ
 
 env = environ.Env()
@@ -874,6 +875,24 @@ class TestMainChartViz(TestCase):
         self.assertIn('function updateMainChart()', rendered_js)
         self.assertIn('updateMainChart();', rendered_js)
         self.assertIn('document.getElementById(\'toggle-main-view\').addEventListener(\'click\', function()', rendered_js)
+
+class TestDatabase(TestCase):
+    ''' This class tests if the tract IDs and Zip codes from different sources match. '''
+    fixtures = ['db.json']
+
+    def test_tracts_consistency(self):
+        ''' Test if the tracts in shapefiles match those in database. '''
+        tract_gpd = gpd.read_file('censustracts/censustracts.shp')
+        valid_tracts = set(tract_gpd['tractce10'].astype(int).unique())
+        unique_tract_ids = set(CensusTracts.objects.values_list('tract_id', flat=True).distinct())
+        self.assertEqual(valid_tracts, unique_tract_ids)
+
+    def test_zipcodes_consistency(self):
+        ''' Test if the zipcodes in shapefiles match those in database. '''
+        zip_gpd = gpd.read_file('zipcode/zipcode.shp')
+        valid_zipcodes = set(zip_gpd['zip'].astype(int).unique())
+        unique_zipcodes = set(TractZipCode.objects.values_list('zip_code', flat=True).distinct())
+        self.assertEqual(valid_zipcodes, unique_zipcodes)
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

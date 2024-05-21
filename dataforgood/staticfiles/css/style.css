@@ -53,50 +53,6 @@ h1,h2,h3,h4{
     background-color: #003d80;
 }
 
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 2rem;
-    background-color: #0C4180;
-    color: #fff;
-}
-
-.navbar .logo {
-    font-size: 2rem;
-    font-weight: bold;
-    font-family: "Bebas Neue", sans-serif;
-}
-
-.navbar .logo a {
-    color: #fff !important;
-    text-decoration: none !important;
-    font-family: 'Bebas Neue', sans-serif !important;
-    font-size: 2rem !important;
-}
-.navbar .nav-links {
-    list-style: none;
-    display: flex;
-    gap: 1rem;
-}
-
-.navbar .nav-links li {
-    margin: 0;
-}
-
-.navbar .nav-links a {
-    color: #fff;
-    text-decoration: none;
-    font-size: 1.2rem;
-    font-family: "Bebas Neue", sans-serif;
-    transition: all 0.3s;
-}
-
-.navbar .nav-links a:hover {
-    /*text-decoration: underline;*/
-    color: #333333;
-}
-
 /* Section styles */
 section {
     padding: 2rem;

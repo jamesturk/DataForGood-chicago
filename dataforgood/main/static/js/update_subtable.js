@@ -1,9 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     var multiYearSubtableField = {{ multi_year_subtable_field|safe }};
     var subgroupChartData = {{ subgroup_chart_data|safe }};
-    console.log(subgroupChartData, 'subgroupChartData');
     var currentView = 'tract';
-    document.querySelector('.con3').classList.add('hidden');
 
     function updateSubgroupTable(year) {
         var subtableData = multiYearSubtableField[year];
@@ -79,15 +77,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 stackLabels: {
                     enabled: true
                 }
-            },
-            legend: {
-                align: 'right',
-                verticalAlign: 'top',
-                floating: true,
-                backgroundColor: 'white',
-                borderColor: '#CCC',
-                borderWidth: 1,
-                shadow: false
             },
             tooltip: {
                 headerFormat: '<b>{point.x}</b><br/>',

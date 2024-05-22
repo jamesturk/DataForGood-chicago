@@ -502,19 +502,19 @@ class MainTable:
         """
         # Create a row of "NA" strongs corresponding to the number of
         # table columns (i.e. number of periods selected by the user)
-        row = ["NA"] * self.num_cols
+        row = ["None"] * self.num_cols
 
         if self.geographic_level == "Tract":
             for idx, r in enumerate(results):
                 if r.value is None:
-                    continue
+                    row[idx] = "NA"
                 else:
                     row[idx] = round(r.value, 2)
 
         else:
             for idx, r in enumerate(results):
                 if r["agg_val"] is None:
-                    continue
+                    row[idx] = "NA"
                 else:
                     row[idx] = round(r["agg_val"], 2)
         

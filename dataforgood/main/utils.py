@@ -505,14 +505,18 @@ class MainTable:
         row = ["NA"] * self.num_cols
 
         if self.geographic_level == "Tract":
-            for idx, r in enumerate(results):
+            for r in results:
+                result_year = r.year
+                idx = self.years.index(result_year)
                 if r.value is None:
                     continue
                 else:
                     row[idx] = round(float(r.value), 2)
 
         else:
-            for idx, r in enumerate(results):
+            for r in results:
+                result_year = r["year"]
+                idx = self.years.index(result_year)
                 if r["agg_val"] is None:
                     continue
                 else:
@@ -595,10 +599,22 @@ class SubgroupTable:
         self.model_subgroups = self.get_model_subgroups()
 
         # Subgroup Table Output Variables
-        self.num_cols = len(geographic_units)
+        self.num_cols = self.get_num_cols()
         self.subtable_headers = self.create_subtable_headers()
         self.many_subtables = self.create_all_years_tables()
 
+    def get_num_cols(self):
+        """
+        Returns the number of geographic units in the query, one for each column
+
+        Inputs: None
+        Returns (int): Number of columns
+        """
+        if self.geographic_level == "City of Chicago":
+            return 1
+        else:
+            return len(self.geographic_units)
+    
     def create_subtable_headers(self):
         """
         Creates the header row of the table.
@@ -813,20 +829,33 @@ class SubgroupTable:
         Returns:
             rows (list of lists): a single list with each subgroup stored as a
                 list
-        """
+        """     
         for subgroup in self.model_subgroups:
+            row = ["NA"] * self.num_cols
+    
             if self.geographic_level == "City of Chicago":
-                row = ["NA"]
-            else:
-                row = ["NA"] * self.num_cols
+                for r in results.filter(sub_group_indicator_name=subgroup):
+                    if r["agg_val"] is None:
+                        continue
+                    else:
+                        row[0] = round(float(r["agg_val"]), 2)
 
-            for idx, r in enumerate(
-                results.filter(sub_group_indicator_name=subgroup)
-            ):
-                if r["agg_val"] is None:
-                    continue
-                else:
-                    row[idx] = round(float(r["agg_val"]), 2)
+            else:
+                for r in results.filter(sub_group_indicator_name=subgroup):
+
+                    if self.geographic_level == "Tract":
+                        result_geographic_area = str(r["census_tract_id"])
+                    
+                    elif self.geographic_level == "Community":
+                        result_geographic_area = str(r["census_tract_id__community"])
+                    
+                    idx = self.geographic_units.index(result_geographic_area)
+                    
+                    if r["agg_val"] is None:
+                        continue
+                    else:
+                        row[idx] = round(float(r["agg_val"]), 2)
+            
             row = [SUBGROUP_NAMES[subgroup]] + row
             rows.append(row)
 

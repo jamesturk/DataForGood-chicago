@@ -157,29 +157,72 @@
                 </div>
 
                 <div id="chart-container"></div>
-                <script src = "{% static 'js/update_mainchart.js' %}"> </script>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        var chartData = {{ chart_data | safe }};
+                        var currentView = 'category'; // Initialize the current view to 'category'
 
-                <!-- <div class="map-container">
-                    <h2>Condition of Selected Geographies</h2>
-                    <select id="map-select">
-                        <option value="">Select a year of heatmap</option>
-                        {% for item in paths_titles %}
-                        <option value="{{ item.path }}">{{ item.title }}</option>
-                        {% endfor %}
-                    </select>
+                        function updateMainChart() {
+                            var categories = chartData.categories;
+                            var series = chartData.series;
 
-                    <div id="map-display">
-                        {% for item in paths_titles %}
-                        <div style="margin-bottom: 20px; display: none;" id="{{ item.path }}">
-                            <div class="iframe-wrapper">
-                                {% include item.path %}
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div> -->
+                            var seriesData;
 
-                <!-- <script src = "{% static 'js/update_heatmap.js' %}"> </script> -->
+                            if (currentView === 'category') {
+                                seriesData = series;
+                            } else {
+                                seriesData = categories.map(function(category, index) {
+                                    var categoryData = series.map(function(serie) {
+                                        return serie.data[index];
+                                    });
+
+                                    return {
+                                        name: category,
+                                        data: categoryData
+                                    };
+                                });
+                            }
+
+                            var chartOptions = {
+                                chart: {
+                                    type: 'bar'
+                                },
+                                title: {
+                                    text: '{{ table_title }}'
+                                },
+                                xAxis: {
+                                    categories: currentView === 'category' ? categories : series.map(function(serie) {
+                                        return serie.name;
+                                    })
+                                },
+                                yAxis: {
+                                    min: 0,
+                                    title: {
+                                        text: 'Value'
+                                    }
+                                },
+                                legend: {
+                                    reversed: true
+                                },
+                                plotOptions: {
+                                    series: {
+                                        stacking: 'normal'
+                                    }
+                                },
+                                series: seriesData
+                            };
+
+                            Highcharts.chart('chart-container', chartOptions);
+                        }
+
+                        updateMainChart();
+
+                        document.getElementById('toggle-main-view').addEventListener('click', function() {
+                            currentView = currentView === 'category' ? 'series' : 'category';
+                            updateMainChart();
+                        });
+                    });
+                </script>
 
                 <div class="map-container">
                     {% for item in paths_titles %}
@@ -301,15 +344,6 @@
                                     stackLabels: {
                                         enabled: true
                                     }
-                                },
-                                legend: {
-                                    align: 'right',
-                                    verticalAlign: 'top',
-                                    floating: true,
-                                    backgroundColor: 'white',
-                                    borderColor: '#CCC',
-                                    borderWidth: 1,
-                                    shadow: false
                                 },
                                 tooltip: {
                                     headerFormat: '<b>{point.x}</b><br/>',

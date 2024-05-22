@@ -311,11 +311,13 @@ class MainTable:
         self.model = model
         self.periods = periods
         self.aggregate_operation = AGGERGATE_OPERATORS[self.indicator]
+        self.annotation_cls = self.get_annotation_cls()
         self.years = self.convert_periods_to_years()
 
         # Main Table Output Variables
         self.table_title = self.create_table_title()
         self.headers = [self.geographic_level] + periods
+        self.num_cols = len(periods)
         self.rows = self.create_rows()
         self.table = {"headers": self.headers, "rows": self.rows}
 
@@ -348,8 +350,7 @@ class MainTable:
             ['2011-2015', '2016-2020'] -> [2015, 2020]
             ['2011-2015'] -> [2015]
 
-        Inputs:
-            period (list of str): 5-year period(s) selected by the user
+        Inputs: None
 
         Returns:
             years (list of int): the ending year for each 5-year estimate period
@@ -357,6 +358,7 @@ class MainTable:
         """
         years = []
         for p in self.periods:
+            # Only keeps the last four numbers in the period string
             years.append(int(p[5:]))
 
         years = self.convert_list_to_tuple(years)
@@ -384,6 +386,21 @@ class MainTable:
 
         return indicator_formatted
 
+    def get_annotation_cls(self):
+        """
+        Determines the type of annotation (Avg or Sum) to use when conducting
+        aggregate query operations
+
+        Inputs: None
+
+        Returns (Django query variable): 
+            Avg (averages groupby values) OR Sum (totals grouby values)
+        """
+        if self.aggregate_operation == "Average":
+            return Avg
+        elif self.aggregate_operation == "Total":
+            return Sum
+
     def conduct_query_city_level(self):
         """
         Conducts a Django model query to obtain the city-level average or sum
@@ -394,21 +411,12 @@ class MainTable:
         Returns:
             results (Django Queryset): list of query result instances
         """
-        if self.aggregate_operation == "Average":
-            results = (
-                self.model.objects.values("year")
-                .filter(year__in=self.years)
-                .annotate(agg_val=Avg("value"))
-                .order_by("year")
-            )
-
-        elif self.aggregate_operation == "Total":
-            results = (
-                self.model.objects.values("year")
-                .filter(year__in=self.years)
-                .annotate(agg_val=Sum("value"))
-                .order_by("year")
-            )
+        results = (
+            self.model.objects.values("year")
+            .filter(year__in=self.years)
+            .annotate(agg_val=self.annotation_cls("value"))
+            .order_by("year")
+        )
 
         return results
 
@@ -429,23 +437,12 @@ class MainTable:
             .distinct()
         )
 
-        if self.aggregate_operation == "Average":
-            results = (
+        results = (
                 self.model.objects.values("year")
                 .filter(
                     census_tract_id__in=tracts_in_zipcode, year__in=self.years
                 )
-                .annotate(agg_val=Avg("value"))
-                .order_by("year")
-            )
-
-        elif self.aggregate_operation == "Total":
-            results = (
-                self.model.objects.values("year")
-                .filter(
-                    census_tract_id__in=tracts_in_zipcode, year__in=self.years
-                )
-                .annotate(agg_val=Sum("value"))
+                .annotate(agg_val=self.annotation_cls("value"))
                 .order_by("year")
             )
 
@@ -479,25 +476,13 @@ class MainTable:
         Returns:
             results (Django Queryset): list of query result instances
         """
-        if self.aggregate_operation == "Average":
-            results = (
+        results = (
                 self.model.objects.values("census_tract_id__community", "year")
                 .filter(
                     census_tract_id__community=one_community,
                     year__in=self.years,
                 )
-                .annotate(agg_val=Avg("value"))
-                .order_by("year")
-            )
-
-        elif self.aggregate_operation == "Total":
-            results = (
-                self.model.objects.values("census_tract_id__community", "year")
-                .filter(
-                    census_tract_id__community=one_community,
-                    year__in=self.years,
-                )
-                .annotate(agg_val=Sum("value"))
+                .annotate(agg_val=self.annotation_cls("value"))
                 .order_by("year")
             )
 
@@ -517,7 +502,7 @@ class MainTable:
         """
         # Create a row of "NA" strongs corresponding to the number of
         # table columns (i.e. number of periods selected by the user)
-        row = ["NA"] * len(self.periods)
+        row = ["NA"] * self.num_cols
 
         if self.geographic_level == "Tract":
             for idx, r in enumerate(results):
@@ -605,10 +590,12 @@ class SubgroupTable:
         self.model = model
         self.periods = periods
         self.aggregate_operation = AGGERGATE_OPERATORS[self.indicator]
+        self.annotation_cls = self.get_annotation_cls()
         self.years = self.convert_periods_to_years()
         self.model_subgroups = self.get_model_subgroups()
 
         # Subgroup Table Output Variables
+        self.num_cols = len(geographic_units)
         self.subtable_headers = self.create_subtable_headers()
         self.many_subtables = self.create_all_years_tables()
 
@@ -668,8 +655,7 @@ class SubgroupTable:
             ['2011-2015', '2016-2020'] -> [2015, 2020]
             ['2011-2015'] -> [2015]
 
-        Inputs:
-            period (list of str): 5-year period(s) selected by the user
+        Inputs: None
 
         Returns:
             years (list of int): the ending year for each 5-year estimate period
@@ -677,6 +663,7 @@ class SubgroupTable:
         """
         years = []
         for p in self.periods:
+            # Only keeps the last four numbers in the period string
             years.append(int(p[5:]))
 
         return self.convert_list_to_tuple(years)
@@ -701,6 +688,21 @@ class SubgroupTable:
 
         return subgroups_lst
 
+    def get_annotation_cls(self):
+        """
+        Determines the type of annotation (Avg or Sum) to use when conducting
+        aggregate query operations
+
+        Inputs: None
+
+        Returns (Django query variable): 
+            Avg (averages groupby values) OR Sum (totals grouby values)
+        """
+        if self.aggregate_operation == "Average":
+            return Avg
+        elif self.aggregate_operation == "Total":
+            return Sum
+    
     def conduct_query_city_level(self, one_year):
         """
         Conducts a Django model query to obtain the city-level average or sum
@@ -712,19 +714,10 @@ class SubgroupTable:
         Returns:
             results (Django Queryset): list of query result instances
         """
-        if self.aggregate_operation == "Average":
-            results = (
+        results = (
                 self.model.objects.values("sub_group_indicator_name")
                 .filter(year=one_year)
-                .annotate(agg_val=Avg("value"))
-                .order_by("sub_group_indicator_name")
-            )
-
-        elif self.aggregate_operation == "Total":
-            results = (
-                self.model.objects.values("sub_group_indicator_name")
-                .filter(year=one_year)
-                .annotate(agg_val=Sum("value"))
+                .annotate(agg_val=self.annotation_cls("value"))
                 .order_by("sub_group_indicator_name")
             )
 
@@ -736,6 +729,7 @@ class SubgroupTable:
         for the various subgroups of an indicator, for a given year.
 
         Inputs:
+            one_zipcode (int): a single zipcode selected by the user
             one_year (int): a year/period selected by the user
 
         Returns:
@@ -747,23 +741,12 @@ class SubgroupTable:
             .distinct()
         )
 
-        if self.aggregate_operation == "Average":
-            results = (
+        results = (
                 self.model.objects.filter(
                     census_tract_id__in=tracts_in_zipcode, year=one_year
                 )
                 .values("sub_group_indicator_name")
-                .annotate(agg_val=Avg("value"))
-                .order_by("sub_group_indicator_name")
-            )
-
-        elif self.aggregate_operation == "Total":
-            results = (
-                self.model.objects.filter(
-                    census_tract_id__in=tracts_in_zipcode, year=one_year
-                )
-                .values("sub_group_indicator_name")
-                .annotate(agg_val=Sum("value"))
+                .annotate(agg_val=self.annotation_cls("value"))
                 .order_by("sub_group_indicator_name")
             )
 
@@ -780,8 +763,7 @@ class SubgroupTable:
         Returns:
             results (Django Queryset): list of query result instances
         """
-        if self.aggregate_operation == "Average":
-            results = (
+        results = (
                 self.model.objects.filter(
                     census_tract_id__community__in=self.geographic_units,
                     year=one_year,
@@ -789,22 +771,7 @@ class SubgroupTable:
                 .values(
                     "census_tract_id__community", "sub_group_indicator_name"
                 )
-                .annotate(agg_val=Avg("value"))
-                .order_by(
-                    "sub_group_indicator_name", "census_tract_id__community"
-                )
-            )
-
-        elif self.aggregate_operation == "Total":
-            results = (
-                self.model.objects.filter(
-                    census_tract_id__community__in=self.geographic_units,
-                    year=one_year,
-                )
-                .values(
-                    "census_tract_id__community", "sub_group_indicator_name"
-                )
-                .annotate(agg_val=Sum("value"))
+                .annotate(agg_val=self.annotation_cls("value"))
                 .order_by(
                     "sub_group_indicator_name", "census_tract_id__community"
                 )
@@ -851,7 +818,7 @@ class SubgroupTable:
             if self.geographic_level == "City of Chicago":
                 row = ["NA"]
             else:
-                row = ["NA"] * len(self.geographic_units)
+                row = ["NA"] * self.num_cols
 
             for idx, r in enumerate(
                 results.filter(sub_group_indicator_name=subgroup)
@@ -909,7 +876,7 @@ class SubgroupTable:
         if self.geographic_level == "Zipcode":
             # Create a dictionary to save values for each subgroup
             subgroup_dct = {
-                subgroup: ["NA"] * len(self.geographic_units)
+                subgroup: ["NA"] * self.num_cols
                 for subgroup in self.model_subgroups
             }
 

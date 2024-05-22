@@ -502,21 +502,21 @@ class MainTable:
         """
         # Create a row of "NA" strongs corresponding to the number of
         # table columns (i.e. number of periods selected by the user)
-        row = ["None"] * self.num_cols
+        row = ["NA"] * self.num_cols
 
         if self.geographic_level == "Tract":
             for idx, r in enumerate(results):
                 if r.value is None:
-                    row[idx] = "NA"
+                    continue
                 else:
-                    row[idx] = round(r.value, 2)
+                    row[idx] = round(float(r.value), 2)
 
         else:
             for idx, r in enumerate(results):
                 if r["agg_val"] is None:
-                    row[idx] = "NA"
+                    continue
                 else:
-                    row[idx] = round(r["agg_val"], 2)
+                    row[idx] = round(float(r["agg_val"]), 2)
         
         if self.geographic_level == "Community":
             row = [unit.title()] + row
@@ -826,7 +826,7 @@ class SubgroupTable:
                 if r["agg_val"] is None:
                     continue
                 else:
-                    row[idx] = round(r["agg_val"], 2)
+                    row[idx] = round(float(r["agg_val"]), 2)
             row = [SUBGROUP_NAMES[subgroup]] + row
             rows.append(row)
 

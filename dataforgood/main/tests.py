@@ -166,7 +166,7 @@ class CreateMainTableTests(TestCase):
         Races_Main.objects.create(
             id=1,
             indicator_id=5,
-            sub_group_indicator_name=indicator_2_name,
+            indicator_name=indicator_2_name,
             census_tract_id=80400,
             year=2017,
             value=10000
@@ -174,7 +174,7 @@ class CreateMainTableTests(TestCase):
         Races_Main.objects.create(
             id=2,
             indicator_id=5,
-            sub_group_indicator_name=indicator_2_name,
+            indicator_name=indicator_2_name,
             census_tract_id=80400,
             year=2018,
             value=15000
@@ -182,7 +182,7 @@ class CreateMainTableTests(TestCase):
         Races_Main.objects.create(
             id=3,
             indicator_id=5,
-            sub_group_indicator_name=indicator_2_name,
+            indicator_name=indicator_2_name,
             census_tract_id=80401,
             year=2017,
             value=20000
@@ -190,7 +190,7 @@ class CreateMainTableTests(TestCase):
         Races_Main.objects.create(
             id=4,
             indicator_id=5,
-            sub_group_indicator_name=indicator_2_name,
+            indicator_name=indicator_2_name,
             census_tract_id=80401,
             year=2018,
             value=22000
@@ -198,7 +198,7 @@ class CreateMainTableTests(TestCase):
         Races_Main.objects.create(
             id=5,
             indicator_id=5,
-            sub_group_indicator_name=indicator_2_name,
+            indicator_name=indicator_2_name,
             census_tract_id=80402,
             year=2017,
             value=30000
@@ -206,7 +206,7 @@ class CreateMainTableTests(TestCase):
         Races_Main.objects.create(
             id=6,
             indicator_id=5,
-            sub_group_indicator_name=indicator_2_name,
+            indicator_name=indicator_2_name,
             census_tract_id=80402,
             year=2018,
             value=50000
@@ -214,7 +214,7 @@ class CreateMainTableTests(TestCase):
         Races_Main.objects.create(
             id=7,
             indicator_id=5,
-            sub_group_indicator_name=indicator_2_name,
+            indicator_name=indicator_2_name,
             census_tract_id=80403,
             year=2017,
             value=30000
@@ -222,7 +222,7 @@ class CreateMainTableTests(TestCase):
         Races_Main.objects.create(
             id=8,
             indicator_id=5,
-            sub_group_indicator_name=indicator_2_name,
+            indicator_name=indicator_2_name,
             census_tract_id=80403,
             year=2018,
             value=28000
@@ -230,7 +230,7 @@ class CreateMainTableTests(TestCase):
         Races_Main.objects.create(
             id=9,
             indicator_id=5,
-            sub_group_indicator_name=indicator_2_name,
+            indicator_name=indicator_2_name,
             census_tract_id=80404,
             year=2017,
             value=15000
@@ -269,9 +269,9 @@ class CreateMainTableTests(TestCase):
             ).table["rows"]
         
         correct_rows = [
-            ["HYDE PARK", 1500, 1850],
-            ["LINCOLN PARK", 3000, 3900],
-            ["KENWOOD", 1150, 1350],
+            ["Hyde Park", 1500.0, 1850.0],
+            ["Kenwood", 1150.0, 1350.0],
+            ["Lincoln Park", 3000.0, 3900.0],
         ]
 
         self.assertEqual(rows, correct_rows)
@@ -290,9 +290,9 @@ class CreateMainTableTests(TestCase):
             ).table["rows"]
         
         correct_rows = [
-            [60601, 2000, 2150],
-            [60602, 2150, 1950],
-            [60603, 1900, 3000],
+            [60601, 2000.0, 2150.0],
+            [60602, 1750.0, 1950.0],
+            [60603, 1900.0, 3000.0],
         ]
 
         self.assertEqual(rows, correct_rows)
@@ -311,12 +311,12 @@ class CreateMainTableTests(TestCase):
             ).table["rows"]
         
         correct_rows = [
-            [80400, 1000, 1500],
-            [80401, 2000, 2200],
-            [80402, 3000, 5000],
-            [80403, 3000, 2800],
-            [80404, 1500, 1700],
-            [80405, 800, 1000],
+            [80400, 1000.0, 1500.0],
+            [80401, 2000.0, 2200.0],
+            [80402, 3000.0, 5000.0],
+            [80403, 3000.0, 2800.0],
+            [80404, 1500.0, 1700.0],
+            [80405, 800.0, 1000.0],
         ]
 
         self.assertEqual(rows, correct_rows)
@@ -335,7 +335,7 @@ class CreateMainTableTests(TestCase):
             ).table["rows"]
         
         correct_rows = [
-            ["City Total", 105000, 115000],
+            ["City Total", 105000.0, 115000.0],
         ]
 
         self.assertEqual(rows, correct_rows)
@@ -354,9 +354,9 @@ class CreateMainTableTests(TestCase):
             ).table["rows"]
         
         correct_rows = [
-            ["HYDE PARK", 30000, 37000],
-            ["LINCOLN PARK", 60000, 78000],
-            ["KENWOOD", 15000, "NA"],
+            ["Hyde Park", 30000.0, 37000.0],
+            ["Kenwood", 15000.0, "NA"],
+            ["Lincoln Park", 60000.0, 78000.0],
         ]
 
         self.assertEqual(rows, correct_rows)
@@ -375,9 +375,9 @@ class CreateMainTableTests(TestCase):
             ).table["rows"]
         
         correct_rows = [
-            [60601, 40000, 43000],
-            [60602, 35000, 22000],
-            [60603, 30000, 50000],
+            [60601, 40000.0, 43000.0],
+            [60602, 35000.0, 22000.0],
+            [60603, 30000.0, 50000.0],
         ]
 
         self.assertEqual(rows, correct_rows)
@@ -396,11 +396,11 @@ class CreateMainTableTests(TestCase):
             ).table["rows"]
         
         correct_rows = [
-            [80400, 10000, 15000],
-            [80401, 20000, 22000],
-            [80402, 30000, 50000],
-            [80403, 30000, 28000],
-            [80404, 15000, "NA"],
+            [80400, 10000.0, 15000.0],
+            [80401, 20000.0, 22000.0],
+            [80402, 30000.0, 50000.0],
+            [80403, 30000.0, 28000.0],
+            [80404, 15000.0, "NA"],
             [80405, "NA", "NA"],
         ]
 
@@ -627,12 +627,12 @@ class CreateSubgroupTableTests(TestCase):
         model = ContractRent_Sub
         periods = SINGLE_PERIOD_LIST
 
-        rows = MainTable(
+        rows = SubgroupTable(
             geographic_level, geographic_unit, indicator, model, periods
-            ).table["rows"]
+            ).many_subtables[SINGLE_PERIOD_LIST[0]]["rows"]
         
         correct_rows = [
-            ["Lower Contract Rent Quartile", 2100],
+            ["Lower Contract Rent Quartile", 2100.0],
             ["Upper Contract Rent Quartile", 3016.67],
         ]
 
@@ -647,13 +647,13 @@ class CreateSubgroupTableTests(TestCase):
         model = ContractRent_Sub
         periods = SINGLE_PERIOD_LIST
 
-        rows = MainTable(
+        rows = SubgroupTable(
             geographic_level, geographic_unit, indicator, model, periods
-            ).table["rows"]
+            ).many_subtables[SINGLE_PERIOD_LIST[0]]["rows"]
         
         correct_rows = [
-            ["Lower Contract Rent Quartile", 1150, 900, 4250],
-            ["Upper Contract Rent Quartile", 1750, 1550, 5750],
+            ["Lower Contract Rent Quartile", 1150.0, 4250.0, 900.0],
+            ["Upper Contract Rent Quartile", 1750.0, 5750.0, 1550.0],
         ]
 
         self.assertEqual(rows, correct_rows)
@@ -667,13 +667,13 @@ class CreateSubgroupTableTests(TestCase):
         model = ContractRent_Sub
         periods = SINGLE_PERIOD_LIST
 
-        rows = MainTable(
+        rows = SubgroupTable(
             geographic_level, geographic_unit, indicator, model, periods
-            ).table["rows"]
+            ).many_subtables[SINGLE_PERIOD_LIST[0]]["rows"]
         
         correct_rows = [
-            ["Lower Contract Rent Quartile", 1000, 2150, 3150],
-            ["Upper Contract Rent Quartile", 1750, 3500, 3800],
+            ["Lower Contract Rent Quartile", 1000.0, 2150.0, 3150.0],
+            ["Upper Contract Rent Quartile", 1750.0, 3500.0, 3800.0],
         ]
 
         self.assertEqual(rows, correct_rows)
@@ -687,13 +687,13 @@ class CreateSubgroupTableTests(TestCase):
         model = ContractRent_Sub
         periods = SINGLE_PERIOD_LIST
 
-        rows = MainTable(
+        rows = SubgroupTable(
             geographic_level, geographic_unit, indicator, model, periods
-            ).table["rows"]
+            ).many_subtables[SINGLE_PERIOD_LIST[0]]["rows"]
         
         correct_rows = [
-            ["Lower Contract Rent Quartile", 1000, 1300, 800, 1000, 3000, 5500],
-            ["Upper Contract Rent Quartile", 1500, 2000, 1100, 2000, 5000, 6500],
+            ["Lower Contract Rent Quartile", 1000.0, 1300.0, 800.0, 1000.0, 3000.0, 5500.0],
+            ["Upper Contract Rent Quartile", 1500.0, 2000.0, 1100.0, 2000.0, 5000.0, 6500.0],
         ]
 
         self.assertEqual(rows, correct_rows)
@@ -707,13 +707,13 @@ class CreateSubgroupTableTests(TestCase):
         model = Races_Sub
         periods = SINGLE_PERIOD_LIST
 
-        rows = MainTable(
+        rows = SubgroupTable(
             geographic_level, geographic_unit, indicator, model, periods
-            ).table["rows"]
+            ).many_subtables[SINGLE_PERIOD_LIST[0]]["rows"]
         
         correct_rows = [
-            ["Asian", 118000],
-            ["White", 161000],
+            ["Asian", 118000.0],
+            ["White", 161000.0],
         ]
 
         self.assertEqual(rows, correct_rows)
@@ -727,13 +727,13 @@ class CreateSubgroupTableTests(TestCase):
         model = Races_Sub
         periods = SINGLE_PERIOD_LIST
 
-        rows = MainTable(
+        rows = SubgroupTable(
             geographic_level, geographic_unit, indicator, model, periods
-            ).table["rows"]
+            ).many_subtables[SINGLE_PERIOD_LIST[0]]["rows"]
         
         correct_rows = [
-            ["Asian", 23000, 10000, 85000],
-            ["White", 35000, 11000, 115000],
+            ["Asian", 23000, 85000, 10000],
+            ["White", 35000, 115000, 11000],
         ]
 
         self.assertEqual(rows, correct_rows)
@@ -747,13 +747,13 @@ class CreateSubgroupTableTests(TestCase):
         model = Races_Sub
         periods = SINGLE_PERIOD_LIST
 
-        rows = MainTable(
+        rows = SubgroupTable(
             geographic_level, geographic_unit, indicator, model, periods
-            ).table["rows"]
+            ).many_subtables[SINGLE_PERIOD_LIST[0]]["rows"]
         
         correct_rows = [
-            ["Asian", 20000, 43000, 55000],
-            ["White", 15000, 70000, 76000],
+            ["Asian", 20000.0, 43000.0, 55000.0],
+            ["White", 15000.0, 70000.0, 76000.0],
         ]
 
         self.assertEqual(rows, correct_rows)
@@ -767,13 +767,13 @@ class CreateSubgroupTableTests(TestCase):
         model = Races_Sub
         periods = SINGLE_PERIOD_LIST
 
-        rows = MainTable(
+        rows = SubgroupTable(
             geographic_level, geographic_unit, indicator, model, periods
-            ).table["rows"]
+            ).many_subtables[SINGLE_PERIOD_LIST[0]]["rows"]
         
         correct_rows = [
-            ["Asian", 10000, 13000, "NA", 10000, 30000, 55000],
-            ["White", 15000, 20000, 11000, "NA", 50000, 65000],
+            ["Asian", 10000.0, 13000.0, 10000.0, 30000.0, 55000.0, "NA"],
+            ["White", 15000.0, 20000.0, 11000.0, 50000.0, 65000.0, "NA"],
         ]
 
         self.assertEqual(rows, correct_rows)
@@ -838,7 +838,7 @@ class TestMainChartViz(TestCase):
             ]
         }
         table_title = 'Main Chart'
-        
+
         template_string = '''
         <script>
             document.addEventListener('DOMContentLoaded', function () {

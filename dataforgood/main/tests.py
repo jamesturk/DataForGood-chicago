@@ -652,8 +652,8 @@ class CreateSubgroupTableTests(TestCase):
             ).many_subtables[SINGLE_PERIOD_LIST[0]]["rows"]
         
         correct_rows = [
-            ["Lower Contract Rent Quartile", 1150.0, 4250.0, 900.0],
-            ["Upper Contract Rent Quartile", 1750.0, 5750.0, 1550.0],
+            ["Lower Contract Rent Quartile", 1150.0, 900.0, 4250.0],
+            ["Upper Contract Rent Quartile", 1750.0, 1550.0, 5750.0],
         ]
 
         self.assertEqual(rows, correct_rows)
@@ -732,8 +732,8 @@ class CreateSubgroupTableTests(TestCase):
             ).many_subtables[SINGLE_PERIOD_LIST[0]]["rows"]
         
         correct_rows = [
-            ["Asian", 23000, 85000, 10000],
-            ["White", 35000, 115000, 11000],
+            ["Asian", 23000, 10000, 85000],
+            ["White", 35000, 11000, 115000],
         ]
 
         self.assertEqual(rows, correct_rows)

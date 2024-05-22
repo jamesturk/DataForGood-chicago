@@ -107,7 +107,7 @@
                             <input type="checkbox" id="select_all_years" onclick="toggleYearSelection(this)">
                             <label for="select_all_years">Select All/Remove All</label>
                         </p>
-                        <p><em>Note: Please do not choose overlapping years for the ACS 5-year estimates. Compare non-overlapping datasets (example: compare 2013-2017 ACS 5-year estimates to 2018-2022 ACS 5-year estimates). For more information, see <a href="https://www.census.gov/newsroom/blogs/random-samplings/2022/03/period-estimates-american-community-survey.html">Period Estimates in the American Community Survey</a>.</em></p>
+                        <p><em>Note: Please be careful when you choose overlapping years for the ACS 5-year estimates. Comparing non-overlapping 5-year estimates is prohibited (example: compare 2013-2017 ACS 5-year estimates to 2018-2022 ACS 5-year estimates). For more information, see <a href="https://www.census.gov/newsroom/blogs/random-samplings/2022/03/period-estimates-american-community-survey.html">Period Estimates in the American Community Survey</a>.</em></p>
                     </div>
                     <div class="year-select">
                         {% for checkbox in form.year %}
@@ -150,24 +150,62 @@
                     </div>
                 </div>
 
-                <script src = "{% static 'js/download_main_table.js' %}"> </script>
-
                 <div style="text-align: center">
                     <button id="toggle-main-view">Switch Axes</button>
                 </div>
 
                 <div id="chart-container"></div>
                 <script>
+                    function downloadTableAsExcel() {
+                        var table = document.getElementById("main-table");
+                        var wb = XLSX.utils.table_to_book(table);
+                        XLSX.writeFile(wb, "main-table.xlsx");
+                    }
+                
+                    function downloadTableAsCSV() {
+                        var table = document.getElementById("main-table");
+                        var csv = [];
+                        var rows = table.querySelectorAll("tr");
+                
+                        for (var i = 0; i < rows.length; i++) {
+                            var row = [], cols = rows[i].querySelectorAll("td, th");
+                
+                            for (var j = 0; j < cols.length; j++) {
+                                row.push(cols[j].innerText);
+                            }
+                
+                            csv.push(row.join(","));
+                        }
+                
+                        var csvString = csv.join("\n");
+                        var blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
+                
+                        if (navigator.msSaveBlob) { // IE 10+
+                            navigator.msSaveBlob(blob, "main-table.csv");
+                        } else {
+                            var link = document.createElement("a");
+                            if (link.download !== undefined) {
+                                var url = URL.createObjectURL(blob);
+                                link.setAttribute("href", url);
+                                link.setAttribute("download", "main-table.csv");
+                                link.style.visibility = 'hidden';
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                            }
+                        }
+                    }
+                
                     document.addEventListener('DOMContentLoaded', function () {
                         var chartData = {{ chart_data | safe }};
                         var currentView = 'category'; // Initialize the current view to 'category'
-
+                
                         function updateMainChart() {
                             var categories = chartData.categories;
                             var series = chartData.series;
-
+                
                             var seriesData;
-
+                
                             if (currentView === 'category') {
                                 seriesData = series;
                             } else {
@@ -175,14 +213,14 @@
                                     var categoryData = series.map(function(serie) {
                                         return serie.data[index];
                                     });
-
+                
                                     return {
                                         name: category,
                                         data: categoryData
                                     };
                                 });
                             }
-
+                
                             var chartOptions = {
                                 chart: {
                                     type: 'bar'
@@ -211,12 +249,12 @@
                                 },
                                 series: seriesData
                             };
-
+                
                             Highcharts.chart('chart-container', chartOptions);
                         }
-
+                
                         updateMainChart();
-
+                
                         document.getElementById('toggle-main-view').addEventListener('click', function() {
                             currentView = currentView === 'category' ? 'series' : 'category';
                             updateMainChart();
@@ -254,34 +292,30 @@
                         <button onclick="downloadSubtableAsCSV()">Download as CSV</button>
                     </div>
                 </div>
-
+                
                 <div id="subtable-chart-container"></div>
-                <script src = "{% static 'js/subtable.js' %}"></script>
-                <script src = "{% static 'js/download_subtable.js' %}"></script>
-
                 <div style="text-align: center">
                     <button id="toggle-view">Switch Axes</button>
                 </div>
-
-                <div id="subtable-chart-container"></div>
+                
                 <script>
                     document.addEventListener('DOMContentLoaded', function() {
                         var multiYearSubtableField = {{ multi_year_subtable_field|safe }};
                         var subgroupChartData = {{ subgroup_chart_data|safe }};
                         var currentView = 'tract';
-
+                
                         function updateSubgroupTable(year) {
                             var subtableData = multiYearSubtableField[year];
                             document.getElementById('subtable-year').textContent = year;
                             document.getElementById('subtable-headers').innerHTML = '';
                             document.getElementById('subtable-rows').innerHTML = '';
-
+                
                             subtableData.headers.forEach(function(header) {
                                 var th = document.createElement('th');
                                 th.textContent = header;
                                 document.getElementById('subtable-headers').appendChild(th);
                             });
-
+                
                             subtableData.rows.forEach(function(row) {
                                 var tr = document.createElement('tr');
                                 row.forEach(function(value) {
@@ -291,19 +325,19 @@
                                 });
                                 document.getElementById('subtable-rows').appendChild(tr);
                             });
-
+                
                             updateChart(year, subtableData);
                         }
-
+                
                         function updateChart(year, subtableData) {
                             var tractCategories = subtableData.rows.map(function(row) {
                                 return row[0];
                             });
-
+                
                             var raceGroups = subtableData.headers.slice(1);
-
+                
                             var seriesData;
-
+                
                             if (currentView === 'tract') {
                                 seriesData = raceGroups.map(function(raceGroup, index) {
                                     return {
@@ -318,14 +352,14 @@
                                     var tractData = subtableData.rows[index].slice(1).map(function(value) {
                                         return parseFloat(value) || null;
                                     });
-
+                
                                     return {
                                         name: tract,
                                         data: tractData
                                     };
                                 });
                             }
-
+                
                             var chartOptions = {
                                 chart: {
                                     type: 'column'
@@ -359,8 +393,48 @@
                                 },
                                 series: seriesData
                             };
-
+                
                             Highcharts.chart('subtable-chart-container', chartOptions);
+                        }
+
+                        function downloadSubtableAsExcel() {
+                            var table = document.getElementById("subtable");
+                            var wb = XLSX.utils.table_to_book(table);
+                            XLSX.writeFile(wb, "subtable.xlsx");
+                        }
+
+                        function downloadSubtableAsCSV() {
+                            var table = document.getElementById("subtable");
+                            var csv = [];
+                            var rows = table.querySelectorAll("tr");
+
+                            for (var i = 0; i < rows.length; i++) {
+                                var row = [], cols = rows[i].querySelectorAll("td, th");
+
+                                for (var j = 0; j < cols.length; j++) {
+                                    row.push(cols[j].innerText);
+                                }
+
+                                csv.push(row.join(","));
+                            }
+
+                            var csvString = csv.join("\n");
+                            var blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
+
+                            if (navigator.msSaveBlob) { 
+                                navigator.msSaveBlob(blob, "subtable.csv");
+                            } else {
+                                var link = document.createElement("a");
+                                if (link.download !== undefined) {
+                                    var url = URL.createObjectURL(blob);
+                                    link.setAttribute("href", url);
+                                    link.setAttribute("download", "subtable.csv");
+                                    link.style.visibility = 'hidden';
+                                    document.body.appendChild(link);
+                                    link.click();
+                                    document.body.removeChild(link);
+                                }
+                            }
                         }
 
                         document.getElementById('subgroup-form').addEventListener('submit', function(event) {
@@ -368,7 +442,7 @@
                             var selectedYear = document.getElementById('id_subgroup_year').value;
                             updateSubgroupTable(selectedYear);
                         });
-
+                
                         document.getElementById('toggle-view').addEventListener('click', function() {
                             currentView = currentView === 'tract' ? 'raceGroup' : 'tract';
                             var selectedYear = document.getElementById('id_subgroup_year').value;

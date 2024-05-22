@@ -772,8 +772,8 @@ class CreateSubgroupTableTests(TestCase):
             ).many_subtables[SINGLE_PERIOD_LIST[0]]["rows"]
         
         correct_rows = [
-            ["Asian", 10000.0, 13000.0, 10000.0, 30000.0, 55000.0, "NA"],
-            ["White", 15000.0, 20000.0, 11000.0, 50000.0, 65000.0, "NA"],
+            ["Asian", 10000.0, 13000.0, "NA", 10000.0, 30000.0, 55000.0],
+            ["White", 15000.0, 20000.0, 11000.0, "NA", 50000.0, 65000.0],
         ]
 
         self.assertEqual(rows, correct_rows)

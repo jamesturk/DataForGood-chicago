@@ -208,12 +208,15 @@ poetry shell
 python manage.py runserver
 ```
 
-#### **Web App Demo**
+### **Web App Demo**
 
+#### About Us Page
 Our web app has three main tabs: About Us, Data & Visualize, and Resource.\
 To navigate to explore and visualize the data, choose "Explore Data" or click on the "Data & Visualize" Tab.
 
 https://github.com/uchicago-capp-30320/DataForGood-chicago/assets/111541644/2bdcad30-70ac-4c71-9c39-1bbcdd75bef6
+
+#### Selecting Geographic Level, Indicator, Years, and Memo Generation
 
 You will be navigated to a new page with a form.
 
@@ -231,7 +234,9 @@ If you would like to generate a memo about the key insights of the data, select 
 
 https://github.com/uchicago-capp-30320/DataForGood-chicago/assets/111541644/a33990ea-e6b5-41ce-9cfc-2fbec722497b
 
-After the page loads, scroll down to see the main data table. The table consists of the indicator values for each of the selected geographic areas for each of the selected years.
+#### Tables and Visualizations
+
+After the page loads, scroll down to see the main data table. The table consists of the indicator values for the selected geographic areas and years.
 
 To download the data, select "Download as Excel" or "Download as CSV".
 
@@ -241,7 +246,7 @@ The downloaded data will look like this:
 
 ![image](https://github.com/uchicago-capp-30320/DataForGood-chicago/assets/111541644/2702373e-7d53-4348-8892-9e377a31a692)
 
-The first visualization presented to you will be a bar graph.
+The first visualization presented to you will be a bar graph of the indicator values for the selected geographic areas and years.
 
 To switch the axes of the bar graph, select the  "Switch Axes" button. To display the bar graph in full screen mode, click on the bar icon to the right and selecting "View in Full screen". Hover over the bars for the geographic area name and the indicator value. 
 
@@ -249,11 +254,13 @@ You are also able to download the bar graph visualization as an PNG, JPEG, PDF o
 
 https://github.com/uchicago-capp-30320/DataForGood-chicago/assets/111541644/ee03327d-f41d-4a48-8be7-085749d3aea9
 
-The second visualization presented to you will be heat maps.
+The second visualization presented to you will be heat maps of the selected geographic areas and years.
 
 Hover over each geographic area to see the indicator value and the name of the area. Use the "+" button to zoom in, the "-" button to zoom out, and click and drag your mouse to move the frame of the map.
 
 https://github.com/uchicago-capp-30320/DataForGood-chicago/assets/111541644/fb74bbf8-2e52-487a-a8b5-7a27b9fa9a17
+
+#### Subgroup Tables and Visualizations
 
 You are also able to explore the indicator at a deeper level through our subgroups features. 
 
@@ -267,7 +274,9 @@ https://github.com/uchicago-capp-30320/DataForGood-chicago/assets/111541644/49d5
 The downloaded subgroup data will look like this:
 ![image](https://github.com/uchicago-capp-30320/DataForGood-chicago/assets/111541644/635525ce-39d8-4e94-aab4-bed14660d23e)
 
-The generated memo will be at the bottom of the page.
+#### AI Generated Memo
+
+The generated memo is powered by OpenAI's ChatGPT 3.5 Turbo model. If you selected "Yes" in the data form, the generated memo will be at the bottom of the page.
 
 To download an editable file of the memo, click the "Download Memo" button.
 
@@ -276,6 +285,7 @@ https://github.com/uchicago-capp-30320/DataForGood-chicago/assets/111541644/7619
 The downloaded memo will look like this:
 ![image](https://github.com/uchicago-capp-30320/DataForGood-chicago/assets/111541644/b4c4dca3-9548-46af-a747-b592ec87494a)
 
+#### Resource Page
 To navigate to our Resource page, select the "Resource" tab.
 
 https://github.com/uchicago-capp-30320/DataForGood-chicago/assets/111541644/f253af4b-ece7-4646-bd67-bc5d8853ddbb

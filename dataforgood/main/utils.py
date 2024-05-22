@@ -338,7 +338,7 @@ class MainTable:
         if len(query_lst) == 1:
             query_tup = (query_lst[0],)
         else:
-            query_tup = tuple(query_lst)
+            query_tup = sorted(tuple(query_lst))
 
         return query_tup
 

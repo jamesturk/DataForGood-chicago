@@ -42,18 +42,18 @@ class CreateMainTableTests(TestCase):
 
         # 6 Census Tracts, 3 Zipcodes, 3 Neighborhoods
         CensusTracts.objects.create(tract_id=80400, community="HYDE PARK")
-        CensusTracts.objects.create(name=80401, community="HYDE PARK")
-        CensusTracts.objects.create(name=80402, community="LINCOLN PARK")
-        CensusTracts.objects.create(name=80403, community="LINCOLN PARK")
-        CensusTracts.objects.create(name=80404, community="KENWOOD")
-        CensusTracts.objects.create(name=80405, community="KENWOOD")
+        CensusTracts.objects.create(tract_id=80401, community="HYDE PARK")
+        CensusTracts.objects.create(tract_id=80402, community="LINCOLN PARK")
+        CensusTracts.objects.create(tract_id=80403, community="LINCOLN PARK")
+        CensusTracts.objects.create(tract_id=80404, community="KENWOOD")
+        CensusTracts.objects.create(tract_id=80405, community="KENWOOD")
 
-        TractZipCode.objects.create(id=1, tract=80400, zip_code=60601)
-        TractZipCode.objects.create(id=2, tract=80401, zip_code=60602)
-        TractZipCode.objects.create(id=3, tract=80402, zip_code=60603)
-        TractZipCode.objects.create(id=4, tract=80403, zip_code=60601)
-        TractZipCode.objects.create(id=5, tract=80404, zip_code=60602)
-        TractZipCode.objects.create(id=6, tract=80405, zip_code=60603)
+        TractZipCode.objects.create(id=1, tract_id=80400, zip_code=60601)
+        TractZipCode.objects.create(id=2, tract_id=80401, zip_code=60602)
+        TractZipCode.objects.create(id=3, tract_id=80402, zip_code=60603)
+        TractZipCode.objects.create(id=4, tract_id=80403, zip_code=60601)
+        TractZipCode.objects.create(id=5, tract_id=80404, zip_code=60602)
+        TractZipCode.objects.create(id=6, tract_id=80405, zip_code=60603)
 
         # Indicator 1 - "Aggregate Contract Rent" (No Missing Data)
         # Aggregation takes the average values across tracts
@@ -61,85 +61,97 @@ class CreateMainTableTests(TestCase):
     
         ContractRent_Main.objects.create(
             id=1,
+            indicator_id=4,
             indicator_name=indicator_1_name,
-            census_tract=80400,
+            census_tract_id=80400,
             year=2017,
             value=1000
         )
         ContractRent_Main.objects.create(
             id=2,
+            indicator_id=4,
             indicator_name=indicator_1_name,
-            census_tract=80400,
+            census_tract_id=80400,
             year=2018,
             value=1500
         )
         ContractRent_Main.objects.create(
             id=3,
+            indicator_id=4,
             indicator_name=indicator_1_name,
-            census_tract=80401,
+            census_tract_id=80401,
             year=2017,
             value=2000
         )
         ContractRent_Main.objects.create(
             id=4,
+            indicator_id=4,
             indicator_name=indicator_1_name,
-            census_tract=80401,
+            census_tract_id=80401,
             year=2018,
             value=2200
         )
         ContractRent_Main.objects.create(
             id=5,
+            indicator_id=4,
             indicator_name=indicator_1_name,
-            census_tract=80402,
+            census_tract_id=80402,
             year=2017,
             value=3000
         )
         ContractRent_Main.objects.create(
             id=6,
+            indicator_id=4,
             indicator_name=indicator_1_name,
-            census_tract=80402,
+            census_tract_id=80402,
             year=2018,
             value=5000
         )
         ContractRent_Main.objects.create(
             id=7,
+            indicator_id=4,
             indicator_name=indicator_1_name,
-            census_tract=80403,
+            census_tract_id=80403,
             year=2017,
             value=3000
         )
         ContractRent_Main.objects.create(
             id=8,
+            indicator_id=4,
             indicator_name=indicator_1_name,
-            census_tract=80403,
+            census_tract_id=80403,
             year=2018,
             value=2800
         )
         ContractRent_Main.objects.create(
             id=9,
+            indicator_id=4,
             indicator_name=indicator_1_name,
-            census_tract=80404,
+            census_tract_id=80404,
             year=2017,
             value=1500
         )
         ContractRent_Main.objects.create(
             id=10,
+            indicator_id=4,
             indicator_name=indicator_1_name,
-            census_tract=80404,
+            census_tract_id=80404,
             year=2018,
             value=1700
         )
         ContractRent_Main.objects.create(
             id=11,
+            indicator_id=4,
             indicator_name=indicator_1_name,
-            census_tract=80405,
+            census_tract_id=80405,
             year=2017,
             value=800
         )
         ContractRent_Main.objects.create(
             id=12,
+            indicator_id=4,
             indicator_name=indicator_1_name,
-            census_tract=80405,
+            census_tract_id=80405,
             year=2018,
             value=1000
         )
@@ -153,64 +165,73 @@ class CreateMainTableTests(TestCase):
 
         Races_Main.objects.create(
             id=1,
+            indicator_id=5,
             sub_group_indicator_name=indicator_2_name,
-            census_tract=80400,
+            census_tract_id=80400,
             year=2017,
             value=10000
         )
         Races_Main.objects.create(
             id=2,
+            indicator_id=5,
             sub_group_indicator_name=indicator_2_name,
-            census_tract=80400,
+            census_tract_id=80400,
             year=2018,
             value=15000
         )
         Races_Main.objects.create(
             id=3,
+            indicator_id=5,
             sub_group_indicator_name=indicator_2_name,
-            census_tract=80401,
+            census_tract_id=80401,
             year=2017,
             value=20000
         )
         Races_Main.objects.create(
             id=4,
+            indicator_id=5,
             sub_group_indicator_name=indicator_2_name,
-            census_tract=80401,
+            census_tract_id=80401,
             year=2018,
             value=22000
         )
         Races_Main.objects.create(
             id=5,
+            indicator_id=5,
             sub_group_indicator_name=indicator_2_name,
-            census_tract=80402,
+            census_tract_id=80402,
             year=2017,
             value=30000
         )
         Races_Main.objects.create(
             id=6,
+            indicator_id=5,
             sub_group_indicator_name=indicator_2_name,
-            census_tract=80402,
+            census_tract_id=80402,
             year=2018,
             value=50000
         )
         Races_Main.objects.create(
             id=7,
+            indicator_id=5,
             sub_group_indicator_name=indicator_2_name,
-            census_tract=80403,
+            census_tract_id=80403,
             year=2017,
             value=30000
         )
         Races_Main.objects.create(
             id=8,
+            indicator_id=5,
             sub_group_indicator_name=indicator_2_name,
-            census_tract=80403,
+            census_tract_id=80403,
             year=2018,
             value=28000
         )
         Races_Main.objects.create(
             id=9,
+            indicator_id=5,
             sub_group_indicator_name=indicator_2_name,
-            census_tract=80404,
+            census_tract_id=80404,
             year=2017,
             value=15000
         )
@@ -395,18 +416,18 @@ class CreateSubgroupTableTests(TestCase):
 
         # 6 Census Tracts, 3 Zipcodes, 3 Neighborhoods
         CensusTracts.objects.create(tract_id=80400, community="HYDE PARK")
-        CensusTracts.objects.create(name=80401, community="HYDE PARK")
-        CensusTracts.objects.create(name=80402, community="LINCOLN PARK")
-        CensusTracts.objects.create(name=80403, community="LINCOLN PARK")
-        CensusTracts.objects.create(name=80404, community="KENWOOD")
-        CensusTracts.objects.create(name=80405, community="KENWOOD")
+        CensusTracts.objects.create(tract_id=80401, community="HYDE PARK")
+        CensusTracts.objects.create(tract_id=80402, community="LINCOLN PARK")
+        CensusTracts.objects.create(tract_id=80403, community="LINCOLN PARK")
+        CensusTracts.objects.create(tract_id=80404, community="KENWOOD")
+        CensusTracts.objects.create(tract_id=80405, community="KENWOOD")
 
-        TractZipCode.objects.create(id=1, tract=80400, zip_code=60601)
-        TractZipCode.objects.create(id=2, tract=80401, zip_code=60602)
-        TractZipCode.objects.create(id=3, tract=80402, zip_code=60603)
-        TractZipCode.objects.create(id=4, tract=80403, zip_code=60601)
-        TractZipCode.objects.create(id=5, tract=80404, zip_code=60602)
-        TractZipCode.objects.create(id=6, tract=80405, zip_code=60603)
+        TractZipCode.objects.create(id=1, tract_id=80400, zip_code=60601)
+        TractZipCode.objects.create(id=2, tract_id=80401, zip_code=60602)
+        TractZipCode.objects.create(id=3, tract_id=80402, zip_code=60603)
+        TractZipCode.objects.create(id=4, tract_id=80403, zip_code=60601)
+        TractZipCode.objects.create(id=5, tract_id=80404, zip_code=60602)
+        TractZipCode.objects.create(id=6, tract_id=80405, zip_code=60603)
 
         # Indicator 1 - "Aggregate Contract Rent" (No Missing Data)
         # Aggregation takes the average values across tracts
@@ -415,85 +436,97 @@ class CreateSubgroupTableTests(TestCase):
     
         ContractRent_Sub.objects.create(
             id=1,
+            indicator_id=4,
             sub_group_indicator_name=subgroup_1_a,
-            census_tract=80400,
+            census_tract_id=80400,
             year=2017,
             value=1000
         )
         ContractRent_Sub.objects.create(
             id=2,
+            indicator_id=4,
             sub_group_indicator_name=subgroup_1_b,
-            census_tract=80400,
+            census_tract_id=80400,
             year=2017,
             value=1500
         )
         ContractRent_Sub.objects.create(
             id=3,
+            indicator_id=4,
             sub_group_indicator_name=subgroup_1_a,
-            census_tract=80401,
+            census_tract_id=80401,
             year=2017,
             value=1300
         )
         ContractRent_Sub.objects.create(
             id=4,
+            indicator_id=4,
             sub_group_indicator_name=subgroup_1_b,
-            census_tract=80401,
+            census_tract_id=80401,
             year=2017,
             value=2000
         )
         ContractRent_Sub.objects.create(
             id=5,
+            indicator_id=4,
             sub_group_indicator_name=subgroup_1_a,
-            census_tract=80402,
+            census_tract_id=80402,
             year=2017,
             value=800
         )
         ContractRent_Sub.objects.create(
             id=6,
+            indicator_id=4,
             sub_group_indicator_name=subgroup_1_b,
-            census_tract=80402,
+            census_tract_id=80402,
             year=2017,
             value=1100
         )
         ContractRent_Sub.objects.create(
             id=7,
+            indicator_id=4,
             sub_group_indicator_name=subgroup_1_a,
-            census_tract=80403,
+            census_tract_id=80403,
             year=2017,
             value=1000
         )
         ContractRent_Sub.objects.create(
             id=8,
+            indicator_id=4,
             sub_group_indicator_name=subgroup_1_b,
-            census_tract=80403,
+            census_tract_id=80403,
             year=2017,
             value=2000
         )
         ContractRent_Sub.objects.create(
             id=9,
+            indicator_id=4,
             sub_group_indicator_name=subgroup_1_a,
-            census_tract=80404,
+            census_tract_id=80404,
             year=2017,
             value=3000
         )
         ContractRent_Sub.objects.create(
             id=10,
+            indicator_id=4,
             sub_group_indicator_name=subgroup_1_b,
-            census_tract=80404,
+            census_tract_id=80404,
             year=2017,
             value=5000
         )
         ContractRent_Sub.objects.create(
             id=11,
+            indicator_id=4,
             sub_group_indicator_name=subgroup_1_a,
-            census_tract=80405,
+            census_tract_id=80405,
             year=2017,
             value=5500
         )
         ContractRent_Sub.objects.create(
             id=12,
+            indicator_id=4,
             sub_group_indicator_name=subgroup_1_b,
-            census_tract=80405,
+            census_tract_id=80405,
             year=2017,
             value=6500
         )
@@ -506,71 +539,81 @@ class CreateSubgroupTableTests(TestCase):
         subgroup_2_b = "pop_white"
         Races_Sub.objects.create(
             id=1,
+            indicator_id=5,
             sub_group_indicator_name=subgroup_2_a,
-            census_tract=80400,
+            census_tract_id=80400,
             year=2017,
             value=10000
         )
         Races_Sub.objects.create(
             id=2,
+            indicator_id=5,
             sub_group_indicator_name=subgroup_2_b,
-            census_tract=80400,
+            census_tract_id=80400,
             year=2017,
             value=15000
         )
         Races_Sub.objects.create(
             id=3,
+            indicator_id=5,
             sub_group_indicator_name=subgroup_2_a,
-            census_tract=80401,
+            census_tract_id=80401,
             year=2017,
             value=13000
         )
         Races_Sub.objects.create(
             id=4,
+            indicator_id=5,
             sub_group_indicator_name=subgroup_2_b,
-            census_tract=80401,
+            census_tract_id=80401,
             year=2017,
             value=20000
         )
         Races_Sub.objects.create(
             id=5,
+            indicator_id=5,
             sub_group_indicator_name=subgroup_2_b,
-            census_tract=80402,
+            census_tract_id=80402,
             year=2017,
             value=11000
         )
         Races_Sub.objects.create(
             id=6,
+            indicator_id=5,
             sub_group_indicator_name=subgroup_2_a,
-            census_tract=80403,
+            census_tract_id=80403,
             year=2017,
             value=10000
         )
         Races_Sub.objects.create(
             id=7,
+            indicator_id=5,
             sub_group_indicator_name=subgroup_2_a,
-            census_tract=80404,
+            census_tract_id=80404,
             year=2017,
             value=30000
         )
         Races_Sub.objects.create(
             id=8,
+            indicator_id=5,
             sub_group_indicator_name=subgroup_2_b,
-            census_tract=80404,
+            census_tract_id=80404,
             year=2017,
             value=50000
         )
         Races_Sub.objects.create(
             id=9,
+            indicator_id=5,
             sub_group_indicator_name=subgroup_2_a,
-            census_tract=80405,
+            census_tract_id=80405,
             year=2017,
             value=55000
         )
         Races_Sub.objects.create(
             id=10,
+            indicator_id=5,
             sub_group_indicator_name=subgroup_2_b,
-            census_tract=80405,
+            census_tract_id=80405,
             year=2017,
             value=65000
         )

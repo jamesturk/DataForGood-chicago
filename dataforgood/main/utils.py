@@ -507,6 +507,10 @@ class MainTable:
         if self.geographic_level == "Tract":
             for r in results:
                 result_year = r.year
+
+                # Obtain the corresponding index of a result's specific year
+                # so that the value is appended to the correct column
+                # corresponding to the specific period
                 idx = self.years.index(result_year)
                 if r.value is None:
                     continue
@@ -516,6 +520,10 @@ class MainTable:
         else:
             for r in results:
                 result_year = r["year"]
+
+                # Obtain the corresponding index of a result's specific year
+                # so that the value is appended to the correct column
+                # corresponding to the specific period
                 idx = self.years.index(result_year)
                 if r["agg_val"] is None:
                     continue
@@ -849,6 +857,9 @@ class SubgroupTable:
                     elif self.geographic_level == "Community":
                         result_geographic_area = str(r["census_tract_id__community"])
                     
+                    # Obtain the corresponding index of the geographic unit
+                    # so that values are appended to the correct column
+                    # corresponding to the geographic unit's column
                     idx = self.geographic_units.index(result_geographic_area)
                     
                     if r["agg_val"] is None:

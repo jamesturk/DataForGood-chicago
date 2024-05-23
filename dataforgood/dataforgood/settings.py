@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 import os
+import sys
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -90,8 +91,15 @@ DATABASES = {
         "PASSWORD": os.getenv("DB_PASSWORD"),
         "HOST": os.getenv("DB_HOST"),
         "PORT": os.getenv("DB_PORT"),
+        "TEST": {
+            "NAME": "test_db",
+        },
     }
 }
+
+if 'test' in sys.argv:
+    DATABASES['default']['USER'] = os.getenv("TEST_DB_USER")
+    DATABASES['default']['PASSWORD'] = os.getenv("TEST_DB_PASSWORD")
 
 
 # Password validation

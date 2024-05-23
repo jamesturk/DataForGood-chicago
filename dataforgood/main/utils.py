@@ -290,7 +290,8 @@ class MainTable:
     Class object to represent a main data table on the webapp.
     """
 
-    def __init__(self, geographic_level, geographic_units, indicator, periods):
+    def __init__(self, geographic_level, geographic_units, indicator, 
+                 model, periods):
         """
         Inputs:
             geographic_level (str): geographic level selected by the user
@@ -298,6 +299,7 @@ class MainTable:
             geographic_units (list of str or int): geographic unit(s) corresponding
                 to the geographic level selected by the user in the form
             indicator (str): name of indicator selected by the user in the form
+            model (Django model object): corresponding model for the indicator
             preiods (list of str): periods(s) selected by the user
 
         Returns: None
@@ -306,14 +308,16 @@ class MainTable:
         self.geographic_level = geographic_level
         self.geographic_units = self.convert_list_to_tuple(geographic_units)
         self.indicator = indicator
+        self.model = model
         self.periods = periods
-        self.model = MAIN_MODEL_MAPPING[self.indicator]
         self.aggregate_operation = AGGERGATE_OPERATORS[self.indicator]
+        self.annotation_cls = self.get_annotation_cls()
         self.years = self.convert_periods_to_years()
 
         # Main Table Output Variables
         self.table_title = self.create_table_title()
         self.headers = [self.geographic_level] + periods
+        self.num_cols = len(periods)
         self.rows = self.create_rows()
         self.table = {"headers": self.headers, "rows": self.rows}
 
@@ -334,7 +338,7 @@ class MainTable:
         if len(query_lst) == 1:
             query_tup = (query_lst[0],)
         else:
-            query_tup = tuple(query_lst)
+            query_tup = sorted(tuple(query_lst))
 
         return query_tup
 
@@ -346,8 +350,7 @@ class MainTable:
             ['2011-2015', '2016-2020'] -> [2015, 2020]
             ['2011-2015'] -> [2015]
 
-        Inputs:
-            period (list of str): 5-year period(s) selected by the user
+        Inputs: None
 
         Returns:
             years (list of int): the ending year for each 5-year estimate period
@@ -355,6 +358,7 @@ class MainTable:
         """
         years = []
         for p in self.periods:
+            # Only keeps the last four numbers in the period string
             years.append(int(p[5:]))
 
         years = self.convert_list_to_tuple(years)
@@ -382,6 +386,21 @@ class MainTable:
 
         return indicator_formatted
 
+    def get_annotation_cls(self):
+        """
+        Determines the type of annotation (Avg or Sum) to use when conducting
+        aggregate query operations
+
+        Inputs: None
+
+        Returns (Django query variable): 
+            Avg (averages groupby values) OR Sum (totals grouby values)
+        """
+        if self.aggregate_operation == "Average":
+            return Avg
+        elif self.aggregate_operation == "Total":
+            return Sum
+
     def conduct_query_city_level(self):
         """
         Conducts a Django model query to obtain the city-level average or sum
@@ -392,21 +411,12 @@ class MainTable:
         Returns:
             results (Django Queryset): list of query result instances
         """
-        if self.aggregate_operation == "Average":
-            results = (
-                self.model.objects.values("year")
-                .filter(year__in=self.years)
-                .annotate(agg_val=Avg("value"))
-                .order_by("year")
-            )
-
-        elif self.aggregate_operation == "Total":
-            results = (
-                self.model.objects.values("year")
-                .filter(year__in=self.years)
-                .annotate(agg_val=Sum("value"))
-                .order_by("year")
-            )
+        results = (
+            self.model.objects.values("year")
+            .filter(year__in=self.years)
+            .annotate(agg_val=self.annotation_cls("value"))
+            .order_by("year")
+        )
 
         return results
 
@@ -427,23 +437,12 @@ class MainTable:
             .distinct()
         )
 
-        if self.aggregate_operation == "Average":
-            results = (
+        results = (
                 self.model.objects.values("year")
                 .filter(
                     census_tract_id__in=tracts_in_zipcode, year__in=self.years
                 )
-                .annotate(agg_val=Avg("value"))
-                .order_by("year")
-            )
-
-        elif self.aggregate_operation == "Total":
-            results = (
-                self.model.objects.values("year")
-                .filter(
-                    census_tract_id__in=tracts_in_zipcode, year__in=self.years
-                )
-                .annotate(agg_val=Sum("value"))
+                .annotate(agg_val=self.annotation_cls("value"))
                 .order_by("year")
             )
 
@@ -477,25 +476,13 @@ class MainTable:
         Returns:
             results (Django Queryset): list of query result instances
         """
-        if self.aggregate_operation == "Average":
-            results = (
+        results = (
                 self.model.objects.values("census_tract_id__community", "year")
                 .filter(
                     census_tract_id__community=one_community,
                     year__in=self.years,
                 )
-                .annotate(agg_val=Avg("value"))
-                .order_by("year")
-            )
-
-        elif self.aggregate_operation == "Total":
-            results = (
-                self.model.objects.values("census_tract_id__community", "year")
-                .filter(
-                    census_tract_id__community=one_community,
-                    year__in=self.years,
-                )
-                .annotate(agg_val=Sum("value"))
+                .annotate(agg_val=self.annotation_cls("value"))
                 .order_by("year")
             )
 
@@ -515,21 +502,33 @@ class MainTable:
         """
         # Create a row of "NA" strongs corresponding to the number of
         # table columns (i.e. number of periods selected by the user)
-        row = ["NA"] * len(self.periods)
+        row = ["NA"] * self.num_cols
 
         if self.geographic_level == "Tract":
-            for idx, r in enumerate(results):
+            for r in results:
+                result_year = r.year
+
                 if r.value is None:
                     continue
                 else:
-                    row[idx] = round(r.value, 2)
+                    # Obtain the corresponding index of a result's specific year
+                    # so that the value is appended to the correct column
+                    # corresponding to the specific period
+                    idx = self.years.index(result_year)
+                    row[idx] = round(float(r.value), 2)
 
         else:
-            for idx, r in enumerate(results):
+            for r in results:
+                result_year = r["year"]
+
                 if r["agg_val"] is None:
                     continue
                 else:
-                    row[idx] = round(r["agg_val"], 2)
+                    # Obtain the corresponding index of a result's specific year
+                    # so that the value is appended to the correct column
+                    # corresponding to the specific period
+                    idx = self.years.index(result_year)
+                    row[idx] = round(float(r["agg_val"]), 2)
         
         if self.geographic_level == "Community":
             row = [unit.title()] + row
@@ -582,7 +581,8 @@ class SubgroupTable:
     Class object to represent a series of subgroup data tables on the webapp.
     """
 
-    def __init__(self, geographic_level, geographic_units, indicator, periods):
+    def __init__(self, geographic_level, geographic_units, indicator, 
+                 model, periods):
         """
         Inputs:
             geographic_level (str): geographic level selected by the user
@@ -590,6 +590,7 @@ class SubgroupTable:
             geographic_units (list of str or int): geographic unit(s) corresponding
                 to the geographic level selected by the user in the form
             indicator (str): name of indicator selected by the user in the form
+            model (Django model object): corresponding model for the indicator
             preiods (list of str): periods(s) selected by the user
 
         Returns: None
@@ -598,16 +599,30 @@ class SubgroupTable:
         self.geographic_level = geographic_level
         self.geographic_units = self.convert_list_to_tuple(geographic_units)
         self.indicator = indicator
+        self.model = model
         self.periods = periods
-        self.model = SUB_MODEL_MAPPING[self.indicator]
         self.aggregate_operation = AGGERGATE_OPERATORS[self.indicator]
+        self.annotation_cls = self.get_annotation_cls()
         self.years = self.convert_periods_to_years()
         self.model_subgroups = self.get_model_subgroups()
 
         # Subgroup Table Output Variables
+        self.num_cols = self.get_num_cols()
         self.subtable_headers = self.create_subtable_headers()
         self.many_subtables = self.create_all_years_tables()
 
+    def get_num_cols(self):
+        """
+        Returns the number of geographic units in the query, one for each column
+
+        Inputs: None
+        Returns (int): Number of columns
+        """
+        if self.geographic_level == "City of Chicago":
+            return 1
+        else:
+            return len(self.geographic_units)
+    
     def create_subtable_headers(self):
         """
         Creates the header row of the table.
@@ -664,8 +679,7 @@ class SubgroupTable:
             ['2011-2015', '2016-2020'] -> [2015, 2020]
             ['2011-2015'] -> [2015]
 
-        Inputs:
-            period (list of str): 5-year period(s) selected by the user
+        Inputs: None
 
         Returns:
             years (list of int): the ending year for each 5-year estimate period
@@ -673,6 +687,7 @@ class SubgroupTable:
         """
         years = []
         for p in self.periods:
+            # Only keeps the last four numbers in the period string
             years.append(int(p[5:]))
 
         return self.convert_list_to_tuple(years)
@@ -697,6 +712,21 @@ class SubgroupTable:
 
         return subgroups_lst
 
+    def get_annotation_cls(self):
+        """
+        Determines the type of annotation (Avg or Sum) to use when conducting
+        aggregate query operations
+
+        Inputs: None
+
+        Returns (Django query variable): 
+            Avg (averages groupby values) OR Sum (totals grouby values)
+        """
+        if self.aggregate_operation == "Average":
+            return Avg
+        elif self.aggregate_operation == "Total":
+            return Sum
+    
     def conduct_query_city_level(self, one_year):
         """
         Conducts a Django model query to obtain the city-level average or sum
@@ -708,19 +738,10 @@ class SubgroupTable:
         Returns:
             results (Django Queryset): list of query result instances
         """
-        if self.aggregate_operation == "Average":
-            results = (
+        results = (
                 self.model.objects.values("sub_group_indicator_name")
                 .filter(year=one_year)
-                .annotate(agg_val=Avg("value"))
-                .order_by("sub_group_indicator_name")
-            )
-
-        elif self.aggregate_operation == "Total":
-            results = (
-                self.model.objects.values("sub_group_indicator_name")
-                .filter(year=one_year)
-                .annotate(agg_val=Sum("value"))
+                .annotate(agg_val=self.annotation_cls("value"))
                 .order_by("sub_group_indicator_name")
             )
 
@@ -732,6 +753,7 @@ class SubgroupTable:
         for the various subgroups of an indicator, for a given year.
 
         Inputs:
+            one_zipcode (int): a single zipcode selected by the user
             one_year (int): a year/period selected by the user
 
         Returns:
@@ -743,23 +765,12 @@ class SubgroupTable:
             .distinct()
         )
 
-        if self.aggregate_operation == "Average":
-            results = (
+        results = (
                 self.model.objects.filter(
                     census_tract_id__in=tracts_in_zipcode, year=one_year
                 )
                 .values("sub_group_indicator_name")
-                .annotate(agg_val=Avg("value"))
-                .order_by("sub_group_indicator_name")
-            )
-
-        elif self.aggregate_operation == "Total":
-            results = (
-                self.model.objects.filter(
-                    census_tract_id__in=tracts_in_zipcode, year=one_year
-                )
-                .values("sub_group_indicator_name")
-                .annotate(agg_val=Sum("value"))
+                .annotate(agg_val=self.annotation_cls("value"))
                 .order_by("sub_group_indicator_name")
             )
 
@@ -776,8 +787,7 @@ class SubgroupTable:
         Returns:
             results (Django Queryset): list of query result instances
         """
-        if self.aggregate_operation == "Average":
-            results = (
+        results = (
                 self.model.objects.filter(
                     census_tract_id__community__in=self.geographic_units,
                     year=one_year,
@@ -785,22 +795,7 @@ class SubgroupTable:
                 .values(
                     "census_tract_id__community", "sub_group_indicator_name"
                 )
-                .annotate(agg_val=Avg("value"))
-                .order_by(
-                    "sub_group_indicator_name", "census_tract_id__community"
-                )
-            )
-
-        elif self.aggregate_operation == "Total":
-            results = (
-                self.model.objects.filter(
-                    census_tract_id__community__in=self.geographic_units,
-                    year=one_year,
-                )
-                .values(
-                    "census_tract_id__community", "sub_group_indicator_name"
-                )
-                .annotate(agg_val=Sum("value"))
+                .annotate(agg_val=self.annotation_cls("value"))
                 .order_by(
                     "sub_group_indicator_name", "census_tract_id__community"
                 )
@@ -842,20 +837,35 @@ class SubgroupTable:
         Returns:
             rows (list of lists): a single list with each subgroup stored as a
                 list
-        """
+        """     
         for subgroup in self.model_subgroups:
+            row = ["NA"] * self.num_cols
+    
             if self.geographic_level == "City of Chicago":
-                row = ["NA"]
-            else:
-                row = ["NA"] * len(self.geographic_units)
+                for r in results.filter(sub_group_indicator_name=subgroup):
+                    if r["agg_val"] is None:
+                        continue
+                    else:
+                        row[0] = round(float(r["agg_val"]), 2)
 
-            for idx, r in enumerate(
-                results.filter(sub_group_indicator_name=subgroup)
-            ):
-                if r["agg_val"] is None:
-                    continue
-                else:
-                    row[idx] = round(r["agg_val"], 2)
+            else:
+                for r in results.filter(sub_group_indicator_name=subgroup):
+
+                    if self.geographic_level == "Tract":
+                        result_geographic_area = str(r["census_tract_id"])
+                    
+                    elif self.geographic_level == "Community":
+                        result_geographic_area = str(r["census_tract_id__community"])
+                    
+                    if r["agg_val"] is None:
+                        continue
+                    else:
+                        # Obtain the corresponding index of the geographic unit
+                        # so that values are appended to the correct column
+                        # corresponding to the geographic unit's column
+                        idx = self.geographic_units.index(result_geographic_area)
+                        row[idx] = round(float(r["agg_val"]), 2)
+            
             row = [SUBGROUP_NAMES[subgroup]] + row
             rows.append(row)
 
@@ -905,7 +915,7 @@ class SubgroupTable:
         if self.geographic_level == "Zipcode":
             # Create a dictionary to save values for each subgroup
             subgroup_dct = {
-                subgroup: ["NA"] * len(self.geographic_units)
+                subgroup: ["NA"] * self.num_cols
                 for subgroup in self.model_subgroups
             }
 
@@ -945,7 +955,8 @@ def generate_heatmaps(geograpahic_level, indicator, field, years):
         years (list): The list of years selected.
 
     Returns:
-        list: A list of dictionaries containing heatmap information.
+        heatmap_data: Pandas DataFrame that is used to generate the heatmap.
+        heatmap_info: A list of dictionaries containing heatmap information.
     """
     heatmap_data = pd.DataFrame(field["rows"], columns=field["headers"])
     heatmap_info = []
@@ -975,23 +986,21 @@ def generate_heatmaps(geograpahic_level, indicator, field, years):
 
         for year in years:
             year_dic = {}
-            mymap, title = create_heatmap(data, geograpahic_level, indicator, 
+            heatmap, title = create_heatmap(data, geograpahic_level, indicator, 
                                           year)
             
             name = "heatmap_{}".format(uuid.uuid4())
             map_file_path = "{}/{}.html".format(html_path, name)
-            mymap.save(map_file_path)
+            heatmap.save(map_file_path)
             year_dic["title"] = title
             year_dic["path"] = f"maps/{name}.html"
             year_dic["year"] = year
             heatmap_info.append(year_dic)
-            del mymap
 
     return heatmap_data, heatmap_info
 
 def delete_legend(Choropleth: folium.Choropleth):
-  """A hack to remove choropleth legends.
-  
+  """
   This function removes the legend from the choropleth. This function is based
   from https://github.com/python-visualization/folium/issues/1052
   
@@ -999,7 +1008,7 @@ def delete_legend(Choropleth: folium.Choropleth):
     choropleth: Folium choropleth object
     
   Returns:
-    Chloropeth without legen
+    Chloropeth without legend
   """
   legend_list = []
   for c in Choropleth._children:
@@ -1020,15 +1029,16 @@ def create_heatmap(data, geograpahic_level, indicator, year):
         year (str): The selected year.
 
     Returns:
-        folium.Map: The generated heatmap.
+        heatmap: The generated folium heatmap
+        title: Title of folium heatmap
     """
     # Adding base layer
-    mymap = folium.Map(
+    heatmap = folium.Map(
         location=[41.8781, -87.6298], zoom_start=10, tiles=None
     )
     folium.TileLayer(
         "CartoDB positron", name="Light Map", control=False
-    ).add_to(mymap)
+    ).add_to(heatmap)
 
     # Creating heatmap layer
     units = INDICATOR_UNIT_MAPPING[indicator]
@@ -1047,7 +1057,7 @@ def create_heatmap(data, geograpahic_level, indicator, year):
         smooth_factor=0,
         nan_fill_color="grey",
         nan_fill_opacity=0.4,
-    )).add_to(mymap)
+    )).add_to(heatmap)
 
     def style_function(x):
         return {
@@ -1079,9 +1089,9 @@ def create_heatmap(data, geograpahic_level, indicator, year):
             ),
         ),
     )
-    mymap.add_child(feat)
-    mymap.keep_in_front(feat)
-    folium.LayerControl().add_to(mymap)
+    heatmap.add_child(feat)
+    heatmap.keep_in_front(feat)
+    folium.LayerControl().add_to(heatmap)
     if geograpahic_level[-1:] == "y":
         title = "Heat Map of {} by Selected {}ies in {}".format(
             indicator, geograpahic_level[:-1], year
@@ -1090,7 +1100,7 @@ def create_heatmap(data, geograpahic_level, indicator, year):
         title = "Heat Map of {} by Selected {}s in {}".format(
             indicator, geograpahic_level, year
         )
-    return mymap, title
+    return heatmap, title
 
 
 # HELPER FUNCTIONS FOR FORMS.PY #
@@ -1155,3 +1165,32 @@ def create_multiple_choice_indicator(
         widget=forms.Select(attrs={"class": class_name, "id": widget_id}),
         choices=choices_lst,
     )
+
+def prepare_chart_data(field):
+    chart_data = {
+        "categories": field["headers"][1:],  # Years
+        "series": [],
+    }
+    for row in field["rows"]:
+        chart_data["series"].append(
+            {
+                "name": row[0],  # Geographic unit
+                "data": row[1:],  # Values for each year
+            }
+        )
+    return chart_data
+
+
+def prepare_subgroup_chart_data(multi_year_subtable_field):
+    subgroup_chart_data = {}
+    for year_value, subtable_data in multi_year_subtable_field.items():
+        subgroup_chart_data[year_value] = {
+            "categories": subtable_data["headers"][1:],  # Subgroup categories
+            "series": [
+                {
+                    "name": subtable_data["headers"][0],
+                    "data": [row[1:] for row in subtable_data["rows"]],  # Subgroup values
+                }
+            ],
+        }
+    return subgroup_chart_data

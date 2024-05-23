@@ -26,72 +26,70 @@ DataForGood-chicago
 ├── LICENSE
 ├── README.md
 ├── dataforgood: contains code for the web app, including settings, URLs, views, models, templates, and static files.
-│   ├── admin_login_info.text
-│   ├── dataforgood
-│   │   ├── __init__.py
-│   │   ├── __pycache__
-│   │   │   ├── __init__.cpython-311.pyc
-│   │   │   ├── settings.cpython-311.pyc
-│   │   │   ├── urls.cpython-311.pyc
-│   │   │   └── wsgi.cpython-311.pyc
-│   │   ├── asgi.py
-│   │   ├── settings.py
-│   │   ├── urls.py
-│   │   └── wsgi.py
-│   ├── main: Django app for the main functionality of the web app
-│   │   ├── __init__.py
-│   │   ├── __pycache__
-│   │   │   ├── __init__.cpython-311.pyc
-│   │   │   ├── admin.cpython-311.pyc
-│   │   │   ├── apps.cpython-311.pyc
-│   │   │   ├── forms.cpython-311.pyc
-│   │   │   ├── models.cpython-311.pyc
-│   │   │   ├── urls.cpython-311.pyc
-│   │   │   ├── utils.cpython-311.pyc
-│   │   │   └── views.cpython-311.pyc
-│   │   ├── admin.py
-│   │   ├── apps.py
-│   │   ├── censustracts: shape files for Chicago's census tracts from City of Chicago's Data Portal
-│   │   ├── communityarea: shape files for Chicago's community areas from City of Chicago's Data Portal
-│   │   ├── forms.py
-│   │   ├── management:
-│   │   │   └── commands
-│   │   │       ├── __init__.py
-│   │   │       └── load_data.py
-│   │   ├── models.py
-│   │   ├── static: Directory for static files (e.g., CSS, images, JavaScript).
-│   │   │   ├── css
-│   │   │   │   └── style.css
-│   │   │   ├── images
-│   │   │   │   ├── banner.webp
-│   │   │   │   └── bg.jpg
-│   │   │   └── js
-│   │   │       └── script.js
-│   │   ├── templates: Directory for HTML templates used by Django.
-│   │   │   ├── aboutus.html
-│   │   │   ├── dataandvisualize.html
-│   │   │   ├── index.html
-│   │   │   ├── maps
-│   │   │   ├── memos
-│   │   │   ├── resources.html
-│   │   │   └── style.css
-│   │   ├── tests.py
-│   │   ├── urls.py
-│   │   ├── utils.py
-│   │   ├── views.py
-│   │   └── zipcode
-│   └── manage.py
+│   ├── dataforgood: core Django project directory
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   ├── asgi.py
+│   │   ├── settings.py
+│   │   ├── urls.py
+│   │   └── wsgi.py
+│   ├── db.sqlite3
+│   ├── main: Django app for the main functionality of the web app
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   ├── admin.py
+│   │   ├── apps.py
+│   │   ├── censustracts: shape files for Chicago's census tracts from City of Chicago's Data Portal
+│   │   ├── communityarea: shape files for Chicago's community areas from City of Chicago's Data Portal
+│   │   ├── zipcode: shape files for Chicago's zip codes from City of Chicago's Data Portal
+│   │   ├── data_pipeline: directory for data pulling and processing scripts 
+│   │   ├── forms.py
+│   │   ├── management: custom Django management commands
+│   │   │   └── commands
+│   │   │       ├── __init__.py
+│   │   │       └── load_data.py
+│   │   ├── models.py
+│   │   ├── static: Static files (CSS, JavaScript, images)
+│   │   │   ├── css
+│   │   │   │   ├── style.css
+│   │   │   │   └── header.css
+│   │   │   ├── images
+│   │   │   │   ├── banner.webp
+│   │   │   │   └── bg.jpg:
+│   │   │   └── js
+│   │   │       └── main_form_selection.js
+│   │   ├── templates: HTML templates for the web app
+│   │   │   ├── aboutus.html
+│   │   │   ├── dataandvisualize.html
+│   │   │   ├── index.html
+│   │   │   ├── maps
+│   │   │   ├── memos
+│   │   │   └── resources.html
+│   │   ├── tests.py
+│   │   ├── urls.py
+│   │   ├── utils.py
+│   │   └── views.py
+│   ├── manage.py
+│   └── staticfiles: Collected static files for deployment
+│       ├── admin
+│       │   ├── css: Admin-specific CSS files
+│       │   ├── img: Admin-specific images
+│       │   └── js: Admin-specific JavaScript files
+│       ├── css
+│       │   ├── header.css
+│       │   └── style.css
+│       ├── django_extensions: Static files for Django extensions
+│       ├── images: Collected images
+│       └── js: Collected JavaScript files
 ├── docs: Documentation for our project.
-│   ├── architecture.md
-│   ├── changelog.md
-│   ├── decisions
-│   │   └── README.md
-│   ├── endpoints
-│   │   └── endpoints.md
-│   ├── index.md
-│   ├── models.md
-│   └── test
-├── homebrew
+│   ├── Code Ownership.pdf
+│   ├── architecture.md
+│   ├── changelog.md
+│   ├── endpoints
+│   │   └── endpoints.md
+│   ├── index.md
+│   ├── models.md
+│   ├── retrospective.md
 ├── poetry.lock
 └── pyproject.toml
 ```

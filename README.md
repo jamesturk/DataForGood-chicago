@@ -17,6 +17,13 @@ Overall, the application aims to bridge the gap between data availability, acces
 - Yueyue Wang: Chief Architect, Supporting Frontend Engineer, Supporting GIS Engineer,
 - Maxine Xu: Project Manager, Lead GIS Engineer, Supporting Backend Engineer/Data Engineer
 
+#### **Code Contribution:**
+- Bryan Foo Suon Chuang: 
+- Yujie Jiang: 
+- Ruoyi Wu: 
+- Yueyue Wang: Subgroup table, main and subtable visualizations, embeded ArcGIS Web App, css, and documentation (README, architecture.md, endpoints.md)
+- Maxine Xu: Heat map visualizations, memo generation, defining Django models, and documentation (README, models.md, architecture.md, changelog.md)
+
 ### **Repository Layout**
 ```
 DataForGood-chicago
@@ -35,7 +42,6 @@ DataForGood-chicago
 │   │   ├── settings.py
 │   │   ├── urls.py
 │   │   └── wsgi.py
-│   ├── db.sqlite3
 │   ├── main: Django app for the main functionality of the web app
 │   │   ├── __init__.py
 │   │   ├── __pycache__
@@ -135,9 +141,7 @@ Check our pyproject.toml file for all the packages used and their relative versi
 Source: U.S. Census Bureau\
 Way of Collection: API Key
 
-(2) ChatGPT API:\
-
-(2) OpenAI API:\
+(2) OpenAI (ChatGPT) API:\
 Source: OpenAI\
 Way of Collection: API Key
 
@@ -147,6 +151,7 @@ Way of Collection: Downloaded shapefiles
 
 #### **Credentials**
 ##### Getting Census API key
+- Census API documentation: https://www.census.gov/data/developers/guidance/api-user-guide.html
 - Request an API key with this link: https://api.census.gov/data/key_signup.html
 - Once you have the keys, please create a new file called `.env` in the root directory of this project by running `touch .env`.
 - In this .env file, assign the key to the variable `CENSUS_API_KEY` without spaces or quotations (i.e. CENSUS_API_KEY=123456789)
@@ -154,11 +159,13 @@ Way of Collection: Downloaded shapefiles
 - An example of requesting census data and shapefile to map the results are in [this notebook](census_test.ipynb)
 
 ##### Getting OpenAI API key
-- Create an OpenAI account or sign into your existing account here: https://openai.com/blog/openai-api/
+- OpenAI API documentation: https://openai.com/blog/openai-api/
+- Create an OpenAI account or sign into your existing account here: https://platform.openai.com/signup
 - Once you have a key, assign the key to the variable `open_ai_key` without spaces or quotations (i.e. open_ai_key=123456789)
 
 #### **.env Setup**
 - The path of `.env` should look like: DataForGood-chicago/dataforgood/.env
+
 - The format in `.env` should look like the following:
 `SECRET_KEY=`\
 `DB_NAME=`\
@@ -168,10 +175,8 @@ Way of Collection: Downloaded shapefiles
 `DB_PORT=`\
 `open_ai_key=`\
 `CENSUS_API_KEY=`
-__________________
 
 #### **Launching the Web Application**
-
 
 1. Clone the repository.
 ```
@@ -181,23 +186,110 @@ git clone git@github.com:uchicago-capp-30320/DataForGood-chicago.git
 ```
 cd ./DataForGood-chicago/dataforgood
 ```
-3. If you haven't done it already:
+3. Ensure that your environment is set up correctly (refer to the above **.env Setup section**)
+4. If you haven't done it already:
 ```
 pip install poetry
 ```
-4. Set the path of downloaded poetry
+5. Set the path of downloaded poetry
 ```
 export PATH="$HOME/.local/bin:$PATH"
 ```
-5. Establish Dependencies.
+6. Establish Dependencies.
 ```
 poetry install
 ```
-6. Activate the virtual environment.
+7. Activate the virtual environment.
 ```
 poetry shell
 ```
-5. Launch the App
+8. Launch the App
 ```
 python manage.py runserver
 ```
+
+### **Web App Demo**
+
+#### About Us Page
+Our web app has three main tabs: About Us, Data & Visualize, and Resource.\
+To navigate to explore and visualize the data, choose "Explore Data" or click on the "Data & Visualize" Tab.
+
+https://github.com/uchicago-capp-30320/DataForGood-chicago/assets/111541644/2bdcad30-70ac-4c71-9c39-1bbcdd75bef6
+
+#### Selecting Geographic Level, Indicator, Years, and Memo Generation
+
+You will be navigated to a new page with a form.
+
+Please choose the geographic level you would like to study. We offer data at the city, community, zip code, and census tract level. In addition to selecting geographic areas, you can also use the search bar to select specific areas you are interested in.
+
+For ease of use, we have grouped the data into five categories: Economic, Education, Health, Housing, and Population. Please select one category and our available data will be generated. In the next field, choose an indicator you would like to analyze in-depth.
+
+https://github.com/uchicago-capp-30320/DataForGood-chicago/assets/111541644/5ee48e72-6118-4254-963b-6d36e2943f30
+
+After choosing an indicator, select the years of data you would like.\
+*Please note that are current data consists of the ACS' 5-year estimates, meaning that users should choose non-overlapping years (for example. 2013-2017 and 2018-2022) for the most accurate results.*
+
+If you would like to generate a memo about the key insights of the data, select "Yes" in the "Generate Memo" field.\
+*Please note that if you select "Yes" it will take several seconds for the next page to load after clicking the "Submit" button.*
+
+https://github.com/uchicago-capp-30320/DataForGood-chicago/assets/111541644/a33990ea-e6b5-41ce-9cfc-2fbec722497b
+
+#### Tables and Visualizations
+
+After the page loads, scroll down to see the main data table. The table consists of the indicator values for the selected geographic areas and years.
+
+To download the data, select "Download as Excel" or "Download as CSV".
+
+https://github.com/uchicago-capp-30320/DataForGood-chicago/assets/111541644/bde0471b-c99f-419a-bdc5-cc643fa86897
+
+The downloaded data will look like this:
+
+![image](https://github.com/uchicago-capp-30320/DataForGood-chicago/assets/111541644/2702373e-7d53-4348-8892-9e377a31a692)
+
+The first visualization presented to you will be a bar graph of the indicator values for the selected geographic areas and years.
+
+To switch the axes of the bar graph, select the  "Switch Axes" button. To display the bar graph in full screen mode, click on the bar icon to the right and selecting "View in Full screen". Hover over the bars for the geographic area name and the indicator value. 
+
+You are also able to download the bar graph visualization as an PNG, JPEG, PDF or SVG vector image.
+
+https://github.com/uchicago-capp-30320/DataForGood-chicago/assets/111541644/ee03327d-f41d-4a48-8be7-085749d3aea9
+
+The second visualization presented to you will be heat maps of the selected geographic areas and years.
+
+Hover over each geographic area to see the indicator value and the name of the area. Use the "+" button to zoom in, the "-" button to zoom out, and click and drag your mouse to move the frame of the map.
+
+https://github.com/uchicago-capp-30320/DataForGood-chicago/assets/111541644/fb74bbf8-2e52-487a-a8b5-7a27b9fa9a17
+
+#### Subgroup Tables and Visualizations
+
+You are also able to explore the indicator at a deeper level through our subgroups features. 
+
+Choose a specific year of subgroup data and click "Get Data and Visualization" to generate the data tables and visualizations. 
+
+You are able to download the subgroup tables by choosing the "Download as Excel" or "Download as "CSV" buttons as well as switch axes on the bar graph visualization by click the "Switch Axes" button. Hover over the bars for the geographic area name and the indicator value.
+
+
+https://github.com/uchicago-capp-30320/DataForGood-chicago/assets/111541644/49d581f8-d8b7-4c4b-85cd-f5c67b01d7ee
+
+The downloaded subgroup data will look like this:
+![image](https://github.com/uchicago-capp-30320/DataForGood-chicago/assets/111541644/635525ce-39d8-4e94-aab4-bed14660d23e)
+
+#### AI Generated Memo
+
+The generated memo is powered by OpenAI's ChatGPT 3.5 Turbo model. If you selected "Yes" in the data form, the generated memo will be at the bottom of the page.
+
+To download an editable file of the memo, click the "Download Memo" button.
+
+https://github.com/uchicago-capp-30320/DataForGood-chicago/assets/111541644/7619720c-6b35-41ea-b4e1-b9d3c197bfce
+
+The downloaded memo will look like this:
+![image](https://github.com/uchicago-capp-30320/DataForGood-chicago/assets/111541644/b4c4dca3-9548-46af-a747-b592ec87494a)
+
+#### Resource Page
+To navigate to our Resource page, select the "Resource" tab.
+
+https://github.com/uchicago-capp-30320/DataForGood-chicago/assets/111541644/f253af4b-ece7-4646-bd67-bc5d8853ddbb
+
+Add map elements by selecting the layer icon to the right of the screen and checking the layers you would like to see in the map.
+
+https://github.com/uchicago-capp-30320/DataForGood-chicago/assets/111541644/c31c862c-883b-4b5b-a225-86a85ed86464

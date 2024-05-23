@@ -1,7 +1,7 @@
 ## Architecture Documentation
 Welcome to the DataForGood Chicago project! This document will provide you with an overview of our application's architecture and key concepts to help you get started.
 
-### Data Flow and Backend:
+### Backend:
 - Data Source: The data for our application comes mainly from the American Community Survey conducted by the Census Bureau. We have a backend database using PostgreSQL, which stores this data in a structured format. The following is a table view of the indicators we have for each category:
 - Time Unit:
 * 2013-2017 ACS 5-year estimate
@@ -84,10 +84,11 @@ Welcome to the DataForGood Chicago project! This document will provide you with 
 
 **Please see `models.md` file for a more comprehensive diagram**
 
-- Data Flow: When a user interacts with the application and selects specific parameters (geographic level, indicator category, indicator, and years), the backend retrieves the relevant data from the database models and sends it to the frontend for visualization. We would like to note that our application allows the user to select indicators within one broader category (ie only selecting economic indicator variables) so that users can get a deeper view of one category at a time.
-
 ### Frontend and User Interface:
 <final design images here>
+
+### Data Flow:
+![image](https://github.com/uchicago-capp-30320/DataForGood-chicago/assets/111541644/e1a262b4-8fd4-4251-93fd-a571a120e601)
 
 ### Key Concepts:
 

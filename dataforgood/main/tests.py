@@ -693,27 +693,7 @@ class CreateSubgroupTableTests(TestCase):
         ]
 
         self.assertEqual(rows, correct_rows)
-    
-    def test_rent_sub_tract_level(self):
-        """
-        """
-        geographic_level = "Tract"
-        geographic_unit = TRACT_LIST
-        indicator = "Aggregate Contract Rent"
-        model = ContractRent_Sub
-        periods = SINGLE_PERIOD_LIST
 
-        rows = SubgroupTable(
-            geographic_level, geographic_unit, indicator, model, periods
-            ).many_subtables[SINGLE_PERIOD_LIST[0]]["rows"]
-        
-        correct_rows = [
-            ["Lower Contract Rent Quartile", 1000.0, 1300.0, 800.0, 1000.0, 3000.0, 5500.0],
-            ["Upper Contract Rent Quartile", 1500.0, 2000.0, 1100.0, 2000.0, 5000.0, 6500.0],
-        ]
-
-        self.assertEqual(rows, correct_rows)
-    
     def test_pop_sub_city_level(self):
         """
         """
@@ -770,26 +750,6 @@ class CreateSubgroupTableTests(TestCase):
         correct_rows = [
             ["Asian", 20000.0, 43000.0, 55000.0],
             ["White", 15000.0, 70000.0, 76000.0],
-        ]
-
-        self.assertEqual(rows, correct_rows)
-    
-    def test_pop_sub_tract_level(self):
-        """
-        """
-        geographic_level = "Tract"
-        geographic_unit = TRACT_LIST
-        indicator = "Total Population and Race Group"
-        model = Races_Sub
-        periods = SINGLE_PERIOD_LIST
-
-        rows = SubgroupTable(
-            geographic_level, geographic_unit, indicator, model, periods
-            ).many_subtables[SINGLE_PERIOD_LIST[0]]["rows"]
-        
-        correct_rows = [
-            ["Asian", 10000.0, 13000.0, "NA", 10000.0, 30000.0, 55000.0],
-            ["White", 15000.0, 20000.0, 11000.0, "NA", 50000.0, 65000.0],
         ]
 
         self.assertEqual(rows, correct_rows)

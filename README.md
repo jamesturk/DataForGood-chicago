@@ -160,7 +160,7 @@ Way of Collection: Downloaded shapefiles
 #### **.env Setup**
 - The path of `.env` should look like: DataForGood-chicago/dataforgood/.env
 
-- The format in `.env` should look like the following:
+- The format in `.env` should look like the following:\
 `SECRET_KEY=`\
 `DB_NAME=`\
 `DB_USER=`\
@@ -168,7 +168,11 @@ Way of Collection: Downloaded shapefiles
 `DB_HOST=`\
 `DB_PORT=`\
 `open_ai_key=`\
-`CENSUS_API_KEY=`
+`CENSUS_API_KEY=`\
+`GDAL_LIBRARY_PATH=`\
+`GEOS_LIBRARY_PATH=`\
+`DB_TEST_USER=`\
+`DB_TEST_PASSWORD=`
 
 #### **Launching the Web Application**
 

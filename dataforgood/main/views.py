@@ -243,7 +243,7 @@ def resources(request):
     """
     return render(request, "resources.html")
 
-
+# Source: https://stackoverflow.com/questions/19400089/downloadable-docx-file-in-django
 def download_memo(request):
     """
     Allows users to download the generated memo.

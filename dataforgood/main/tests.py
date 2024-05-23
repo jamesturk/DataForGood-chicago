@@ -248,7 +248,7 @@ class CreateMainTableTests(TestCase):
         rows = MainTable(
             geographic_level, geographic_unit, indicator, model, periods
             ).table["rows"]
-        
+
         correct_rows = [
             ["City Average", 1883.33, 2366.67],
         ]
@@ -572,13 +572,21 @@ class CreateSubgroupTableTests(TestCase):
         Races_Sub.objects.create(
             id=5,
             indicator_id=5,
+            sub_group_indicator_name=subgroup_2_a,
+            census_tract_id=80402,
+            year=2017,
+            value=None
+        )
+        Races_Sub.objects.create(
+            id=6,
+            indicator_id=5,
             sub_group_indicator_name=subgroup_2_b,
             census_tract_id=80402,
             year=2017,
             value=11000
         )
         Races_Sub.objects.create(
-            id=6,
+            id=7,
             indicator_id=5,
             sub_group_indicator_name=subgroup_2_a,
             census_tract_id=80403,
@@ -586,7 +594,15 @@ class CreateSubgroupTableTests(TestCase):
             value=10000
         )
         Races_Sub.objects.create(
-            id=7,
+            id=8,
+            indicator_id=5,
+            sub_group_indicator_name=subgroup_2_b,
+            census_tract_id=80403,
+            year=2017,
+            value=None
+        )
+        Races_Sub.objects.create(
+            id=9,
             indicator_id=5,
             sub_group_indicator_name=subgroup_2_a,
             census_tract_id=80404,
@@ -594,7 +610,7 @@ class CreateSubgroupTableTests(TestCase):
             value=30000
         )
         Races_Sub.objects.create(
-            id=8,
+            id=10,
             indicator_id=5,
             sub_group_indicator_name=subgroup_2_b,
             census_tract_id=80404,
@@ -602,7 +618,7 @@ class CreateSubgroupTableTests(TestCase):
             value=50000
         )
         Races_Sub.objects.create(
-            id=9,
+            id=11,
             indicator_id=5,
             sub_group_indicator_name=subgroup_2_a,
             census_tract_id=80405,
@@ -610,7 +626,7 @@ class CreateSubgroupTableTests(TestCase):
             value=55000
         )
         Races_Sub.objects.create(
-            id=10,
+            id=12,
             indicator_id=5,
             sub_group_indicator_name=subgroup_2_b,
             census_tract_id=80405,

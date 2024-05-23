@@ -18,11 +18,7 @@ Overall, the application aims to bridge the gap between data availability, acces
 - Maxine Xu: Project Manager, Lead GIS Engineer, Supporting Backend Engineer/Data Engineer
 
 #### **Code Contribution:**
-- Bryan Foo Suon Chuang: 
-- Yujie Jiang: 
-- Ruoyi Wu: 
-- Yueyue Wang: Subgroup table, main and subtable visualizations, embeded ArcGIS Web App, css, and documentation (README, architecture.md, endpoints.md)
-- Maxine Xu: Heat map visualizations, memo generation, defining Django models, and documentation (README, models.md, architecture.md, changelog.md)
+For a detailed description of each team member's code contribution, please see our "Code Ownership.pdf" file in the docs repository.
 
 ### **Repository Layout**
 ```

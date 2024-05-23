@@ -238,6 +238,8 @@ class CreateMainTableTests(TestCase):
     
     def test_rent_main_city_level(self):
         """
+        Tests rows of main data table for a city-level query, without any
+        missing data. Aggregation computes the mean across tracts.
         """
         geographic_level = "City of Chicago"
         geographic_unit = []
@@ -257,6 +259,8 @@ class CreateMainTableTests(TestCase):
     
     def test_rent_main_community_level(self):
         """
+        Tests rows of main data table for a community-level query, without any
+        missing data. Aggregation computes the mean across tracts.
         """
         geographic_level = "Community"
         geographic_unit = COMMUNTIY_LIST
@@ -278,6 +282,8 @@ class CreateMainTableTests(TestCase):
     
     def test_rent_main_zipcode_level(self):
         """
+        Tests rows of main data table for a zipcode-level query, without any
+        missing data. Aggregation computes the mean across tracts.
         """
         geographic_level = "Zipcode"
         geographic_unit = ZIPCODE_LIST
@@ -299,6 +305,8 @@ class CreateMainTableTests(TestCase):
     
     def test_rent_main_tract_level(self):
         """
+        Tests rows of main data table for a tract-level query, without any
+        missing data. Aggregation computes the mean across tracts.
         """
         geographic_level = "Tract"
         geographic_unit = TRACT_LIST
@@ -323,6 +331,8 @@ class CreateMainTableTests(TestCase):
 
     def test_pop_main_city_level(self):
         """
+        Tests rows of main data table for a city-level query, with
+        missing data. Aggregation computes the sum across tracts.
         """
         geographic_level = "City of Chicago"
         geographic_unit = []
@@ -342,6 +352,8 @@ class CreateMainTableTests(TestCase):
     
     def test_pop_main_community_level(self):
         """
+        Tests rows of main data table for a community-level query, with
+        missing data. Aggregation computes the sum across tracts.
         """
         geographic_level = "Community"
         geographic_unit = COMMUNTIY_LIST
@@ -363,6 +375,8 @@ class CreateMainTableTests(TestCase):
     
     def test_pop_main_zipcode_level(self):
         """
+        Tests rows of main data table for a zipcode-level query, with
+        missing data. Aggregation computes the sum across tracts.
         """
         geographic_level = "Zipcode"
         geographic_unit = ZIPCODE_LIST
@@ -384,6 +398,8 @@ class CreateMainTableTests(TestCase):
     
     def test_pop_main_tract_level(self):
         """
+        Tests rows of main data table for a tract-level query, with
+        missing data.
         """
         geographic_level = "Tract"
         geographic_unit = TRACT_LIST
@@ -636,6 +652,8 @@ class CreateSubgroupTableTests(TestCase):
     
     def test_rent_sub_city_level(self):
         """
+        Tests rows of subgroup data table for a city-level query, without 
+        any missing data. Aggregation computes the mean across tracts.
         """
         geographic_level = "City of Chicago"
         geographic_unit = []
@@ -656,6 +674,8 @@ class CreateSubgroupTableTests(TestCase):
     
     def test_rent_sub_community_level(self):
         """
+        Tests rows of subgroup data table for a community-level query, without 
+        any missing data. Aggregation computes the mean across tracts.
         """
         geographic_level = "Community"
         geographic_unit = COMMUNTIY_LIST
@@ -676,6 +696,8 @@ class CreateSubgroupTableTests(TestCase):
     
     def test_rent_sub_zipcode_level(self):
         """
+        Tests rows of subgroup data table for a zipcode-level query, without 
+        any missing data. Aggregation computes the mean across tracts.
         """
         geographic_level = "Zipcode"
         geographic_unit = ZIPCODE_LIST
@@ -696,6 +718,8 @@ class CreateSubgroupTableTests(TestCase):
 
     def test_pop_sub_city_level(self):
         """
+        Tests rows of subgroup data table for a city-level query, with
+        missing data. Aggregation computes the sum across tracts.
         """
         geographic_level = "City of Chicago"
         geographic_unit = []
@@ -716,6 +740,8 @@ class CreateSubgroupTableTests(TestCase):
     
     def test_pop_sub_community_level(self):
         """
+        Tests rows of subgroup data table for a community-level query, with
+        missing data. Aggregation computes the sum across tracts.
         """
         geographic_level = "Community"
         geographic_unit = COMMUNTIY_LIST
@@ -736,6 +762,8 @@ class CreateSubgroupTableTests(TestCase):
     
     def test_pop_sub_zipcode_level(self):
         """
+        Tests rows of subgroup data table for a zipcode-level query, with
+        missing data. Aggregation computes the sum across tracts.
         """
         geographic_level = "Zipcode"
         geographic_unit = ZIPCODE_LIST

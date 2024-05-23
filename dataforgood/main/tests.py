@@ -805,6 +805,9 @@ class TestWriteMemo(TestCase):
 
 class TestMainChartViz(TestCase):
     def test_visualization_rendering(self):
+        """
+        Tests the visualization chart for the main indicator data table.
+        """
         chart_data = {
             'categories': ['Category 1', 'Category 2', 'Category 3'],
             'series': [
